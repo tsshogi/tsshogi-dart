@@ -7,6 +7,7 @@
 import 'dart:io';
 
 import 'package:tsshogi/src/castle.dart';
+import 'package:tsshogi/src/color.dart';
 import 'package:tsshogi/src/piece.dart';
 import 'package:tsshogi/src/strategy.dart';
 
@@ -63,16 +64,7 @@ List<PlacementCell> _toCells(List<CastleRequirement> placements) {
           PlacementCell(
             file: req.file,
             rank: req.rank,
-            kind: 'exact',
-            pieceTypes: <String>[req.pieceType.name],
-          ),
-        );
-      case OpponentPiecePlacement():
-        out.add(
-          PlacementCell(
-            file: req.file,
-            rank: req.rank,
-            kind: 'opponent',
+            kind: req.color == Color.black ? 'exact' : 'opponent',
             pieceTypes: <String>[req.pieceType.name],
           ),
         );

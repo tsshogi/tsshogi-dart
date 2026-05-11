@@ -282,7 +282,7 @@ PlacementCell? _toPlacement(_CellTok t, int file, int rank) {
   final String? prefix = t.prefix;
   final String body = t.body;
   // `v駒` = 相手 (後手) の駒が指定マスにある (bioshogi の opponent piece)。
-  // 駒種を解決して OpponentPiecePlacement を emit する。
+  // 駒種を解決して PiecePlacement(color: Color.white) を emit する。
   if (prefix == 'v') {
     final String? sfen = _kanjiToSfen[body];
     if (sfen == null) return null;

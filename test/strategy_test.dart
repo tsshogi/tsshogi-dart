@@ -53,17 +53,18 @@ void _placeStrategy(Position position, StrategyTemplate template, Color side) {
 
   for (final CastleRequirement r in template.placements) {
     switch (r) {
-      case PiecePlacement(:final file, :final rank, :final pieceType):
+      case PiecePlacement(
+          :final file,
+          :final rank,
+          :final pieceType,
+          :final color
+        ):
         final int f = side == Color.black ? file : 10 - file;
         final int rr = side == Color.black ? rank : 10 - rank;
-        board.set(Square(f, rr), Piece(side, pieceType));
-        mark(f, rr);
-        break;
-      case OpponentPiecePlacement(:final file, :final rank, :final pieceType):
-        final int f = side == Color.black ? file : 10 - file;
-        final int rr = side == Color.black ? rank : 10 - rank;
-        final Color opp = side == Color.black ? Color.white : Color.black;
-        board.set(Square(f, rr), Piece(opp, pieceType));
+        final Color expected = color == Color.black
+            ? side
+            : (side == Color.black ? Color.white : Color.black);
+        board.set(Square(f, rr), Piece(expected, pieceType));
         mark(f, rr);
         break;
       case AnyOfPieces(:final file, :final rank, :final options):
@@ -461,10 +462,6 @@ void main() {
         for (final CastleRequirement r in t.placements) {
           final ({int file, int rank})? coord = switch (r) {
             PiecePlacement(:final file, :final rank) => (
-                file: file,
-                rank: rank,
-              ),
-            OpponentPiecePlacement(:final file, :final rank) => (
                 file: file,
                 rank: rank,
               ),

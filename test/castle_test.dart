@@ -48,18 +48,19 @@ void _placeTemplate(Position position, CastleTemplate template, Color side) {
 
   for (final CastleRequirement r in template.placements) {
     switch (r) {
-      case PiecePlacement(:final file, :final rank, :final pieceType):
+      case PiecePlacement(
+          :final file,
+          :final rank,
+          :final pieceType,
+          :final color
+        ):
         final int f = side == Color.black ? file : 10 - file;
         final int rr = side == Color.black ? rank : 10 - rank;
-        board.set(Square(f, rr), Piece(side, pieceType));
-        occupied.add(f * 10 + rr);
-        break;
-      case OpponentPiecePlacement(:final file, :final rank, :final pieceType):
-        final int f = side == Color.black ? file : 10 - file;
-        final int rr = side == Color.black ? rank : 10 - rank;
-        // 相手駒を配置 (テンプレ判定の正側 side に対する相手色)。
-        final Color opp = side == Color.black ? Color.white : Color.black;
-        board.set(Square(f, rr), Piece(opp, pieceType));
+        // color.black = 自陣駒、color.white = 相手駒
+        final Color expected = color == Color.black
+            ? side
+            : (side == Color.black ? Color.white : Color.black);
+        board.set(Square(f, rr), Piece(expected, pieceType));
         occupied.add(f * 10 + rr);
         break;
       case AnyOfPieces(:final file, :final rank, :final options):
@@ -567,7 +568,6 @@ void main() {
             if (r is PieceVisited ||
                 r is PieceUnmoved ||
                 r is KingIgyoku ||
-                r is OpponentPiecePlacement ||
                 r is HandPiece) {
               return false;
             }
@@ -863,7 +863,6 @@ void main() {
         for (final CastleRequirement r in t.placements) {
           final ({int file, int rank})? coord = switch (r) {
             PiecePlacement(:final file, :final rank) ||
-            OpponentPiecePlacement(:final file, :final rank) ||
             AnyOfPieces(:final file, :final rank) ||
             EmptySquare(:final file, :final rank) ||
             NotOfPieces(:final file, :final rank) ||
@@ -916,7 +915,6 @@ void main() {
         for (final CastleRequirement r in t.placements) {
           final ({int file, int rank})? coord = switch (r) {
             PiecePlacement(:final file, :final rank) ||
-            OpponentPiecePlacement(:final file, :final rank) ||
             AnyOfPieces(:final file, :final rank) ||
             EmptySquare(:final file, :final rank) ||
             NotOfPieces(:final file, :final rank) ||
@@ -967,7 +965,6 @@ void main() {
       // PieceAnywhere/HandPiece は親子関係から外れる宣言なので除外)。
       ({int file, int rank})? coordOf(CastleRequirement r) => switch (r) {
             PiecePlacement(:final file, :final rank) ||
-            OpponentPiecePlacement(:final file, :final rank) ||
             AnyOfPieces(:final file, :final rank) ||
             EmptySquare(:final file, :final rank) ||
             NotOfPieces(:final file, :final rank) ||

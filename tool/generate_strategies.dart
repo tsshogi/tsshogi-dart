@@ -28,6 +28,7 @@ String generateStrategyDart(List<ParsedTemplate> templates) {
   buf.writeln('// To regenerate: dart run tool/generate_strategies.dart');
   buf.writeln();
   buf.writeln("import '../castle.dart';");
+  buf.writeln("import '../color.dart';");
   buf.writeln("import '../piece.dart';");
   buf.writeln("import '../strategy.dart';");
   buf.writeln();
@@ -77,8 +78,8 @@ String _formatPlacement(PlacementCell p) {
       return 'PiecePlacement(${p.file}, ${p.rank}, PieceType.$enumName)';
     case 'opponent':
       final String enumName = p.pieceTypes.single;
-      return 'OpponentPiecePlacement(${p.file}, ${p.rank}, '
-          'PieceType.$enumName)';
+      return 'PiecePlacement(${p.file}, ${p.rank}, '
+          'PieceType.$enumName, color: Color.white)';
     case 'anyOf':
       final String opts =
           p.pieceTypes.map((String n) => 'PieceType.$n').join(', ');

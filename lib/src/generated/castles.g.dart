@@ -4,6 +4,7 @@
 // To regenerate: dart run tool/generate_castles.dart
 
 import '../castle.dart';
+import '../color.dart';
 import '../piece.dart';
 
 const List<CastleTemplate> castles = <CastleTemplate>[
@@ -152,8 +153,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
     name: '豆腐矢倉',
     parent: '金矢倉',
     placements: <CastleRequirement>[
-      OpponentPiecePlacement(6, 2, PieceType.rook),
-      OpponentPiecePlacement(7, 3, PieceType.knight),
+      PiecePlacement(6, 2, PieceType.rook, color: Color.white),
+      PiecePlacement(7, 3, PieceType.knight, color: Color.white),
       EmptySquare(8, 5),
       EmptySquare(5, 5),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -352,14 +353,14 @@ const List<CastleTemplate> castles = <CastleTemplate>[
     name: 'ムリヤリ矢倉',
     plyMax: 16,
     placements: <CastleRequirement>[
-      OpponentPiecePlacement(3, 1, PieceType.bishop),
-      OpponentPiecePlacement(8, 2, PieceType.rook),
+      PiecePlacement(3, 1, PieceType.bishop, color: Color.white),
+      PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       EmptySquare(4, 2),
       EmptySquare(5, 3),
-      OpponentPiecePlacement(3, 3, PieceType.silver),
-      OpponentPiecePlacement(2, 3, PieceType.pawn),
+      PiecePlacement(3, 3, PieceType.silver, color: Color.white),
+      PiecePlacement(2, 3, PieceType.pawn, color: Color.white),
       EmptySquare(6, 4),
-      OpponentPiecePlacement(8, 5, PieceType.pawn),
+      PiecePlacement(8, 5, PieceType.pawn, color: Color.white),
       EmptySquare(7, 5),
       PiecePlacement(2, 5, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),

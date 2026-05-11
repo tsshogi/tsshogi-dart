@@ -8,7 +8,7 @@
 #
 # Source ASCII parsed by: tool/import_bioshogi.dart
 
-# Last regenerated: 2026-05-11T21:06:32.878607
+# Last regenerated: 2026-05-11T21:25:00.391031
 # Source: attack_info.rb (246 metadata rows)
 #  ∩  shape_info.rb (394 ASCII templates)
 
