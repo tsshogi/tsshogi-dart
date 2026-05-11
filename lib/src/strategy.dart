@@ -128,3 +128,17 @@ bool _matchesStrategyTemplate(
   }
   return true;
 }
+
+/// 局面からの戦法検出ユーティリティ。プロパティ形式で
+/// `position.strategies` のように呼べる。手番は無視し両陣営の検出結果を返す。
+///
+/// ```dart
+/// final p = Position.newBySFEN(sfen)!;
+/// for (final s in p.strategies) {
+///   print('${s.side.value}: ${s.template.name}');
+/// }
+/// ```
+extension ImmutablePositionStrategies on ImmutablePosition {
+  /// この局面で検出される戦法を返す (両陣営)。
+  List<DetectedStrategy> get strategies => detectStrategies(this);
+}

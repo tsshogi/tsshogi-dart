@@ -173,6 +173,20 @@ List<DetectedTechnique> detectTechniques(ImmutableRecord record) {
   return results;
 }
 
+/// 棋譜からの手筋検出ユーティリティ。プロパティ形式で
+/// `record.techniques` のように呼べる。
+///
+/// ```dart
+/// final r = Record.newByUSI(usi)!;
+/// for (final t in r.techniques) {
+///   print('${t.ply}手目: ${t.template.name} (${t.color.value})');
+/// }
+/// ```
+extension ImmutableRecordTechniques on ImmutableRecord {
+  /// この棋譜のアクティブブランチを走査し、各手で発動した手筋を返す。
+  List<DetectedTechnique> get techniques => detectTechniques(this);
+}
+
 // ---------------------------------------------------------------------------
 // 共通ヘルパー
 // ---------------------------------------------------------------------------

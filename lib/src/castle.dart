@@ -380,3 +380,17 @@ bool _matchesTemplate(
   }
   return true;
 }
+
+/// 局面からの囲い検出ユーティリティ。
+///
+/// プロパティ形式で `position.castles` のように呼べる。手番は無視し
+/// 両陣営の検出結果を返す。特定陣営のみが欲しい場合は filter する:
+///
+/// ```dart
+/// final blackCastles =
+///     position.castles.where((c) => c.side == Color.black).toList();
+/// ```
+extension ImmutablePositionCastles on ImmutablePosition {
+  /// この局面で検出される囲いを返す (両陣営)。
+  List<DetectedCastle> get castles => detectCastles(this);
+}
