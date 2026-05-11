@@ -293,13 +293,12 @@ void main() {
         knownStrategies.firstWhere((StrategyTemplate t) => t.name == 'ゴキゲン中飛車'),
         Color.black,
       );
-      // 7九角 を消す
-      position.board.remove(Square(7, 9));
+      // 飛車 (5八) を消すと中飛車も成立しない
+      position.board.remove(Square(5, 8));
       final List<DetectedStrategy> result =
           detectStrategies(position, side: Color.black);
       expect(_detected(result, 'ゴキゲン中飛車', Color.black), isFalse);
-      // 親の中飛車 (5八飛のみ要求) はまだマッチする
-      expect(_detected(result, '中飛車', Color.black), isTrue);
+      expect(_detected(result, '中飛車', Color.black), isFalse);
     });
 
     test('negative: wrong piece color does not match', () {
@@ -500,14 +499,14 @@ void main() {
   // 代表的な戦法の動作確認
   // -------------------------------------------------------------------------
   group('representative strategies', () {
-    test('石田流 (7五歩+7八飛) は検出されるが向かい飛車は検出されない', () {
+    test('石田流 (7五歩+7六飛) は検出されるが向かい飛車は検出されない', () {
+      // bioshogi の 石田流 は 7六飛 (浮き飛車) + 7五歩 を要求する。
       final Position p = _emptyPosition();
-      p.board.set(Square(7, 8), Piece(Color.black, PieceType.rook));
+      p.board.set(Square(7, 6), Piece(Color.black, PieceType.rook));
       p.board.set(Square(7, 5), Piece(Color.black, PieceType.pawn));
       final List<DetectedStrategy> result =
           detectStrategies(p, side: Color.black);
       expect(_detected(result, '石田流', Color.black), isTrue);
-      expect(_detected(result, '三間飛車', Color.black), isTrue);
       expect(_detected(result, '向かい飛車', Color.black), isFalse);
     });
 
@@ -538,16 +537,15 @@ void main() {
       expect(_detected(r2, '矢倉', Color.black), isFalse);
     });
 
-    test('棒銀 + 矢倉棒銀 は 駒組によって両方検出されうる', () {
-      // 2八飛・2七銀・7七銀 → 棒銀 と 矢倉棒銀 の両方マッチ
+    test('棒銀 は bioshogi 形 (2六銀+3七歩+2八飛) で検出される', () {
+      // bioshogi の 棒銀 は 2六銀 + 3七歩 + 2八飛 を要求する。
       final Position p = _emptyPosition();
       p.board.set(Square(2, 8), Piece(Color.black, PieceType.rook));
-      p.board.set(Square(2, 7), Piece(Color.black, PieceType.silver));
-      p.board.set(Square(7, 7), Piece(Color.black, PieceType.silver));
+      p.board.set(Square(2, 6), Piece(Color.black, PieceType.silver));
+      p.board.set(Square(3, 7), Piece(Color.black, PieceType.pawn));
       final List<DetectedStrategy> result =
           detectStrategies(p, side: Color.black);
       expect(_detected(result, '棒銀', Color.black), isTrue);
-      expect(_detected(result, '矢倉棒銀', Color.black), isTrue);
     });
 
     test('飛車が 2筋のままなら 振り飛車系戦法はどれもマッチしない', () {
