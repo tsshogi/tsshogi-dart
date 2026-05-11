@@ -413,6 +413,7 @@ class Record implements ImmutableRecord {
     _position = _initialPosition.clone();
     _first = _NodeImpl.newRootEntry(_initialPosition);
     _current = _first;
+    _incrementRepetition();
   }
 
   RecordMetadata _metadata;
@@ -420,6 +421,14 @@ class Record implements ImmutableRecord {
   late Position _position;
   late _NodeImpl _first;
   late _NodeImpl _current;
+
+  /// SFEN ごとに「これまで何回この局面に到達したか」を数える。
+  /// 千日手 (4 回以上) と連続王手の千日手の判定に使う。
+  final Map<String, int> _repetitionCounts = <String, int>{};
+
+  /// SFEN ごとに「最初にこの局面が現れた手数」を記録する。
+  /// 連続王手の千日手判定 (since から current まで王手連続か) に使う。
+  final Map<String, int> _repetitionStart = <String, int>{};
 
   // Event controllers (broadcast for multiple subscribers).
   final StreamController<void> _onChangePositionCtrl =
@@ -545,8 +554,38 @@ class Record implements ImmutableRecord {
     _position = _initialPosition.clone();
     _first = _NodeImpl.newRootEntry(_initialPosition);
     _current = _first;
+    _repetitionCounts.clear();
+    _repetitionStart.clear();
+    _incrementRepetition();
     _onClearCtrl.add(_initialPosition);
     _onChangePositionCtrl.add(null);
+  }
+
+  /// 現在の局面の SFEN をキーに repetition カウンタをインクリメントする。
+  /// 初回登録時には `ply` を repetitionStart にも記録する (省略時は現在の ply)。
+  void _incrementRepetition([int? ply]) {
+    final String sfen = _position.sfen;
+    final int? current = _repetitionCounts[sfen];
+    if (current != null) {
+      _repetitionCounts[sfen] = current + 1;
+    } else {
+      _repetitionCounts[sfen] = 1;
+      _repetitionStart[sfen] = ply ?? _current.ply;
+    }
+  }
+
+  /// 現在の局面の SFEN の repetition カウンタを 1 減らす。0 になったらキー
+  /// 自体を削除する。
+  void _decrementRepetition() {
+    final String sfen = _position.sfen;
+    final int? n = _repetitionCounts[sfen];
+    if (n == null) return;
+    if (n <= 1) {
+      _repetitionCounts.remove(sfen);
+      _repetitionStart.remove(sfen);
+    } else {
+      _repetitionCounts[sfen] = n - 1;
+    }
   }
 
   /// 1手前に戻ります。
@@ -563,6 +602,7 @@ class Record implements ImmutableRecord {
     if (prev != null) {
       final mv = _current.move;
       if (mv is Move) {
+        _decrementRepetition();
         _position.undoMove(mv);
       }
       _current = prev;
@@ -590,6 +630,7 @@ class Record implements ImmutableRecord {
       final mv = _current.move;
       if (mv is Move) {
         _position.doMove(mv, ignoreValidation: true);
+        _incrementRepetition();
       }
       return true;
     }
@@ -692,12 +733,14 @@ class Record implements ImmutableRecord {
         final cur = _current;
         final mv = cur.move;
         if (mv is Move) {
+          _decrementRepetition();
           _position.undoMove(mv);
         }
         _current = p;
         final newMv = _current.move;
         if (newMv is Move) {
           _position.doMove(newMv, ignoreValidation: true);
+          _incrementRepetition();
         }
         ok = true;
       } else {
@@ -741,6 +784,11 @@ class Record implements ImmutableRecord {
     // 特殊な指し手のノードの場合は前のノードに戻る。
     if (!identical(_current, _first) && _current.move is! Move) {
       _goBack();
+    }
+
+    // 通常手なら repetition カウンタを増やす (新規ノード追加 / 既存上書きの前)。
+    if (actualMove is Move) {
+      _incrementRepetition(_current.ply + 1);
     }
 
     // 最終ノードの場合は単に新しいノードを追加する。
@@ -1028,14 +1076,45 @@ class Record implements ImmutableRecord {
     return true;
   }
 
+  /// 千日手かどうかを判定します。
+  /// 現在の局面が **4 回目以上**の同一局面である場合に true。
   @override
-  bool get repetition => false; // PHASE3
+  bool get repetition => (_repetitionCounts[_position.sfen] ?? 0) >= 4;
 
+  /// 現在の局面まで (現手を含む) に指定された局面が何回現れたかを返します。
   @override
-  int getRepetitionCount(ImmutablePosition position) => 0; // PHASE3
+  int getRepetitionCount(ImmutablePosition position) =>
+      _repetitionCounts[position.sfen] ?? 0;
 
+  /// 連続王手の千日手かどうかを判定します。
+  /// 千日手成立 (同一局面 4 回以上) であり、かつ最初に同一局面が現れたとき
+  /// から現手番側が一貫して王手をかけ続けていれば、その王手をかけてる側の
+  /// 陣営を返す。そうでなければ null。
   @override
-  Color? get perpetualCheck => null; // PHASE3
+  Color? get perpetualCheck {
+    if (!repetition) return null;
+    final String sfen = _position.sfen;
+    final int? since = _repetitionStart[sfen];
+    if (since == null) return null;
+    bool black = true;
+    bool white = true;
+    Color color = _position.color;
+    _NodeImpl? p = _current;
+    while (p != null && p.ply >= since) {
+      color = reverseColor(color);
+      if (p.isCheck) {
+        p = p._prev;
+        continue;
+      }
+      if (color == Color.black) {
+        black = false;
+      } else {
+        white = false;
+      }
+      p = p._prev;
+    }
+    return black ? Color.black : (white ? Color.white : null);
+  }
 
   @override
   String get usi => getUSI();
