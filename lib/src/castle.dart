@@ -1,7 +1,9 @@
 import 'color.dart';
 import 'generated/castles.g.dart' as gen;
+import 'move.dart';
 import 'piece.dart';
 import 'position.dart';
+import 'record.dart';
 import 'square.dart';
 
 /// 囲い / 戦法テンプレートを構成する 1 つの要件。
@@ -390,7 +392,86 @@ bool _matchesTemplate(
 /// final blackCastles =
 ///     position.castles.where((c) => c.side == Color.black).toList();
 /// ```
+///
+/// 注: これは **スナップショット** 検出のため、囲い完成後ずっと検出され続け
+/// る。「初めて成立した手」を知りたい場合は [ImmutableRecordCastles.castles]
+/// を使う。
 extension ImmutablePositionCastles on ImmutablePosition {
   /// この局面で検出される囲いを返す (両陣営)。
   List<DetectedCastle> get castles => detectCastles(this);
+}
+
+/// 棋譜の中で囲いが「初めて成立した手」を表す。
+///
+/// 同じ (テンプレ名, 陣営) は最も早い [ply] でのみ報告される。
+class DetectedCastleAt {
+  const DetectedCastleAt({
+    required this.template,
+    required this.side,
+    required this.ply,
+  });
+
+  /// マッチしたテンプレート
+  final CastleTemplate template;
+
+  /// 囲いを構築している陣営
+  final Color side;
+
+  /// 初めてマッチした手数 (0 は初期局面)。
+  final int ply;
+
+  @override
+  bool operator ==(Object other) =>
+      other is DetectedCastleAt &&
+      other.template.name == template.name &&
+      other.side == side &&
+      other.ply == ply;
+
+  @override
+  int get hashCode => Object.hash(template.name, side, ply);
+}
+
+/// 棋譜走査ベースの囲い検出。各囲いを「初めて成立した手」だけ報告する。
+///
+/// スナップショット形 ([ImmutablePositionCastles.castles]) と違い、一度
+/// 検出された囲いは以降の手では再報告されない。四間飛車が成立した後
+/// 関係ない手を指し続けても、ずっと検出され続けることはない。
+///
+/// ```dart
+/// final r = Record.newByUSI('position startpos moves 7g7f ...')!;
+/// for (final c in r.castles) {
+///   print('${c.ply}手目: ${c.side.value} ${c.template.name}');
+/// }
+/// ```
+extension ImmutableRecordCastles on ImmutableRecord {
+  /// アクティブブランチを走査し、初めて成立した囲いを ply 順に返す。
+  List<DetectedCastleAt> get castles {
+    final List<DetectedCastleAt> results = <DetectedCastleAt>[];
+    final Set<String> seen = <String>{};
+    void emitAt(int ply, ImmutablePosition pos) {
+      for (final DetectedCastle d in detectCastles(pos)) {
+        final String key = '${d.template.name}|${d.side.value}';
+        if (seen.add(key)) {
+          results.add(DetectedCastleAt(
+            template: d.template,
+            side: d.side,
+            ply: ply,
+          ));
+        }
+      }
+    }
+
+    final Position pos = initialPosition.clone();
+    emitAt(0, pos);
+    ImmutableNode? node = first.next;
+    while (node != null) {
+      final Object raw = node.move;
+      if (raw is Move) {
+        pos.doMove(raw, ignoreValidation: true);
+        emitAt(node.ply, pos);
+      }
+      node = node.next;
+    }
+    return results;
+  }
 }

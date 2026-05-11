@@ -1,7 +1,9 @@
 import 'castle.dart';
 import 'color.dart';
 import 'generated/strategies.g.dart' as gen;
+import 'move.dart';
 import 'position.dart';
+import 'record.dart';
 
 // ---------------------------------------------------------------------------
 // 戦法検出 (Strategy / Opening detection)
@@ -132,6 +134,10 @@ bool _matchesStrategyTemplate(
 /// 局面からの戦法検出ユーティリティ。プロパティ形式で
 /// `position.strategies` のように呼べる。手番は無視し両陣営の検出結果を返す。
 ///
+/// 注: これは **スナップショット** 検出のため、戦法が成立した後の手でも
+/// 同じ結果が出続ける。「初めて成立した手」を知りたい場合は
+/// [ImmutableRecordStrategies.strategies] を使う。
+///
 /// ```dart
 /// final p = Position.newBySFEN(sfen)!;
 /// for (final s in p.strategies) {
@@ -141,4 +147,77 @@ bool _matchesStrategyTemplate(
 extension ImmutablePositionStrategies on ImmutablePosition {
   /// この局面で検出される戦法を返す (両陣営)。
   List<DetectedStrategy> get strategies => detectStrategies(this);
+}
+
+/// 棋譜の中で戦法が「初めて成立した手」を表す。
+class DetectedStrategyAt {
+  const DetectedStrategyAt({
+    required this.template,
+    required this.side,
+    required this.ply,
+  });
+
+  /// マッチしたテンプレート
+  final StrategyTemplate template;
+
+  /// 戦法を採用している陣営
+  final Color side;
+
+  /// 初めてマッチした手数 (0 は初期局面)。
+  final int ply;
+
+  @override
+  bool operator ==(Object other) =>
+      other is DetectedStrategyAt &&
+      other.template.name == template.name &&
+      other.side == side &&
+      other.ply == ply;
+
+  @override
+  int get hashCode => Object.hash(template.name, side, ply);
+}
+
+/// 棋譜走査ベースの戦法検出。各戦法を「初めて成立した手」だけ報告する。
+///
+/// スナップショット形 ([ImmutablePositionStrategies.strategies]) と違い、
+/// 一度検出された戦法は以降の手では再報告されない。例えば四間飛車が成立し
+/// た後に関係ない手を指し続けても、ずっと検出され続けることはない。
+///
+/// ```dart
+/// final r = Record.newByUSI('position startpos moves 7g7f ...')!;
+/// for (final s in r.strategies) {
+///   print('${s.ply}手目: ${s.side.value} ${s.template.name}');
+/// }
+/// ```
+extension ImmutableRecordStrategies on ImmutableRecord {
+  /// アクティブブランチを走査し、初めて成立した戦法を ply 順に返す。
+  List<DetectedStrategyAt> get strategies {
+    final List<DetectedStrategyAt> results = <DetectedStrategyAt>[];
+    final Set<String> seen = <String>{};
+    void emitAt(int ply, ImmutablePosition pos) {
+      for (final DetectedStrategy d in detectStrategies(pos)) {
+        final String key = '${d.template.name}|${d.side.value}';
+        if (seen.add(key)) {
+          results.add(DetectedStrategyAt(
+            template: d.template,
+            side: d.side,
+            ply: ply,
+          ));
+        }
+      }
+    }
+
+    final Position pos = initialPosition.clone();
+    emitAt(0, pos);
+    ImmutableNode? node = first.next;
+    while (node != null) {
+      final Object raw = node.move;
+      if (raw is Move) {
+        pos.doMove(raw, ignoreValidation: true);
+        emitAt(node.ply, pos);
+      }
+      node = node.next;
+    }
+    return results;
+  }
 }

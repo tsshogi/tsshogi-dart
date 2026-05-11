@@ -110,4 +110,102 @@ void main() {
       expect(p.strategies, isNotEmpty);
     });
   });
+
+  group('record.castles (first-occurrence) getter', () {
+    test('居玉 は初期局面 ply 0 で 1 回だけ報告される', () {
+      final Record r = Record.newByUSI('position startpos moves 7g7f 3c3d')!;
+      final List<DetectedCastleAt> blackIgyoku = r.castles
+          .where((c) => c.template.name == '居玉' && c.side == Color.black)
+          .toList();
+      expect(blackIgyoku.length, 1, reason: '居玉 (黒) は最初の 1 回だけ報告されるはず');
+      expect(blackIgyoku.first.ply, 0);
+    });
+
+    test('スナップショット (position.castles) は手数分繰り返し検出', () {
+      // 対照: position.castles なら同じ居玉が手数分検出される
+      final Record r = Record.newByUSI('position startpos moves 7g7f 3c3d')!;
+      // initial position
+      final initialIgyoku = r.initialPosition.castles
+          .where((c) => c.template.name == '居玉' && c.side == Color.black)
+          .toList();
+      expect(initialIgyoku, isNotEmpty);
+      // current position (still 居玉)
+      final currentIgyoku = r.position.castles
+          .where((c) => c.template.name == '居玉' && c.side == Color.black)
+          .toList();
+      expect(currentIgyoku, isNotEmpty);
+      // Record extension is "first only"
+      expect(r.castles.where((c) => c.template.name == '居玉').length, 2,
+          reason: '居玉 は黒/白 1 回ずつ計 2 件');
+    });
+
+    test('ply 0 = 初期局面、ply 1 以降 = 各指し手', () {
+      final Record r = Record.newByUSI('position startpos moves 7g7f')!;
+      for (final DetectedCastleAt c in r.castles) {
+        expect(c.ply, anyOf(equals(0), greaterThanOrEqualTo(1)));
+      }
+    });
+
+    test('空棋譜 = 初期局面の検出のみ', () {
+      final Record r = Record();
+      final List<DetectedCastleAt> list = r.castles;
+      expect(list, isNotEmpty);
+      expect(list.every((c) => c.ply == 0), isTrue);
+    });
+
+    test('DetectedCastleAt equality / hashCode', () {
+      const String sfen =
+          'lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1';
+      final Position p = Position.newBySFEN(sfen)!;
+      final CastleTemplate t = p.castles.first.template;
+      final DetectedCastleAt a =
+          DetectedCastleAt(template: t, side: Color.black, ply: 5);
+      final DetectedCastleAt b =
+          DetectedCastleAt(template: t, side: Color.black, ply: 5);
+      final DetectedCastleAt c =
+          DetectedCastleAt(template: t, side: Color.black, ply: 6);
+      final DetectedCastleAt d =
+          DetectedCastleAt(template: t, side: Color.white, ply: 5);
+      expect(a == b, isTrue);
+      expect(a.hashCode == b.hashCode, isTrue);
+      expect(a == c, isFalse);
+      expect(a == d, isFalse);
+      expect(a == Object(), isFalse);
+    });
+  });
+
+  group('record.strategies (first-occurrence) getter', () {
+    test('一度検出された戦法は再報告されない (重複なし)', () {
+      // 数手指して、検出された戦法の (template, side) が一意であることを
+      // 確認。スナップショットの繰り返し検出を防げているかを保証する。
+      final Record? r =
+          Record.newByUSI('position startpos moves 7g7f 3c3d 2g2f 8c8d');
+      expect(r, isNotNull);
+      final List<DetectedStrategyAt> list = r!.strategies;
+      final Set<String> keys =
+          list.map((s) => '${s.template.name}|${s.side.value}').toSet();
+      expect(keys.length, list.length, reason: '同じ (テンプレ名, 陣営) が 2 回以上現れない');
+    });
+
+    test('空棋譜 = 初期局面の検出のみ', () {
+      final Record r = Record();
+      final List<DetectedStrategyAt> list = r.strategies;
+      expect(list.every((s) => s.ply == 0), isTrue);
+    });
+
+    test('DetectedStrategyAt equality / hashCode', () {
+      final Record r = Record();
+      final StrategyTemplate t = r.strategies.first.template;
+      final DetectedStrategyAt a =
+          DetectedStrategyAt(template: t, side: Color.black, ply: 3);
+      final DetectedStrategyAt b =
+          DetectedStrategyAt(template: t, side: Color.black, ply: 3);
+      final DetectedStrategyAt c =
+          DetectedStrategyAt(template: t, side: Color.white, ply: 3);
+      expect(a == b, isTrue);
+      expect(a.hashCode == b.hashCode, isTrue);
+      expect(a == c, isFalse);
+      expect(a == Object(), isFalse);
+    });
+  });
 }
