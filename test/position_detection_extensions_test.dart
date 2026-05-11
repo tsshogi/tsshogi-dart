@@ -60,12 +60,11 @@ void main() {
   });
 
   group('position.strategies getter', () {
-    test('初期局面の戦法 (主に 矢倉/角換わり/その他 居飛車系) を含む', () {
+    test('初期局面では戦法が検出されない (一掃済)', () {
+      // 「玉5九 + 飛車2八 だけ」の粗テンプレは driver/purge_initial_match_
+      // templates で削除済み。初期局面で発火する戦法は無い。
       final Position p = Position();
-      final List<DetectedStrategy> list = p.strategies;
-      // 何らかしら検出される (初期局面は飛車 2八 / 玉 5九 等で複数戦法
-      // が match する設計)
-      expect(list, isNotEmpty);
+      expect(p.strategies, isEmpty);
     });
 
     test('detectStrategies(p) と同じ結果を返す', () {
@@ -74,7 +73,12 @@ void main() {
     });
 
     test('片陣営のみ欲しい時は .where でフィルタ', () {
+      // 初期局面では戦法 0 件なので、四間飛車組み上げた局面で確認
       final Position p = Position();
+      p.reset(InitialPositionType.empty);
+      p.board.set(Square(5, 9), Piece(Color.black, PieceType.king));
+      p.board.set(Square(5, 1), Piece(Color.white, PieceType.king));
+      p.board.set(Square(6, 8), Piece(Color.black, PieceType.rook)); // 6八飛
       final List<DetectedStrategy> blackOnly =
           p.strategies.where((d) => d.side == Color.black).toList();
       expect(blackOnly.every((d) => d.side == Color.black), isTrue);
@@ -102,12 +106,14 @@ void main() {
   });
 
   group('SFEN 経由の総合テスト', () {
-    test('SFEN 文字列 → 囲い + 戦法 をまとめて取得', () {
+    test('SFEN 文字列 → 囲い だけは取れる (初期局面では戦法は空)', () {
       const String sfen =
           'lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1';
       final Position p = Position.newBySFEN(sfen)!;
+      // 居玉だけは検出される (黒/白)
       expect(p.castles, isNotEmpty);
-      expect(p.strategies, isNotEmpty);
+      // 戦法はパージ済みで初期局面では空
+      expect(p.strategies, isEmpty);
     });
   });
 
@@ -194,8 +200,8 @@ void main() {
     });
 
     test('DetectedStrategyAt equality / hashCode', () {
-      final Record r = Record();
-      final StrategyTemplate t = r.strategies.first.template;
+      // 適当な戦法テンプレを 1 つ取り出す
+      final StrategyTemplate t = knownStrategies.first;
       final DetectedStrategyAt a =
           DetectedStrategyAt(template: t, side: Color.black, ply: 3);
       final DetectedStrategyAt b =

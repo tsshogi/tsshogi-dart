@@ -1175,16 +1175,6 @@ const List<CastleTemplate> castles = <CastleTemplate>[
     ],
   ),
   CastleTemplate(
-    name: 'いかだ囲い',
-    placements: <CastleRequirement>[
-      PiecePlacement(7, 9, PieceType.silver),
-      PiecePlacement(6, 9, PieceType.gold),
-      PiecePlacement(5, 9, PieceType.king),
-      PiecePlacement(4, 9, PieceType.gold),
-      PiecePlacement(3, 9, PieceType.silver),
-    ],
-  ),
-  CastleTemplate(
     name: 'いちご囲い',
     placements: <CastleRequirement>[
       PiecePlacement(8, 8, PieceType.king),
@@ -1298,18 +1288,6 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(7, 9, PieceType.gold),
       PiecePlacement(6, 9, PieceType.king),
       PiecePlacement(5, 9, PieceType.gold),
-    ],
-  ),
-  CastleTemplate(
-    name: 'モノレール囲い',
-    placements: <CastleRequirement>[
-      PiecePlacement(8, 9, PieceType.knight),
-      PiecePlacement(7, 9, PieceType.silver),
-      PiecePlacement(6, 9, PieceType.gold),
-      PiecePlacement(5, 9, PieceType.king),
-      PiecePlacement(4, 9, PieceType.gold),
-      PiecePlacement(3, 9, PieceType.silver),
-      PiecePlacement(2, 9, PieceType.knight),
     ],
   ),
   CastleTemplate(
