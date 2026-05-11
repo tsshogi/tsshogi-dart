@@ -648,4 +648,107 @@ side: ohno
       expect(formatHandHeader(placements), 'hand: B*2 R');
     });
   });
+
+  group('unmoved / visited headers', () {
+    test('parses "unmoved: K 5 9" into a pieceUnmoved cell', () {
+      const String input = '''
+=== name: 居玉
+unmoved: K 5 9
+
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+''';
+      final ParsedTemplate t = parseTemplateFile(input).single;
+      expect(t.placements, hasLength(1));
+      final PlacementCell c = t.placements.single;
+      expect(c.kind, 'pieceUnmoved');
+      expect(c.file, 5);
+      expect(c.rank, 9);
+    });
+
+    test('parses multiple "visited: R ..." into pieceVisited cells', () {
+      const String input = '''
+=== name: Uターン飛車
+visited: R 6 8
+visited: R 5 8
+visited: R 4 8
+visited: R 3 8
+
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . R .
+. . . . . . . . .
+''';
+      final ParsedTemplate t = parseTemplateFile(input).single;
+      // 1 exact (R at 2,8) + 4 visited
+      expect(t.placements, hasLength(5));
+      final List<PlacementCell> visited = t.placements
+          .where((PlacementCell p) => p.kind == 'pieceVisited')
+          .toList();
+      expect(visited, hasLength(4));
+      expect(
+        visited.map((PlacementCell p) => '${p.file}${p.rank}').toSet(),
+        <String>{'68', '58', '48', '38'},
+      );
+      for (final PlacementCell v in visited) {
+        expect(v.pieceTypes.single, 'rook');
+      }
+    });
+
+    test('formatUnmovedHeaders emits one line per pieceUnmoved cell', () {
+      final List<PlacementCell> placements = <PlacementCell>[
+        PlacementCell(kind: 'pieceUnmoved', file: 5, rank: 9),
+      ];
+      expect(formatUnmovedHeaders(placements), <String>['unmoved: K 5 9']);
+    });
+
+    test('formatVisitedHeaders emits one line per pieceVisited cell', () {
+      final List<PlacementCell> placements = <PlacementCell>[
+        PlacementCell(
+          kind: 'pieceVisited',
+          file: 6,
+          rank: 8,
+          pieceTypes: <String>['rook'],
+        ),
+        PlacementCell(
+          kind: 'pieceVisited',
+          file: 5,
+          rank: 8,
+          pieceTypes: <String>['rook'],
+        ),
+      ];
+      expect(formatVisitedHeaders(placements),
+          <String>['visited: R 6 8', 'visited: R 5 8']);
+    });
+
+    test('buildGrid skips history-dependent cells', () {
+      final List<PlacementCell> placements = <PlacementCell>[
+        PlacementCell(kind: 'pieceUnmoved', file: 5, rank: 9),
+        PlacementCell(
+          kind: 'pieceVisited',
+          file: 6,
+          rank: 8,
+          pieceTypes: <String>['rook'],
+        ),
+      ];
+      final List<List<String>> grid = buildGrid(placements);
+      for (final List<String> row in grid) {
+        for (final String cell in row) {
+          expect(cell, '.', reason: 'grid should be fully empty');
+        }
+      }
+    });
+  });
 }

@@ -98,6 +98,14 @@ void _placeTemplate(Position position, CastleTemplate template, Color side) {
       case HandPiece(:final pieceType, :final minCount):
         position.hand(side).set(pieceType, minCount);
         break;
+      case PieceUnmoved():
+        // 履歴依存要件は静的局面生成では再現できない (動かしてない / 動かし
+        // て戻したを盤上だけからは判別不可能)。テスト用の board factory は
+        // この要件を満たすかどうか保証しない。
+        break;
+      case PieceVisited():
+        // 同上。
+        break;
     }
   }
 }
@@ -119,13 +127,13 @@ void main() {
 
     test('initial standard position is not a castle', () {
       final Position position = Position();
-      // 初期局面は囲い未着手 — 居玉以外は何も検出されないはず
-      // (居玉は 5九玉だけのチェックなので初期局面でもマッチする)
+      // 初期局面は囲い未着手 — 何も検出されないはず。
+      // 居玉 は履歴依存 (PieceUnmoved) なので position 単体ではマッチしない。
       final List<DetectedCastle> result =
           detectCastles(position, side: Color.black);
-      // 居玉は検出される
-      expect(_detected(result, '居玉', Color.black), isTrue);
-      // 矢倉・美濃・穴熊は当然検出されない
+      // 居玉 は履歴情報がないため position 検出では発火しない
+      expect(_detected(result, '居玉', Color.black), isFalse);
+      // 矢倉・美濃・穴熊も当然検出されない
       expect(_detected(result, '金矢倉', Color.black), isFalse);
       expect(_detected(result, '美濃囲い', Color.black), isFalse);
       expect(_detected(result, '居飛車穴熊', Color.black), isFalse);
@@ -137,6 +145,9 @@ void main() {
         // (record 経由でのみ有効)。これらは ply_constraint_test.dart で別途
         // 検証する。
         if (template.hasPlyConstraint) continue;
+        // 履歴依存テンプレ (PieceUnmoved / PieceVisited) も同様。
+        // move_history_test.dart で別途検証する。
+        if (template.hasHistoryRequirement) continue;
         test('detects ${template.name}', () {
           final Position position = _emptyPosition();
           _placeTemplate(position, template, Color.black);
@@ -154,6 +165,7 @@ void main() {
     group('each castle detection (white, mirrored)', () {
       for (final CastleTemplate template in knownCastles) {
         if (template.hasPlyConstraint) continue;
+        if (template.hasHistoryRequirement) continue;
         test('detects ${template.name} for white', () {
           // 白玉が初期位置にあるので一旦消す
           final Position position = Position();
@@ -681,8 +693,8 @@ void main() {
 
       final List<DetectedCastle> result = detectCastles(p);
       expect(_detected(result, '美濃囲い', Color.white), isTrue);
-      // 黒側にも 居玉 だけ検出される
-      expect(_detected(result, '居玉', Color.black), isTrue);
+      // 居玉 は履歴依存なので position.castles では発火しない
+      expect(_detected(result, '居玉', Color.black), isFalse);
     });
 
     test('両陣営同時に違う囲いを組んだ局面', () {
@@ -780,11 +792,14 @@ void main() {
       expect(_detected(r, 'ビッグ4', Color.black), isFalse);
     });
 
-    test('居玉のみ → 中住まいや 5五玉系 と誤検出しない', () {
+    test('居玉のみ → 中住まいや 5五玉系 と誤検出しない (position 検出)', () {
+      // 居玉 は履歴依存 (PieceUnmoved) なので position 検出では発火しない
+      // ことが今は仕様。中住まい / 箱入り娘 が誤発火しないことだけを確認。
       final Position p = _emptyPosition();
       p.board.set(Square(5, 9), Piece(Color.black, PieceType.king));
       final List<DetectedCastle> r = detectCastles(p, side: Color.black);
-      expect(_detected(r, '居玉', Color.black), isTrue);
+      expect(_detected(r, '居玉', Color.black), isFalse,
+          reason: '居玉 は履歴依存なので position 検出ではマッチしない');
       expect(_detected(r, '中住まい', Color.black), isFalse);
       expect(_detected(r, '箱入り娘', Color.black), isFalse);
     });
@@ -827,7 +842,11 @@ void main() {
             NotOfPieces(:final file, :final rank) ||
             AnyPiece(:final file, :final rank) =>
               (file: file, rank: rank),
-            PieceAnywhere() || HandPiece() => null,
+            PieceAnywhere() ||
+            HandPiece() ||
+            PieceUnmoved() ||
+            PieceVisited() =>
+              null,
           };
           if (coord == null) continue;
           expect(coord.file, inInclusiveRange(1, 9), reason: '${t.name}: file');
@@ -874,7 +893,11 @@ void main() {
             NotOfPieces(:final file, :final rank) ||
             AnyPiece(:final file, :final rank) =>
               (file: file, rank: rank),
-            PieceAnywhere() || HandPiece() => null,
+            PieceAnywhere() ||
+            HandPiece() ||
+            PieceUnmoved() ||
+            PieceVisited() =>
+              null,
           };
           if (coord == null) continue;
           final int key = coord.file * 10 + coord.rank;
@@ -919,7 +942,11 @@ void main() {
             NotOfPieces(:final file, :final rank) ||
             AnyPiece(:final file, :final rank) =>
               (file: file, rank: rank),
-            PieceAnywhere() || HandPiece() => null,
+            PieceAnywhere() ||
+            HandPiece() ||
+            PieceUnmoved() ||
+            PieceVisited() =>
+              null,
           };
       bool isParentReqSatisfiedBy(
           CastleRequirement parent, CastleRequirement child) {

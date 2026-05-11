@@ -103,6 +103,11 @@ void _placeStrategy(Position position, StrategyTemplate template, Color side) {
       case HandPiece(:final pieceType, :final minCount):
         position.hand(side).set(pieceType, minCount);
         break;
+      case PieceUnmoved():
+        // 履歴依存要件は静的局面生成で再現できない。テストでは置換しない。
+        break;
+      case PieceVisited():
+        break;
     }
   }
 }
@@ -146,6 +151,9 @@ void main() {
         // (record 経由でのみ有効)。これらは ply_constraint_test.dart で別途
         // 検証する。
         if (template.hasPlyConstraint) continue;
+        // 履歴依存テンプレ (PieceUnmoved / PieceVisited) も同様。
+        // move_history_test.dart で別途検証する。
+        if (template.hasHistoryRequirement) continue;
         test('detects ${template.name}', () {
           final Position position = _emptyPosition();
           _placeStrategy(position, template, Color.black);
@@ -164,6 +172,7 @@ void main() {
     group('each strategy self-match (white, mirrored)', () {
       for (final StrategyTemplate template in knownStrategies) {
         if (template.hasPlyConstraint) continue;
+        if (template.hasHistoryRequirement) continue;
         test('detects ${template.name} for white', () {
           final Position position = Position();
           position.reset(InitialPositionType.empty);
@@ -460,6 +469,8 @@ void main() {
             AnyPiece(:final file, :final rank) => (file: file, rank: rank),
             PieceAnywhere() => null,
             HandPiece() => null,
+            PieceUnmoved() => null,
+            PieceVisited() => null,
           };
           if (coord == null) continue;
           expect(

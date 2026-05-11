@@ -2762,6 +2762,10 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'Uターン飛車',
     placements: <CastleRequirement>[
       PiecePlacement(2, 8, PieceType.rook),
+      PieceVisited(6, 8, PieceType.rook),
+      PieceVisited(5, 8, PieceType.rook),
+      PieceVisited(4, 8, PieceType.rook),
+      PieceVisited(3, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(

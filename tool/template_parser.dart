@@ -63,6 +63,7 @@ class PlacementCell {
   /// 要件種別。
   /// - per-cell:  `'exact'`, `'anyOf'`, `'empty'`, `'notOf'`, `'anyPiece'`
   /// - position-wide: `'pieceAnywhere'`, `'handPiece'`
+  /// - history-based: `'pieceUnmoved'`, `'pieceVisited'`
   final String kind;
 
   /// 1..9 (盤右が 1)。position-wide kind では 0 (unused)。
@@ -288,6 +289,32 @@ List<ParsedTemplate> parseTemplateFile(String content) {
           if (parsed.eq != null) sectionPlyEq = parsed.eq;
           if (parsed.max != null) sectionPlyMax = parsed.max;
           break;
+        case 'unmoved':
+          // `unmoved: K 5 9` → PieceUnmoved(5, 9)
+          // (駒種トークンは要件本体に不要だが、可読性のため形式は必須)
+          final ({int file, int rank}) coord =
+              _parseHistoryHeader(header.value, lineNo, 'unmoved');
+          sectionExtras.add(
+            PlacementCell(
+              kind: 'pieceUnmoved',
+              file: coord.file,
+              rank: coord.rank,
+            ),
+          );
+          break;
+        case 'visited':
+          // `visited: R 6 8` → PieceVisited(6, 8, rook)
+          final ({String piece, int file, int rank}) v =
+              _parseVisitedHeader(header.value, lineNo);
+          sectionExtras.add(
+            PlacementCell(
+              kind: 'pieceVisited',
+              file: v.file,
+              rank: v.rank,
+              pieceTypes: <String>[v.piece],
+            ),
+          );
+          break;
         default:
           throw FormatException(
             'line $lineNo: unknown header "${header.key}"',
@@ -336,6 +363,68 @@ _Header _parseHeaderTriple(String line, int lineNo) {
   // Strip leading "===".
   final String rest = line.substring(3).trimLeft();
   return _parseHeader(rest, lineNo);
+}
+
+/// `unmoved: K 5 9` の値部分 (`K 5 9`) をパースする。
+///
+/// 駒種トークン (例: `K`) は可読性のため必須だが、`PieceUnmoved` 自体は駒種
+/// を保持しないので捨てる。
+({int file, int rank}) _parseHistoryHeader(
+  String value,
+  int lineNo,
+  String headerKey,
+) {
+  final List<String> tokens =
+      value.split(RegExp(r'\s+')).where((String s) => s.isNotEmpty).toList();
+  if (tokens.length != 3) {
+    throw FormatException(
+      'line $lineNo: expected "$headerKey: <piece> <file> <rank>", '
+      'got "$value"',
+    );
+  }
+  // 駒種は parse して valid であることだけ確認 (捨てる)。
+  sfenTokenToEnumName(tokens[0]);
+  final int? file = int.tryParse(tokens[1]);
+  final int? rank = int.tryParse(tokens[2]);
+  if (file == null ||
+      rank == null ||
+      file < 1 ||
+      file > 9 ||
+      rank < 1 ||
+      rank > 9) {
+    throw FormatException(
+      'line $lineNo: invalid coordinates in "$headerKey: $value"',
+    );
+  }
+  return (file: file, rank: rank);
+}
+
+/// `visited: R 6 8` の値部分 (`R 6 8`) をパースする。
+({String piece, int file, int rank}) _parseVisitedHeader(
+  String value,
+  int lineNo,
+) {
+  final List<String> tokens =
+      value.split(RegExp(r'\s+')).where((String s) => s.isNotEmpty).toList();
+  if (tokens.length != 3) {
+    throw FormatException(
+      'line $lineNo: expected "visited: <piece> <file> <rank>", got "$value"',
+    );
+  }
+  final String enumName = sfenTokenToEnumName(tokens[0]);
+  final int? file = int.tryParse(tokens[1]);
+  final int? rank = int.tryParse(tokens[2]);
+  if (file == null ||
+      rank == null ||
+      file < 1 ||
+      file > 9 ||
+      rank < 1 ||
+      rank > 9) {
+    throw FormatException(
+      'line $lineNo: invalid coordinates in "visited: $value"',
+    );
+  }
+  return (piece: enumName, file: file, rank: rank);
 }
 
 /// `ply:` ヘッダ値をパースする。
@@ -498,7 +587,12 @@ List<List<String>> buildGrid(List<PlacementCell> placements) {
     (_) => List<String>.filled(9, '.'),
   );
   for (final PlacementCell p in placements) {
-    if (p.kind == 'pieceAnywhere' || p.kind == 'handPiece') continue;
+    if (p.kind == 'pieceAnywhere' ||
+        p.kind == 'handPiece' ||
+        p.kind == 'pieceUnmoved' ||
+        p.kind == 'pieceVisited') {
+      continue;
+    }
     final int rowIdx = p.rank - 1;
     final int colIdx = 9 - p.file;
     if (rowIdx < 0 || rowIdx > 8 || colIdx < 0 || colIdx > 8) {
@@ -556,6 +650,38 @@ String? formatPlyHeader({int? plyEq, int? plyMax}) {
   if (plyEq != null) parts.add('$plyEq');
   if (plyMax != null) parts.add('max $plyMax');
   return 'ply: ${parts.join(', ')}';
+}
+
+/// `unmoved: <piece> <file> <rank>` 形式の行を 0 件以上返す。
+///
+/// `PieceUnmoved` は駒種を持たないが、可読性のためマスにある駒種を引数で
+/// 渡す。代表的な使い方は「居玉 = K 5 9」のように玉専用なので、自然な
+/// `K` を出力する。指定が無い場合は `?` を出す (パーサ側では捨てるので
+/// 動作には影響しないが、人間が読めなくなる)。
+///
+/// 出力順序はリスト順 (= 配置時に同順)。
+List<String> formatUnmovedHeaders(List<PlacementCell> placements,
+    {String fallbackPieceToken = 'K'}) {
+  final List<String> out = <String>[];
+  for (final PlacementCell p in placements) {
+    if (p.kind != 'pieceUnmoved') continue;
+    final String piece = p.pieceTypes.isNotEmpty
+        ? enumNameToSfenToken(p.pieceTypes.single)
+        : fallbackPieceToken;
+    out.add('unmoved: $piece ${p.file} ${p.rank}');
+  }
+  return out;
+}
+
+/// `visited: <piece> <file> <rank>` 形式の行を 0 件以上返す。
+List<String> formatVisitedHeaders(List<PlacementCell> placements) {
+  final List<String> out = <String>[];
+  for (final PlacementCell p in placements) {
+    if (p.kind != 'pieceVisited') continue;
+    final String piece = enumNameToSfenToken(p.pieceTypes.single);
+    out.add('visited: $piece ${p.file} ${p.rank}');
+  }
+  return out;
 }
 
 /// `hand: B*2 R` 形式の 1 行を返す。position-wide な `handPiece` セルが

@@ -14,13 +14,14 @@ import 'package:tsshogi/src/technique.dart';
 
 void main() {
   group('position.castles getter', () {
-    test('初期局面では 居玉 が両陣営で検出される', () {
+    test('初期局面では 居玉 は position 単体では検出されない (履歴依存テンプレ)', () {
+      // 居玉 は PieceUnmoved 要件を含むため history 情報が必要。
+      // position 単体では満たせず、`detectCastles` ではスキップされる。
+      // `record.castles` で初期局面から走査したときのみマッチする。
       final Position p = Position();
       final List<DetectedCastle> list = p.castles;
-      expect(list.any((d) => d.template.name == '居玉' && d.side == Color.black),
-          isTrue);
-      expect(list.any((d) => d.template.name == '居玉' && d.side == Color.white),
-          isTrue);
+      expect(list.any((d) => d.template.name == '居玉'), isFalse,
+          reason: '居玉 は履歴依存なので position.castles では発火しない');
     });
 
     test('detectCastles(p) と同じ結果を返す', () {
@@ -107,13 +108,14 @@ void main() {
   });
 
   group('SFEN 経由の総合テスト', () {
-    test('SFEN 文字列 → 囲い だけは取れる (初期局面では戦法は空に近い)', () {
+    test('SFEN 文字列 → 初期局面では履歴依存テンプレ以外は発火しない', () {
       const String sfen =
           'lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1';
       final Position p = Position.newBySFEN(sfen)!;
-      // 居玉だけは検出される (黒/白)
-      expect(p.castles, isNotEmpty);
-      // 戦法は bioshogi 由来データでは少数の戦法 (Uターン飛車など) が発火しうる
+      // 居玉 (履歴依存) も Uターン飛車 (履歴依存) も position 単体ではマッチ
+      // しないため、初期局面では検出が空になる。
+      expect(p.castles, isEmpty,
+          reason: '履歴依存の 居玉 は position.castles では検出されない');
       expect(p.strategies.length, lessThan(10));
     });
   });
@@ -130,20 +132,16 @@ void main() {
       expect(blackIgyoku.first.ply, 1);
     });
 
-    test('スナップショット (position.castles) は手数分繰り返し検出', () {
-      // 対照: position.castles なら同じ居玉が手数分検出される
+    test('履歴依存 居玉 は record.castles では 1 回ずつ報告される', () {
+      // position.castles では 居玉 (履歴依存) は出ない。record.castles は
+      // 履歴を保持しているため、初手以降ずっと玉が動いてない陣営にだけ
+      // 1 回ずつ報告される。
       final Record r = Record.newByUSI('position startpos moves 7g7f 3c3d')!;
-      // initial position
-      final initialIgyoku = r.initialPosition.castles
-          .where((c) => c.template.name == '居玉' && c.side == Color.black)
-          .toList();
-      expect(initialIgyoku, isNotEmpty);
-      // current position (still 居玉)
-      final currentIgyoku = r.position.castles
-          .where((c) => c.template.name == '居玉' && c.side == Color.black)
-          .toList();
-      expect(currentIgyoku, isNotEmpty);
-      // Record extension is "first only"
+      // position 単体では出ない
+      expect(r.initialPosition.castles.any((c) => c.template.name == '居玉'),
+          isFalse);
+      expect(r.position.castles.any((c) => c.template.name == '居玉'), isFalse);
+      // record extension では (黒/白) 各 1 回ずつ計 2 件
       expect(r.castles.where((c) => c.template.name == '居玉').length, 2,
           reason: '居玉 は黒/白 1 回ずつ計 2 件');
     });
@@ -163,10 +161,9 @@ void main() {
     });
 
     test('DetectedCastleAt equality / hashCode', () {
-      const String sfen =
-          'lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1';
-      final Position p = Position.newBySFEN(sfen)!;
-      final CastleTemplate t = p.castles.first.template;
+      // 初期局面の position.castles は空なので、テンプレは knownCastles から
+      // 直接拾ってくる。
+      final CastleTemplate t = knownCastles.first;
       final DetectedCastleAt a =
           DetectedCastleAt(template: t, side: Color.black, ply: 5);
       final DetectedCastleAt b =

@@ -35,6 +35,12 @@ void main() {
     if (boardLine != null) buf.writeln(boardLine);
     final String? handLine = formatHandHeader(cells);
     if (handLine != null) buf.writeln(handLine);
+    for (final String line in formatUnmovedHeaders(cells)) {
+      buf.writeln(line);
+    }
+    for (final String line in formatVisitedHeaders(cells)) {
+      buf.writeln(line);
+    }
     buf.writeln();
     final List<List<String>> grid = buildGrid(cells);
     for (final List<String> row in grid) {
@@ -97,6 +103,19 @@ List<PlacementCell> _toCells(List<CastleRequirement> placements) {
           kind: 'handPiece',
           pieceTypes: <String>[req.pieceType.name],
           minCount: req.minCount,
+        ));
+      case PieceUnmoved():
+        out.add(PlacementCell(
+          kind: 'pieceUnmoved',
+          file: req.file,
+          rank: req.rank,
+        ));
+      case PieceVisited():
+        out.add(PlacementCell(
+          kind: 'pieceVisited',
+          file: req.file,
+          rank: req.rank,
+          pieceTypes: <String>[req.pieceType.name],
         ));
     }
   }

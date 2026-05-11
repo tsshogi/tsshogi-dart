@@ -1,6 +1,7 @@
 import 'color.dart';
 import 'generated/castles.g.dart' as gen;
 import 'move.dart';
+import 'move_history.dart';
 import 'piece.dart';
 import 'position.dart';
 import 'record.dart';
@@ -26,7 +27,13 @@ sealed class CastleRequirement {
 
   /// この要件が局面 [position] において [side] 陣営の駒組として満たされて
   /// いるかを判定する。
-  bool isSatisfiedBy(ImmutablePosition position, Color side);
+  ///
+  /// [history] が与えられた場合、棋譜走査ベースの履歴依存要件
+  /// (`PieceUnmoved`, `PieceVisited`) が利用する。位置ベース検出では `null`
+  /// が渡される — 履歴依存要件は履歴情報無しでは満たせないため常に `false`
+  /// を返す。
+  bool isSatisfiedBy(ImmutablePosition position, Color side,
+      [MoveHistory? history]);
 }
 
 /// 駒種を厳密に指定する盤上 1 マスの要件 (exact match)。
@@ -46,7 +53,8 @@ class PiecePlacement extends CastleRequirement {
   final PieceType pieceType;
 
   @override
-  bool isSatisfiedBy(ImmutablePosition position, Color side) {
+  bool isSatisfiedBy(ImmutablePosition position, Color side,
+      [MoveHistory? history]) {
     final int f = side == Color.black ? file : 10 - file;
     final int r = side == Color.black ? rank : 10 - rank;
     final Piece? piece = position.board.at(Square(f, r));
@@ -84,7 +92,8 @@ class AnyOfPieces extends CastleRequirement {
   final List<PieceType> options;
 
   @override
-  bool isSatisfiedBy(ImmutablePosition position, Color side) {
+  bool isSatisfiedBy(ImmutablePosition position, Color side,
+      [MoveHistory? history]) {
     final int f = side == Color.black ? file : 10 - file;
     final int r = side == Color.black ? rank : 10 - rank;
     final Piece? piece = position.board.at(Square(f, r));
@@ -123,7 +132,8 @@ class EmptySquare extends CastleRequirement {
   final int rank;
 
   @override
-  bool isSatisfiedBy(ImmutablePosition position, Color side) {
+  bool isSatisfiedBy(ImmutablePosition position, Color side,
+      [MoveHistory? history]) {
     final int f = side == Color.black ? file : 10 - file;
     final int r = side == Color.black ? rank : 10 - rank;
     return position.board.at(Square(f, r)) == null;
@@ -159,7 +169,8 @@ class NotOfPieces extends CastleRequirement {
   final List<PieceType> excluded;
 
   @override
-  bool isSatisfiedBy(ImmutablePosition position, Color side) {
+  bool isSatisfiedBy(ImmutablePosition position, Color side,
+      [MoveHistory? history]) {
     final int f = side == Color.black ? file : 10 - file;
     final int r = side == Color.black ? rank : 10 - rank;
     final Piece? piece = position.board.at(Square(f, r));
@@ -198,7 +209,8 @@ class AnyPiece extends CastleRequirement {
   final int rank;
 
   @override
-  bool isSatisfiedBy(ImmutablePosition position, Color side) {
+  bool isSatisfiedBy(ImmutablePosition position, Color side,
+      [MoveHistory? history]) {
     final int f = side == Color.black ? file : 10 - file;
     final int r = side == Color.black ? rank : 10 - rank;
     final Piece? piece = position.board.at(Square(f, r));
@@ -227,7 +239,8 @@ class PieceAnywhere extends CastleRequirement {
   final PieceType pieceType;
 
   @override
-  bool isSatisfiedBy(ImmutablePosition position, Color side) {
+  bool isSatisfiedBy(ImmutablePosition position, Color side,
+      [MoveHistory? history]) {
     for (final ({Square square, Piece piece}) entry
         in position.board.listNonEmptySquares()) {
       if (entry.piece.color == side && entry.piece.type == pieceType) {
@@ -260,7 +273,8 @@ class HandPiece extends CastleRequirement {
   final int minCount;
 
   @override
-  bool isSatisfiedBy(ImmutablePosition position, Color side) {
+  bool isSatisfiedBy(ImmutablePosition position, Color side,
+      [MoveHistory? history]) {
     return position.hand(side).count(pieceType) >= minCount;
   }
 
@@ -273,6 +287,83 @@ class HandPiece extends CastleRequirement {
 
   @override
   int get hashCode => Object.hash('HandPiece', pieceType, minCount);
+}
+
+/// [side] が指定マスから一度も `move.from` として動いていないことを要求する
+/// 履歴依存要件。
+///
+/// 例: `PieceUnmoved(5, 9)` は 5九 (先手玉の初期マス) から一度も動いていな
+/// いこと。後手判定時には 5一 (= file 5, rank 1) に rotate される。
+///
+/// 履歴情報 (`MoveHistory`) が無い (=`null`) 場合は常に `false` を返す。
+/// したがって `detectCastles(position)` / `detectStrategies(position)` のよ
+/// うな履歴非対応の経路では、本要件を含むテンプレートは決してマッチしない。
+class PieceUnmoved extends CastleRequirement {
+  const PieceUnmoved(this.file, this.rank);
+
+  /// 1..9 — 先手視点
+  final int file;
+
+  /// 1..9 — 先手視点
+  final int rank;
+
+  @override
+  bool isSatisfiedBy(ImmutablePosition position, Color side,
+      [MoveHistory? history]) {
+    if (history == null) return false;
+    final int f = side == Color.black ? file : 10 - file;
+    final int r = side == Color.black ? rank : 10 - rank;
+    return history.isUnmoved(side, f, r);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is PieceUnmoved && other.file == file && other.rank == rank;
+  }
+
+  @override
+  int get hashCode => Object.hash('PieceUnmoved', file, rank);
+}
+
+/// [side] の [pieceType] が指定マスを過去に通過したことを要求する履歴依存
+/// 要件。
+///
+/// 例: `PieceVisited(6, 8, PieceType.rook)` は 6八に先手の飛車が「過去に」
+/// 居たことを要求する (現在そこに飛車がある必要はない)。後手判定時には
+/// 4二に rotate される。
+///
+/// 履歴情報 (`MoveHistory`) が無い (=`null`) 場合は常に `false` を返す。
+class PieceVisited extends CastleRequirement {
+  const PieceVisited(this.file, this.rank, this.pieceType);
+
+  /// 1..9 — 先手視点
+  final int file;
+
+  /// 1..9 — 先手視点
+  final int rank;
+
+  /// 探す駒種
+  final PieceType pieceType;
+
+  @override
+  bool isSatisfiedBy(ImmutablePosition position, Color side,
+      [MoveHistory? history]) {
+    if (history == null) return false;
+    final int f = side == Color.black ? file : 10 - file;
+    final int r = side == Color.black ? rank : 10 - rank;
+    return history.hasVisited(side, pieceType, f, r);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is PieceVisited &&
+        other.file == file &&
+        other.rank == rank &&
+        other.pieceType == pieceType;
+  }
+
+  @override
+  int get hashCode => Object.hash('PieceVisited', file, rank, pieceType);
 }
 
 /// 囲い (king defensive formation) のテンプレート。
@@ -322,12 +413,25 @@ class CastleTemplate {
   /// このテンプレートが ply 制約 (`plyEq` または `plyMax`) を持つかを返す。
   bool get hasPlyConstraint => plyEq != null || plyMax != null;
 
+  /// このテンプレートが履歴依存要件 (`PieceUnmoved` または `PieceVisited`) を
+  /// 含むかを返す。`true` の場合、位置ベース検出
+  /// (`detectCastles(position)`) では常にスキップされる。
+  bool get hasHistoryRequirement => _hasHistoryRequirement(placements);
+
   /// 与えられた手数 [ply] でこのテンプレートが満たすべき ply 制約を満たすか。
   bool satisfiesPlyConstraint(int ply) {
     if (plyEq != null && plyEq != ply) return false;
     if (plyMax != null && ply > plyMax!) return false;
     return true;
   }
+}
+
+/// 任意の placement 列が履歴依存要件を含むかを返す内部ヘルパ。
+bool _hasHistoryRequirement(List<CastleRequirement> placements) {
+  for (final CastleRequirement req in placements) {
+    if (req is PieceUnmoved || req is PieceVisited) return true;
+  }
+  return false;
 }
 
 /// 局面における囲いの検出結果。
@@ -391,6 +495,9 @@ List<DetectedCastle> detectCastles(
   for (final CastleTemplate template in knownCastles) {
     // ply 制約付きテンプレートは Record 経由でのみ判定可能。
     if (template.hasPlyConstraint) continue;
+    // 履歴依存要件 (PieceUnmoved / PieceVisited) を含むテンプレートも同様に
+    // position 単体では判定不能。
+    if (template.hasHistoryRequirement) continue;
     if (side == null || side == Color.black) {
       if (_matchesTemplate(position, template, Color.black)) {
         results.add(DetectedCastle(template: template, side: Color.black));
@@ -408,10 +515,11 @@ List<DetectedCastle> detectCastles(
 bool _matchesTemplate(
   ImmutablePosition position,
   CastleTemplate template,
-  Color side,
-) {
+  Color side, {
+  MoveHistory? history,
+}) {
   for (final CastleRequirement req in template.placements) {
-    if (!req.isSatisfiedBy(position, side)) return false;
+    if (!req.isSatisfiedBy(position, side, history)) return false;
   }
   return true;
 }
@@ -486,8 +594,11 @@ extension ImmutableRecordCastles on ImmutableRecord {
   List<DetectedCastleAt> get castles {
     final List<DetectedCastleAt> results = <DetectedCastleAt>[];
     final Set<String> seen = <String>{};
+    final MoveHistory history = MoveHistory()
+      ..initFromPosition(initialPosition);
     void emitAt(int ply, ImmutablePosition pos) {
-      // ply 制約なしテンプレートは detectCastles(pos) で一括判定。
+      // 1. ply 制約も履歴依存要件も無いテンプレートは detectCastles(pos)
+      //    で一括判定 (高速路)。
       for (final DetectedCastle d in detectCastles(pos)) {
         final String key = '${d.template.name}|${d.side.value}';
         if (seen.add(key)) {
@@ -498,12 +609,19 @@ extension ImmutableRecordCastles on ImmutableRecord {
           ));
         }
       }
-      // ply 制約付きテンプレートは個別に評価。
+      // 2. ply 制約付き / 履歴依存テンプレートは個別に評価。
       for (final CastleTemplate template in knownCastles) {
-        if (!template.hasPlyConstraint) continue;
-        if (!template.satisfiesPlyConstraint(ply)) continue;
+        if (!template.hasPlyConstraint && !template.hasHistoryRequirement) {
+          continue;
+        }
+        if (template.hasPlyConstraint &&
+            !template.satisfiesPlyConstraint(ply)) {
+          continue;
+        }
         for (final Color side in const <Color>[Color.black, Color.white]) {
-          if (!_matchesTemplate(pos, template, side)) continue;
+          if (!_matchesTemplate(pos, template, side, history: history)) {
+            continue;
+          }
           final String key = '${template.name}|${side.value}';
           if (seen.add(key)) {
             results.add(DetectedCastleAt(
@@ -522,6 +640,10 @@ extension ImmutableRecordCastles on ImmutableRecord {
     while (node != null) {
       final Object raw = node.move;
       if (raw is Move) {
+        // 履歴は doMove の前に記録する: PieceUnmoved は「from」が
+        // sourceTouched に居ない (まだ動いていない) ことを判定するため、
+        // 動かす直前のマス情報を必要とする。
+        history.recordMove(raw);
         pos.doMove(raw, ignoreValidation: true);
         emitAt(node.ply, pos);
       }

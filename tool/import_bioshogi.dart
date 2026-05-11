@@ -113,6 +113,13 @@ Map<String, _ShapeRecord> parseShapeInfo(String source) {
 ///   では現状ラベル付きしか出現しない (TODO: 必要なら後で対応)
 _ShapeRecord _parseAsciiBody(String key, List<String> bodyLines) {
   final List<PlacementCell> cells = <PlacementCell>[];
+  // bioshogi の `★` (移動元マーカー) は「この駒が過去にここを通った」を
+  // 表す。テンプレ内の `!<駒>` (primary trigger) と組にして PieceVisited 要件
+  // に展開する。`★` が出てきた (file, rank) を一旦集めておき、`!<駒>` が
+  // 同テンプレ内で見つかったら全 visited セルにその駒種を割り当てる。
+  final List<({int file, int rank})> visitedSquares =
+      <({int file, int rank})>[];
+  String? primaryPieceEnum;
   bool hasKing = false;
   // 段ラベルがある行のみ採用。ラベルがない場合、テンプレ全体としては平手
   // 等の完全盤面 (9 行) のはず。
@@ -134,22 +141,35 @@ _ShapeRecord _parseAsciiBody(String key, List<String> bodyLines) {
     }
   }
 
+  void handleToken(_CellTok t, int file, int rank) {
+    if (t.body == '★' || t.body == '☆') {
+      // 移動元マーカー → 後で `!<駒>` と組み合わせて PieceVisited に変換。
+      visitedSquares.add((file: file, rank: rank));
+      return;
+    }
+    final PlacementCell? cell = _toPlacement(t, file, rank);
+    if (cell == null) return;
+    cells.add(cell);
+    if (cell.kind == 'exact' &&
+        cell.pieceTypes.length == 1 &&
+        cell.pieceTypes.single == 'king') {
+      hasKing = true;
+    }
+    // primary trigger (`!<駒>`) の駒種を記録 (★ への充当用)。
+    if (t.prefix == '!' &&
+        cell.kind == 'exact' &&
+        cell.pieceTypes.length == 1) {
+      primaryPieceEnum ??= cell.pieceTypes.single;
+    }
+  }
+
   if (rankedRows.isNotEmpty) {
     for (final ({int rank, String row}) e in rankedRows) {
       final List<_CellTok> tokens = _splitRow(e.row);
       // 9 列ぴったりが期待値だが、安全のため min を取る
       final int n = tokens.length < 9 ? tokens.length : 9;
       for (int c = 0; c < n; c++) {
-        final _CellTok t = tokens[c];
-        final int file = 9 - c;
-        final PlacementCell? cell = _toPlacement(t, file, e.rank);
-        if (cell == null) continue;
-        cells.add(cell);
-        if (cell.kind == 'exact' &&
-            cell.pieceTypes.length == 1 &&
-            cell.pieceTypes.single == 'king') {
-          hasKing = true;
-        }
+        handleToken(tokens[c], 9 - c, e.rank);
       }
     }
   } else if (unlabeled.isNotEmpty) {
@@ -159,17 +179,22 @@ _ShapeRecord _parseAsciiBody(String key, List<String> bodyLines) {
       final List<_CellTok> tokens = _splitRow(unlabeled[r]);
       final int n = tokens.length < 9 ? tokens.length : 9;
       for (int c = 0; c < n; c++) {
-        final _CellTok t = tokens[c];
-        final int file = 9 - c;
-        final PlacementCell? cell = _toPlacement(t, file, r + 1);
-        if (cell == null) continue;
-        cells.add(cell);
-        if (cell.kind == 'exact' &&
-            cell.pieceTypes.length == 1 &&
-            cell.pieceTypes.single == 'king') {
-          hasKing = true;
-        }
+        handleToken(tokens[c], 9 - c, r + 1);
       }
+    }
+  }
+
+  // `★` が見つかった場合は `!<駒>` で示された primary piece を当てる。
+  // primary が無いテンプレ (= 単体で★だけ) は静的に意味づけられないので
+  // 黙って捨てる (この場合 cells に visited は追加されない)。
+  if (visitedSquares.isNotEmpty && primaryPieceEnum != null) {
+    for (final ({int file, int rank}) v in visitedSquares) {
+      cells.add(PlacementCell(
+        kind: 'pieceVisited',
+        file: v.file,
+        rank: v.rank,
+        pieceTypes: <String>[primaryPieceEnum!],
+      ));
     }
   }
 
@@ -444,15 +469,26 @@ String _formatTemplate({
   if (side != null) buf.writeln('side: $side');
   final String? plyLine = formatPlyHeader(plyEq: plyEq, plyMax: plyMax);
   if (plyLine != null) buf.writeln(plyLine);
+  for (final String line in formatUnmovedHeaders(cells)) {
+    buf.writeln(line);
+  }
+  for (final String line in formatVisitedHeaders(cells)) {
+    buf.writeln(line);
+  }
   buf.writeln();
 
-  // build grid
+  // build grid (履歴依存セルは grid に出ない)
   final List<List<String>> grid = List<List<String>>.generate(
     9,
     (_) => List<String>.filled(9, '.'),
   );
   for (final PlacementCell p in cells) {
-    if (p.kind == 'pieceAnywhere' || p.kind == 'handPiece') continue;
+    if (p.kind == 'pieceAnywhere' ||
+        p.kind == 'handPiece' ||
+        p.kind == 'pieceUnmoved' ||
+        p.kind == 'pieceVisited') {
+      continue;
+    }
     final int rowIdx = p.rank - 1;
     final int colIdx = 9 - p.file;
     if (rowIdx < 0 || rowIdx > 8 || colIdx < 0 || colIdx > 8) continue;
@@ -594,6 +630,10 @@ void main(List<String> args) {
   int castleSkipped = 0;
   // 居玉 は shape_info に無いが、defense_info にあり、テストや UX 上重要
   // なので合成テンプレートで追加する。
+  //
+  // 居玉 = 玉が初期マス (先手なら 5九) から一度も動いていない状態。盤上の
+  // K@5九 という静的条件だと「動いて戻った」も誤検出するため、履歴依存の
+  // PieceUnmoved 要件で表現する。
   bool emittedIgyoku = false;
   void emitIgyoku() {
     if (emittedIgyoku) return;
@@ -604,12 +644,7 @@ void main(List<String> args) {
       aliases: const <String>[],
       side: null,
       cells: <PlacementCell>[
-        PlacementCell(
-          kind: 'exact',
-          file: 5,
-          rank: 9,
-          pieceTypes: const <String>['king'],
-        ),
+        PlacementCell(kind: 'pieceUnmoved', file: 5, rank: 9),
       ],
     ));
     castleCount++;

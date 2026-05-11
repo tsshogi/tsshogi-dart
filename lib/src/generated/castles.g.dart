@@ -1434,7 +1434,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '居玉',
     placements: <CastleRequirement>[
-      PiecePlacement(5, 9, PieceType.king),
+      PieceUnmoved(5, 9),
     ],
   ),
 ];

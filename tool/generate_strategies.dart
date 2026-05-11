@@ -92,6 +92,11 @@ String _formatPlacement(PlacementCell p) {
         return 'HandPiece(PieceType.$name)';
       }
       return 'HandPiece(PieceType.$name, ${p.minCount})';
+    case 'pieceUnmoved':
+      return 'PieceUnmoved(${p.file}, ${p.rank})';
+    case 'pieceVisited':
+      final String name = p.pieceTypes.single;
+      return 'PieceVisited(${p.file}, ${p.rank}, PieceType.$name)';
     default:
       throw ArgumentError('unsupported placement kind: ${p.kind}');
   }

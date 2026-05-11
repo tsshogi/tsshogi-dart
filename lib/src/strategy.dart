@@ -2,6 +2,7 @@ import 'castle.dart';
 import 'color.dart';
 import 'generated/strategies.g.dart' as gen;
 import 'move.dart';
+import 'move_history.dart';
 import 'position.dart';
 import 'record.dart';
 
@@ -86,6 +87,16 @@ class StrategyTemplate {
   /// このテンプレートが ply 制約 (`plyEq` または `plyMax`) を持つかを返す。
   bool get hasPlyConstraint => plyEq != null || plyMax != null;
 
+  /// このテンプレートが履歴依存要件 (`PieceUnmoved` または `PieceVisited`) を
+  /// 含むかを返す。`true` の場合、位置ベース検出
+  /// (`detectStrategies(position)`) では常にスキップされる。
+  bool get hasHistoryRequirement {
+    for (final CastleRequirement req in placements) {
+      if (req is PieceUnmoved || req is PieceVisited) return true;
+    }
+    return false;
+  }
+
   /// 与えられた手数 [ply] でこのテンプレートが ply 制約を満たすか。
   bool satisfiesPlyConstraint(int ply) {
     if (plyEq != null && plyEq != ply) return false;
@@ -140,6 +151,9 @@ List<DetectedStrategy> detectStrategies(
   for (final StrategyTemplate template in knownStrategies) {
     // ply 制約付きテンプレートは Record 経由でのみ判定可能。
     if (template.hasPlyConstraint) continue;
+    // 履歴依存要件 (PieceUnmoved / PieceVisited) を含むテンプレートも同様に
+    // position 単体では判定不能。
+    if (template.hasHistoryRequirement) continue;
     if (side == null || side == Color.black) {
       if (_matchesStrategyTemplate(position, template, Color.black)) {
         results.add(DetectedStrategy(template: template, side: Color.black));
@@ -157,10 +171,11 @@ List<DetectedStrategy> detectStrategies(
 bool _matchesStrategyTemplate(
   ImmutablePosition position,
   StrategyTemplate template,
-  Color side,
-) {
+  Color side, {
+  MoveHistory? history,
+}) {
   for (final CastleRequirement req in template.placements) {
-    if (!req.isSatisfiedBy(position, side)) return false;
+    if (!req.isSatisfiedBy(position, side, history)) return false;
   }
   return true;
 }
@@ -233,8 +248,11 @@ extension ImmutableRecordStrategies on ImmutableRecord {
   List<DetectedStrategyAt> get strategies {
     final List<DetectedStrategyAt> results = <DetectedStrategyAt>[];
     final Set<String> seen = <String>{};
+    final MoveHistory history = MoveHistory()
+      ..initFromPosition(initialPosition);
     void emitAt(int ply, ImmutablePosition pos) {
-      // ply 制約なしテンプレートは detectStrategies(pos) で一括判定。
+      // 1. ply 制約も履歴依存要件も無いテンプレートは detectStrategies(pos)
+      //    で一括判定 (高速路)。
       for (final DetectedStrategy d in detectStrategies(pos)) {
         final String key = '${d.template.name}|${d.side.value}';
         if (seen.add(key)) {
@@ -245,12 +263,20 @@ extension ImmutableRecordStrategies on ImmutableRecord {
           ));
         }
       }
-      // ply 制約付きテンプレートは個別に評価。
+      // 2. ply 制約付き / 履歴依存テンプレートは個別に評価。
       for (final StrategyTemplate template in knownStrategies) {
-        if (!template.hasPlyConstraint) continue;
-        if (!template.satisfiesPlyConstraint(ply)) continue;
+        if (!template.hasPlyConstraint && !template.hasHistoryRequirement) {
+          continue;
+        }
+        if (template.hasPlyConstraint &&
+            !template.satisfiesPlyConstraint(ply)) {
+          continue;
+        }
         for (final Color side in const <Color>[Color.black, Color.white]) {
-          if (!_matchesStrategyTemplate(pos, template, side)) continue;
+          if (!_matchesStrategyTemplate(pos, template, side,
+              history: history)) {
+            continue;
+          }
           final String key = '${template.name}|${side.value}';
           if (seen.add(key)) {
             results.add(DetectedStrategyAt(
@@ -269,6 +295,7 @@ extension ImmutableRecordStrategies on ImmutableRecord {
     while (node != null) {
       final Object raw = node.move;
       if (raw is Move) {
+        history.recordMove(raw);
         pos.doMove(raw, ignoreValidation: true);
         emitAt(node.ply, pos);
       }

@@ -22,5 +22,6 @@ export 'src/hand.dart';
 export 'src/position.dart';
 export 'src/record.dart';
 export 'src/castle.dart';
+export 'src/move_history.dart';
 export 'src/strategy.dart';
 export 'src/technique.dart';
