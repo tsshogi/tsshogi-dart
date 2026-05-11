@@ -15,11 +15,16 @@ Position _emptyPosition() {
 }
 
 /// テンプレートの placements を [side] 視点で盤に並べる。
+/// AnyOfPieces は最初の候補駒種で代表させる。
 void _placeTemplate(Board board, CastleTemplate template, Color side) {
-  for (final PiecePlacement p in template.placements) {
-    final int file = side == Color.black ? p.file : 10 - p.file;
-    final int rank = side == Color.black ? p.rank : 10 - p.rank;
-    board.set(Square(file, rank), Piece(side, p.pieceType));
+  for (final CastleRequirement r in template.placements) {
+    final int file = side == Color.black ? r.file : 10 - r.file;
+    final int rank = side == Color.black ? r.rank : 10 - r.rank;
+    final PieceType type = switch (r) {
+      PiecePlacement(:final pieceType) => pieceType,
+      AnyOfPieces(:final options) => options.first,
+    };
+    board.set(Square(file, rank), Piece(side, type));
   }
 }
 
@@ -262,8 +267,166 @@ void main() {
       expect(a, isNot(equals(c)));
     });
 
-    test('knownCastles has at least 30 entries', () {
-      expect(knownCastles.length, greaterThanOrEqualTo(30));
+    test('knownCastles has at least 100 entries', () {
+      expect(knownCastles.length, greaterThanOrEqualTo(100));
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // ワイルドカード (AnyOfPieces) の挙動
+  // -------------------------------------------------------------------------
+  group('wildcards (AnyOfPieces)', () {
+    test('AnyOfPieces matches when piece type is in options', () {
+      const AnyOfPieces req = AnyOfPieces(
+        6,
+        7,
+        <PieceType>[PieceType.gold, PieceType.silver],
+      );
+      final Piece gold = Piece(Color.black, PieceType.gold);
+      final Piece silver = Piece(Color.black, PieceType.silver);
+      expect(req.isSatisfiedBy(gold, Color.black), isTrue);
+      expect(req.isSatisfiedBy(silver, Color.black), isTrue);
+    });
+
+    test('AnyOfPieces does NOT match when piece type is NOT in options', () {
+      const AnyOfPieces req = AnyOfPieces(
+        6,
+        7,
+        <PieceType>[PieceType.gold, PieceType.silver],
+      );
+      final Piece pawn = Piece(Color.black, PieceType.pawn);
+      expect(req.isSatisfiedBy(pawn, Color.black), isFalse);
+    });
+
+    test('AnyOfPieces does NOT match when piece color is wrong', () {
+      const AnyOfPieces req = AnyOfPieces(
+        6,
+        7,
+        <PieceType>[PieceType.gold, PieceType.silver],
+      );
+      final Piece whiteGold = Piece(Color.white, PieceType.gold);
+      expect(req.isSatisfiedBy(whiteGold, Color.black), isFalse);
+    });
+
+    test('AnyOfPieces does NOT match when square is empty', () {
+      const AnyOfPieces req = AnyOfPieces(
+        6,
+        7,
+        <PieceType>[PieceType.gold, PieceType.silver],
+      );
+      expect(req.isSatisfiedBy(null, Color.black), isFalse);
+    });
+
+    test('custom template with PiecePlacement + AnyOfPieces matches', () {
+      // 玉と 6七が金 or 銀のテンプレートを用意し、両パターンで満たされることを確認
+      const CastleTemplate custom = CastleTemplate(
+        name: 'テスト用ワイルドカード囲い',
+        placements: <CastleRequirement>[
+          PiecePlacement(8, 8, PieceType.king),
+          AnyOfPieces(6, 7, <PieceType>[PieceType.gold, PieceType.silver]),
+        ],
+      );
+
+      // 6七が金のケース
+      final Position p1 = Position();
+      p1.reset(InitialPositionType.empty);
+      p1.board.set(Square(8, 8), Piece(Color.black, PieceType.king));
+      p1.board.set(Square(6, 7), Piece(Color.black, PieceType.gold));
+      p1.board.set(Square(5, 1), Piece(Color.white, PieceType.king));
+      for (final CastleRequirement r in custom.placements) {
+        final Piece? piece = p1.board.at(Square(r.file, r.rank));
+        expect(
+          r.isSatisfiedBy(piece, Color.black),
+          isTrue,
+          reason: '6七金で ${r.file}${r.rank} が満たされる',
+        );
+      }
+
+      // 6七が銀のケース
+      final Position p2 = Position();
+      p2.reset(InitialPositionType.empty);
+      p2.board.set(Square(8, 8), Piece(Color.black, PieceType.king));
+      p2.board.set(Square(6, 7), Piece(Color.black, PieceType.silver));
+      p2.board.set(Square(5, 1), Piece(Color.white, PieceType.king));
+      for (final CastleRequirement r in custom.placements) {
+        final Piece? piece = p2.board.at(Square(r.file, r.rank));
+        expect(
+          r.isSatisfiedBy(piece, Color.black),
+          isTrue,
+          reason: '6七銀で ${r.file}${r.rank} が満たされる',
+        );
+      }
+
+      // 6七が桂 (候補外) のケース → 満たさない
+      final Position p3 = Position();
+      p3.reset(InitialPositionType.empty);
+      p3.board.set(Square(8, 8), Piece(Color.black, PieceType.king));
+      p3.board.set(Square(6, 7), Piece(Color.black, PieceType.knight));
+      p3.board.set(Square(5, 1), Piece(Color.white, PieceType.king));
+      final CastleRequirement wildcard = custom.placements[1];
+      final Piece? piece = p3.board.at(Square(wildcard.file, wildcard.rank));
+      expect(wildcard.isSatisfiedBy(piece, Color.black), isFalse);
+    });
+
+    test('AnyOfPieces equality / hashCode', () {
+      const AnyOfPieces a = AnyOfPieces(
+        6,
+        7,
+        <PieceType>[PieceType.gold, PieceType.silver],
+      );
+      const AnyOfPieces b = AnyOfPieces(
+        6,
+        7,
+        <PieceType>[PieceType.gold, PieceType.silver],
+      );
+      const AnyOfPieces c = AnyOfPieces(
+        6,
+        7,
+        <PieceType>[PieceType.silver, PieceType.gold], // 順序違い
+      );
+      const AnyOfPieces d = AnyOfPieces(
+        7, // 位置違い
+        7,
+        <PieceType>[PieceType.gold, PieceType.silver],
+      );
+      const AnyOfPieces e = AnyOfPieces(
+        6,
+        7,
+        <PieceType>[PieceType.gold], // 候補数違い
+      );
+      expect(a, equals(b));
+      expect(a.hashCode, equals(b.hashCode));
+      // 順序が違えば等しくない (List 順序保持の semantics)
+      expect(a, isNot(equals(c)));
+      expect(a, isNot(equals(d)));
+      expect(a, isNot(equals(e)));
+    });
+
+    test('PiecePlacement is distinct from AnyOfPieces even with same square',
+        () {
+      const PiecePlacement pp = PiecePlacement(6, 7, PieceType.gold);
+      const AnyOfPieces ao = AnyOfPieces(6, 7, <PieceType>[PieceType.gold]);
+      expect(pp, isNot(equals(ao)));
+    });
+
+    test('AnyOfPieces 含むテンプレが detectCastles で検出できる (一枚穴熊)', () {
+      // 一枚穴熊: 9九玉 + 9八香 + 8八 が 金 or 銀
+      final Position p = _emptyPosition();
+      p.board.set(Square(9, 9), Piece(Color.black, PieceType.king));
+      p.board.set(Square(9, 8), Piece(Color.black, PieceType.lance));
+      p.board.set(Square(8, 8), Piece(Color.black, PieceType.silver));
+      final List<DetectedCastle> r1 = detectCastles(p, side: Color.black);
+      expect(_detected(r1, '一枚穴熊', Color.black), isTrue);
+
+      // 8八 を金に変えてもマッチする
+      p.board.set(Square(8, 8), Piece(Color.black, PieceType.gold));
+      final List<DetectedCastle> r2 = detectCastles(p, side: Color.black);
+      expect(_detected(r2, '一枚穴熊', Color.black), isTrue);
+
+      // 8八 を桂に変えるとマッチしない
+      p.board.set(Square(8, 8), Piece(Color.black, PieceType.knight));
+      final List<DetectedCastle> r3 = detectCastles(p, side: Color.black);
+      expect(_detected(r3, '一枚穴熊', Color.black), isFalse);
     });
   });
 
@@ -536,9 +699,9 @@ void main() {
 
     test('全 placements の file/rank が 1..9 に収まる', () {
       for (final CastleTemplate t in knownCastles) {
-        for (final PiecePlacement p in t.placements) {
-          expect(p.file, inInclusiveRange(1, 9), reason: '${t.name}: file');
-          expect(p.rank, inInclusiveRange(1, 9), reason: '${t.name}: rank');
+        for (final CastleRequirement r in t.placements) {
+          expect(r.file, inInclusiveRange(1, 9), reason: '${t.name}: file');
+          expect(r.rank, inInclusiveRange(1, 9), reason: '${t.name}: rank');
         }
       }
     });
@@ -551,8 +714,8 @@ void main() {
 
     test('居玉以外は玉位置が必ず placement に含まれる', () {
       for (final CastleTemplate t in knownCastles) {
-        final bool hasKing = t.placements
-            .any((PiecePlacement p) => p.pieceType == PieceType.king);
+        final bool hasKing = t.placements.any((CastleRequirement r) =>
+            r is PiecePlacement && r.pieceType == PieceType.king);
         expect(hasKing, isTrue, reason: '${t.name} に玉が含まれていない');
       }
     });
@@ -560,10 +723,10 @@ void main() {
     test('同一マスに 2 駒以上の placement がない', () {
       for (final CastleTemplate t in knownCastles) {
         final Set<int> squares = <int>{};
-        for (final PiecePlacement p in t.placements) {
-          final int key = p.file * 10 + p.rank;
+        for (final CastleRequirement r in t.placements) {
+          final int key = r.file * 10 + r.rank;
           expect(squares.contains(key), isFalse,
-              reason: '${t.name} で ${p.file}${p.rank} が重複');
+              reason: '${t.name} で ${r.file}${r.rank} が重複');
           squares.add(key);
         }
       }
@@ -581,6 +744,35 @@ void main() {
     });
 
     test('親テンプレートの placements は子テンプレートの subset', () {
+      // 親要件が AnyOfPieces なら、子の同マスが AnyOfPieces のサブセット
+      // (候補が全て親候補に含まれる) または PiecePlacement (種類が親候補に
+      // 含まれる) であれば OK。
+      bool isParentReqSatisfiedBy(
+          CastleRequirement parent, CastleRequirement child) {
+        if (parent.file != child.file || parent.rank != child.rank) {
+          return false;
+        }
+        if (parent is PiecePlacement) {
+          if (child is PiecePlacement) {
+            return parent.pieceType == child.pieceType;
+          }
+          if (child is AnyOfPieces) {
+            // 子が AnyOf なら全候補が親の単一駒種と一致する必要がある
+            return child.options.every((PieceType t) => t == parent.pieceType);
+          }
+        }
+        if (parent is AnyOfPieces) {
+          if (child is PiecePlacement) {
+            return parent.options.contains(child.pieceType);
+          }
+          if (child is AnyOfPieces) {
+            return child.options
+                .every((PieceType t) => parent.options.contains(t));
+          }
+        }
+        return false;
+      }
+
       final Map<String, CastleTemplate> byName = <String, CastleTemplate>{
         for (final CastleTemplate t in knownCastles) t.name: t,
       };
@@ -588,14 +780,12 @@ void main() {
         if (child.parent == null) continue;
         final CastleTemplate? parent = byName[child.parent];
         if (parent == null) continue;
-        for (final PiecePlacement pp in parent.placements) {
-          final bool included = child.placements.any((PiecePlacement cp) =>
-              cp.file == pp.file &&
-              cp.rank == pp.rank &&
-              cp.pieceType == pp.pieceType);
+        for (final CastleRequirement pp in parent.placements) {
+          final bool included = child.placements
+              .any((CastleRequirement cp) => isParentReqSatisfiedBy(pp, cp));
           expect(included, isTrue,
               reason: '子 ${child.name} に親 ${parent.name} の '
-                  '${pp.file}${pp.rank}${pp.pieceType} がない');
+                  '${pp.file}${pp.rank} に相当する placement がない');
         }
       }
     });
