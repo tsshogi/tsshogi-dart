@@ -4,40 +4,50 @@ import 'piece.dart';
 import 'position.dart';
 import 'square.dart';
 
-/// 囲いテンプレートの 1 マス分の要件 (先手視点)。
+/// 囲い / 戦法テンプレートを構成する 1 つの要件。
 ///
-/// [file] は 1〜9 の筋 (1 が先手から見た右端 = 1筋)。
-/// [rank] は 1〜9 の段 (1 が上端、9 が先手の玉の初期段)。
+/// サブタイプは大きく 2 系統に分かれる:
 ///
-/// サブクラス:
-/// - [PiecePlacement]   — 駒種を指定して exact match
-/// - [AnyOfPieces]      — 候補のいずれかにマッチ (例: 金 or 銀)
+/// 1. **盤上 1 マスに対する要件 (per-cell)** — 先手視点で記述された
+///    `file` / `rank` を持ち、後手検出時には 180° 回転 (file → 10-file,
+///    rank → 10-rank) して照合される。`PiecePlacement`, `AnyOfPieces`,
+///    `EmptySquare`, `NotOfPieces`, `AnyPiece` がこれに該当。
+/// 2. **盤面/持駒全体に対する要件 (position-wide)** — 特定マスに紐づかず、
+///    盤面または持駒の全状態を見て判定する。回転の概念がない。
+///    `PieceAnywhere`, `HandPiece` がこれに該当。
+///
+/// すべてのサブタイプは [isSatisfiedBy] を実装し、[ImmutablePosition] 全体
+/// と判定対象陣営 [Color] を受け取って bool を返す。マスの正規化 (黒/白の
+/// 視点切り替え) は各サブタイプ内部で行う。
 sealed class CastleRequirement {
-  const CastleRequirement(this.file, this.rank);
+  const CastleRequirement();
 
-  /// 1..9 (盤の右が 1)
-  final int file;
-
-  /// 1..9 (盤の上が 1、先手陣の最下段が 9)
-  final int rank;
-
-  /// 指定マスの駒 [piece] が要件を満たすかを判定する。
-  /// [side] は対象陣営。要件を満たすには piece は非 null かつ
-  /// piece.color == side でなければならない (色は常に必須)。
-  bool isSatisfiedBy(Piece? piece, Color side);
+  /// この要件が局面 [position] において [side] 陣営の駒組として満たされて
+  /// いるかを判定する。
+  bool isSatisfiedBy(ImmutablePosition position, Color side);
 }
 
-/// 駒種を厳密に指定する要件 (exact match)。
+/// 駒種を厳密に指定する盤上 1 マスの要件 (exact match)。
 ///
-/// 例: `PiecePlacement(7, 8, PieceType.gold)` は 7八に先手 (照合陣営) の金。
+/// 例: `PiecePlacement(7, 8, PieceType.gold)` は 7八に先手視点で金。後手陣
+/// 営の判定時には自動的に 3二に rotate される。
 class PiecePlacement extends CastleRequirement {
-  const PiecePlacement(super.file, super.rank, this.pieceType);
+  const PiecePlacement(this.file, this.rank, this.pieceType);
+
+  /// 1..9 (盤の右が 1) — 先手視点
+  final int file;
+
+  /// 1..9 (盤の上が 1、先手玉の初期段が 9) — 先手視点
+  final int rank;
 
   /// 駒の種類 (色は照合時に [side] を当てはめる)
   final PieceType pieceType;
 
   @override
-  bool isSatisfiedBy(Piece? piece, Color side) {
+  bool isSatisfiedBy(ImmutablePosition position, Color side) {
+    final int f = side == Color.black ? file : 10 - file;
+    final int r = side == Color.black ? rank : 10 - rank;
+    final Piece? piece = position.board.at(Square(f, r));
     if (piece == null) return false;
     if (piece.color != side) return false;
     return piece.type == pieceType;
@@ -57,16 +67,25 @@ class PiecePlacement extends CastleRequirement {
 
 /// 駒種候補のいずれかにマッチする要件 (or 条件)。
 ///
-/// 例: `AnyOfPieces(6, 7, [PieceType.gold, PieceType.silver])` は
-/// 6七に金 or 銀。
+/// 例: `AnyOfPieces(6, 7, [PieceType.gold, PieceType.silver])` は 6七に
+/// 先手視点で金 or 銀。
 class AnyOfPieces extends CastleRequirement {
-  const AnyOfPieces(super.file, super.rank, this.options);
+  const AnyOfPieces(this.file, this.rank, this.options);
+
+  /// 1..9 — 先手視点
+  final int file;
+
+  /// 1..9 — 先手視点
+  final int rank;
 
   /// 候補駒種 (このリストのいずれか 1 つにマッチすれば OK)
   final List<PieceType> options;
 
   @override
-  bool isSatisfiedBy(Piece? piece, Color side) {
+  bool isSatisfiedBy(ImmutablePosition position, Color side) {
+    final int f = side == Color.black ? file : 10 - file;
+    final int r = side == Color.black ? rank : 10 - rank;
+    final Piece? piece = position.board.at(Square(f, r));
     if (piece == null) return false;
     if (piece.color != side) return false;
     return options.contains(piece.type);
@@ -88,10 +107,177 @@ class AnyOfPieces extends CastleRequirement {
       Object.hash('AnyOfPieces', file, rank, Object.hashAll(options));
 }
 
+/// 指定マスが「完全に空 (どちらの陣営の駒もない)」であることを要求する要件。
+///
+/// 例: `EmptySquare(8, 8)` は 8八が空。後手陣営の判定時には 2二が空であるこ
+/// とを要求する。
+class EmptySquare extends CastleRequirement {
+  const EmptySquare(this.file, this.rank);
+
+  /// 1..9 — 先手視点
+  final int file;
+
+  /// 1..9 — 先手視点
+  final int rank;
+
+  @override
+  bool isSatisfiedBy(ImmutablePosition position, Color side) {
+    final int f = side == Color.black ? file : 10 - file;
+    final int r = side == Color.black ? rank : 10 - rank;
+    return position.board.at(Square(f, r)) == null;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is EmptySquare && other.file == file && other.rank == rank;
+  }
+
+  @override
+  int get hashCode => Object.hash('EmptySquare', file, rank);
+}
+
+/// 指定マスに「side の駒で [excluded] に含まれる種類のものは無い」ことを要
+/// 求する要件。
+///
+/// 空マスや相手の駒は要件を満たす (ブロックしない)。
+///
+/// 例: `NotOfPieces(6, 7, [PieceType.gold, PieceType.silver])` は 6七が
+/// 先手の金/銀以外 (空または先手の他の駒、または後手の任意の駒) であること
+/// を要求する。
+class NotOfPieces extends CastleRequirement {
+  const NotOfPieces(this.file, this.rank, this.excluded);
+
+  /// 1..9 — 先手視点
+  final int file;
+
+  /// 1..9 — 先手視点
+  final int rank;
+
+  /// このリストに含まれる side の駒種があると要件を満たさない
+  final List<PieceType> excluded;
+
+  @override
+  bool isSatisfiedBy(ImmutablePosition position, Color side) {
+    final int f = side == Color.black ? file : 10 - file;
+    final int r = side == Color.black ? rank : 10 - rank;
+    final Piece? piece = position.board.at(Square(f, r));
+    if (piece == null) return true;
+    if (piece.color != side) return true;
+    return !excluded.contains(piece.type);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! NotOfPieces) return false;
+    if (other.file != file || other.rank != rank) return false;
+    if (other.excluded.length != excluded.length) return false;
+    for (int i = 0; i < excluded.length; i++) {
+      if (other.excluded[i] != excluded[i]) return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash('NotOfPieces', file, rank, Object.hashAll(excluded));
+}
+
+/// 指定マスに [side] の駒が (種類を問わず) あることを要求する要件。
+///
+/// 例: `AnyPiece(8, 8)` は 8八に先手の何らかの駒がいること。空マスや相手駒
+/// では満たされない。
+class AnyPiece extends CastleRequirement {
+  const AnyPiece(this.file, this.rank);
+
+  /// 1..9 — 先手視点
+  final int file;
+
+  /// 1..9 — 先手視点
+  final int rank;
+
+  @override
+  bool isSatisfiedBy(ImmutablePosition position, Color side) {
+    final int f = side == Color.black ? file : 10 - file;
+    final int r = side == Color.black ? rank : 10 - rank;
+    final Piece? piece = position.board.at(Square(f, r));
+    if (piece == null) return false;
+    return piece.color == side;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is AnyPiece && other.file == file && other.rank == rank;
+  }
+
+  @override
+  int get hashCode => Object.hash('AnyPiece', file, rank);
+}
+
+/// 盤上のいずれかのマスに [side] の指定駒が 1 枚以上あることを要求する要件。
+/// マス指定はない (position-wide)。
+///
+/// 例: `PieceAnywhere(PieceType.bishop)` は side の角が盤上のどこかに存在
+/// する。矢倉と角換わりの区別など、駒種の有無で峻別したい戦法定義に使う。
+class PieceAnywhere extends CastleRequirement {
+  const PieceAnywhere(this.pieceType);
+
+  /// 探す駒種
+  final PieceType pieceType;
+
+  @override
+  bool isSatisfiedBy(ImmutablePosition position, Color side) {
+    for (final ({Square square, Piece piece}) entry
+        in position.board.listNonEmptySquares()) {
+      if (entry.piece.color == side && entry.piece.type == pieceType) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is PieceAnywhere && other.pieceType == pieceType;
+  }
+
+  @override
+  int get hashCode => Object.hash('PieceAnywhere', pieceType);
+}
+
+/// [side] の持駒に指定駒種が [minCount] 枚以上あることを要求する要件。
+///
+/// 例: `HandPiece(PieceType.bishop)` は side の手駒に角が 1 枚以上。
+/// `HandPiece(PieceType.pawn, 3)` は side の手駒に歩が 3 枚以上。
+class HandPiece extends CastleRequirement {
+  const HandPiece(this.pieceType, [this.minCount = 1]);
+
+  /// 駒種
+  final PieceType pieceType;
+
+  /// 必要枚数 (デフォルト 1)
+  final int minCount;
+
+  @override
+  bool isSatisfiedBy(ImmutablePosition position, Color side) {
+    return position.hand(side).count(pieceType) >= minCount;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HandPiece &&
+        other.pieceType == pieceType &&
+        other.minCount == minCount;
+  }
+
+  @override
+  int get hashCode => Object.hash('HandPiece', pieceType, minCount);
+}
+
 /// 囲い (king defensive formation) のテンプレート。
 ///
-/// 配置は常に先手 (black) 視点で記述する。後手の検出時には
-/// 180° 回転 (file → 10-file, rank → 10-rank) して照合される。
+/// 配置は常に先手 (black) 視点で記述する。後手の検出時には per-cell の
+/// 要件が自動的に 180° 回転 (file → 10-file, rank → 10-rank) して照合さ
+/// れる。`PieceAnywhere` / `HandPiece` は position-wide なので回転不要。
 class CastleTemplate {
   const CastleTemplate({
     required this.name,
@@ -110,8 +296,8 @@ class CastleTemplate {
   /// 親自身もテンプレートとして [knownCastles] に含まれる場合がある。
   final String? parent;
 
-  /// 必須駒配置 (先手視点)。`PiecePlacement` (exact) と `AnyOfPieces` (or) を
-  /// 混在させられる。
+  /// 必須要件の集合 (先手視点)。per-cell と position-wide の要件を混在さ
+  /// せられる。
   final List<CastleRequirement> placements;
 }
 
@@ -160,8 +346,8 @@ const List<CastleTemplate> knownCastles = gen.castles;
 /// 局面 [position] から囲いを検出する。
 ///
 /// [side] が指定された場合はその陣営のみ、null の場合は両陣営を判定する。
-/// 各テンプレートは先手視点で記述されており、後手判定では 180° 回転して
-/// 照合する。テンプレートの全 placements を満たす駒が盤上にあれば検出。
+/// 各テンプレートは先手視点で記述されており、後手判定では per-cell 要件が
+/// 180° 回転して照合される。テンプレートの全 placements を満たせば検出。
 /// テンプレートに含まれていない駒が他のマスにあっても判定には影響しない。
 /// 複数の囲い (例: 金矢倉と矢倉囲い) が同時にマッチすることがある。
 List<DetectedCastle> detectCastles(
@@ -190,12 +376,7 @@ bool _matchesTemplate(
   Color side,
 ) {
   for (final CastleRequirement req in template.placements) {
-    final int file = side == Color.black ? req.file : 10 - req.file;
-    final int rank = side == Color.black ? req.rank : 10 - req.rank;
-    final Piece? piece = position.board.at(Square(file, rank));
-    if (!req.isSatisfiedBy(piece, side)) {
-      return false;
-    }
+    if (!req.isSatisfiedBy(position, side)) return false;
   }
   return true;
 }

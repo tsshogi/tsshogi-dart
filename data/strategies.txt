@@ -901,6 +901,7 @@ side: furibisha
 === name: 矢倉
 aliases: 矢倉戦法
 side: ibisha
+board: B
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1109,6 +1110,7 @@ side: ibisha
 
 === name: 角換わり
 side: ibisha
+hand: B
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1180,6 +1182,7 @@ side: ibisha
 === name: 一手損角換わり
 parent: 角換わり
 side: ibisha
+hand: B
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2878,6 +2881,7 @@ P . . . . . . . .
 
 === name: 丸山ワクチン
 side: ibisha
+hand: B
 
 . . . . . . . . .
 . . . . . . . . .

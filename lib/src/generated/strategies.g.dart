@@ -574,6 +574,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(2, 8, PieceType.rook),
+      PieceAnywhere(PieceType.bishop),
     ],
   ),
   StrategyTemplate(
@@ -712,6 +713,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(2, 8, PieceType.rook),
+      HandPiece(PieceType.bishop),
     ],
   ),
   StrategyTemplate(
@@ -761,6 +763,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(2, 8, PieceType.rook),
+      HandPiece(PieceType.bishop),
     ],
   ),
   StrategyTemplate(
@@ -1704,6 +1707,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(2, 8, PieceType.rook),
+      HandPiece(PieceType.bishop),
     ],
   ),
   StrategyTemplate(

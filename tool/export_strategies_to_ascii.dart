@@ -26,8 +26,12 @@ void main() {
     if (t.side != StrategySide.either) {
       buf.writeln('side: ${t.side.name}');
     }
-    buf.writeln();
     final List<PlacementCell> cells = _toCells(t.placements);
+    final String? boardLine = formatBoardHeader(cells);
+    if (boardLine != null) buf.writeln(boardLine);
+    final String? handLine = formatHandHeader(cells);
+    if (handLine != null) buf.writeln(handLine);
+    buf.writeln();
     final List<List<String>> grid = buildGrid(cells);
     for (final List<String> row in grid) {
       buf.writeln(row.join(' '));
@@ -43,26 +47,55 @@ void main() {
 List<PlacementCell> _toCells(List<CastleRequirement> placements) {
   final List<PlacementCell> out = <PlacementCell>[];
   for (final CastleRequirement req in placements) {
-    if (req is PiecePlacement) {
-      out.add(
-        PlacementCell(
+    switch (req) {
+      case PiecePlacement():
+        out.add(
+          PlacementCell(
+            file: req.file,
+            rank: req.rank,
+            kind: 'exact',
+            pieceTypes: <String>[req.pieceType.name],
+          ),
+        );
+      case AnyOfPieces():
+        out.add(
+          PlacementCell(
+            file: req.file,
+            rank: req.rank,
+            kind: 'anyOf',
+            pieceTypes: req.options.map((PieceType p) => p.name).toList(),
+          ),
+        );
+      case EmptySquare():
+        out.add(PlacementCell(
           file: req.file,
           rank: req.rank,
-          kind: 'exact',
+          kind: 'empty',
+        ));
+      case NotOfPieces():
+        out.add(PlacementCell(
+          file: req.file,
+          rank: req.rank,
+          kind: 'notOf',
+          pieceTypes: req.excluded.map((PieceType p) => p.name).toList(),
+        ));
+      case AnyPiece():
+        out.add(PlacementCell(
+          file: req.file,
+          rank: req.rank,
+          kind: 'anyPiece',
+        ));
+      case PieceAnywhere():
+        out.add(PlacementCell(
+          kind: 'pieceAnywhere',
           pieceTypes: <String>[req.pieceType.name],
-        ),
-      );
-    } else if (req is AnyOfPieces) {
-      out.add(
-        PlacementCell(
-          file: req.file,
-          rank: req.rank,
-          kind: 'anyOf',
-          pieceTypes: req.options.map((PieceType p) => p.name).toList(),
-        ),
-      );
-    } else {
-      throw StateError('unknown CastleRequirement subtype: $req');
+        ));
+      case HandPiece():
+        out.add(PlacementCell(
+          kind: 'handPiece',
+          pieceTypes: <String>[req.pieceType.name],
+          minCount: req.minCount,
+        ));
     }
   }
   return out;

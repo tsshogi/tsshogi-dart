@@ -1,9 +1,7 @@
 import 'castle.dart';
 import 'color.dart';
 import 'generated/strategies.g.dart' as gen;
-import 'piece.dart';
 import 'position.dart';
-import 'square.dart';
 
 // ---------------------------------------------------------------------------
 // 戦法検出 (Strategy / Opening detection)
@@ -126,12 +124,7 @@ bool _matchesStrategyTemplate(
   Color side,
 ) {
   for (final CastleRequirement req in template.placements) {
-    final int file = side == Color.black ? req.file : 10 - req.file;
-    final int rank = side == Color.black ? req.rank : 10 - req.rank;
-    final Piece? piece = position.board.at(Square(file, rank));
-    if (!req.isSatisfiedBy(piece, side)) {
-      return false;
-    }
+    if (!req.isSatisfiedBy(position, side)) return false;
   }
   return true;
 }

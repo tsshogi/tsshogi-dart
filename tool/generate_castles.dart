@@ -60,13 +60,33 @@ String generateCastleDart(List<ParsedTemplate> templates) {
 }
 
 String _formatPlacement(PlacementCell p) {
-  if (p.kind == 'exact') {
-    final String enumName = p.pieceTypes.single;
-    return 'PiecePlacement(${p.file}, ${p.rank}, PieceType.$enumName)';
+  switch (p.kind) {
+    case 'exact':
+      final String enumName = p.pieceTypes.single;
+      return 'PiecePlacement(${p.file}, ${p.rank}, PieceType.$enumName)';
+    case 'anyOf':
+      final String opts =
+          p.pieceTypes.map((String n) => 'PieceType.$n').join(', ');
+      return 'AnyOfPieces(${p.file}, ${p.rank}, <PieceType>[$opts])';
+    case 'empty':
+      return 'EmptySquare(${p.file}, ${p.rank})';
+    case 'anyPiece':
+      return 'AnyPiece(${p.file}, ${p.rank})';
+    case 'notOf':
+      final String opts =
+          p.pieceTypes.map((String n) => 'PieceType.$n').join(', ');
+      return 'NotOfPieces(${p.file}, ${p.rank}, <PieceType>[$opts])';
+    case 'pieceAnywhere':
+      return 'PieceAnywhere(PieceType.${p.pieceTypes.single})';
+    case 'handPiece':
+      final String name = p.pieceTypes.single;
+      if (p.minCount == 1) {
+        return 'HandPiece(PieceType.$name)';
+      }
+      return 'HandPiece(PieceType.$name, ${p.minCount})';
+    default:
+      throw ArgumentError('unsupported placement kind: ${p.kind}');
   }
-  final String options =
-      p.pieceTypes.map((String n) => 'PieceType.$n').join(', ');
-  return 'AnyOfPieces(${p.file}, ${p.rank}, <PieceType>[$options])';
 }
 
 String _dartString(String s) {

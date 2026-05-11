@@ -123,11 +123,25 @@ void _processFile(String path, {required bool dryRun}) {
 String _signature(ParsedTemplate t) {
   // Stable signature based on sorted placement cells.
   final List<String> cells = t.placements.map((PlacementCell c) {
-    if (c.kind == 'exact') {
-      return '${c.file},${c.rank},exact,${c.pieceTypes.single}';
-    } else {
-      final List<String> sorted = List<String>.from(c.pieceTypes)..sort();
-      return '${c.file},${c.rank},anyOf,${sorted.join("|")}';
+    switch (c.kind) {
+      case 'exact':
+        return '${c.file},${c.rank},exact,${c.pieceTypes.single}';
+      case 'anyOf':
+        final List<String> sorted = List<String>.from(c.pieceTypes)..sort();
+        return '${c.file},${c.rank},anyOf,${sorted.join("|")}';
+      case 'notOf':
+        final List<String> sorted = List<String>.from(c.pieceTypes)..sort();
+        return '${c.file},${c.rank},notOf,${sorted.join("|")}';
+      case 'empty':
+        return '${c.file},${c.rank},empty';
+      case 'anyPiece':
+        return '${c.file},${c.rank},anyPiece';
+      case 'pieceAnywhere':
+        return 'board,${c.pieceTypes.single}';
+      case 'handPiece':
+        return 'hand,${c.pieceTypes.single},${c.minCount}';
+      default:
+        throw ArgumentError('unknown kind: ${c.kind}');
     }
   }).toList()
     ..sort();
@@ -143,65 +157,14 @@ void _writeTemplate(
   if (t.parent != null) buf.writeln('parent: ${t.parent}');
   if (aliases.isNotEmpty) buf.writeln('aliases: ${aliases.join(', ')}');
   if (t.side != null && t.side != 'either') buf.writeln('side: ${t.side}');
+  final String? boardLine = formatBoardHeader(t.placements);
+  if (boardLine != null) buf.writeln(boardLine);
+  final String? handLine = formatHandHeader(t.placements);
+  if (handLine != null) buf.writeln(handLine);
   buf.writeln();
-  final List<List<String>> grid = List<List<String>>.generate(
-    9,
-    (_) => List<String>.filled(9, '.'),
-  );
-  for (final PlacementCell c in t.placements) {
-    final int row = c.rank - 1;
-    final int col = 9 - c.file;
-    grid[row][col] = _tokenForCell(c);
-  }
+  final List<List<String>> grid = buildGrid(t.placements);
   for (int r = 0; r < 9; r++) {
     buf.writeln(grid[r].join(' '));
   }
   buf.writeln();
-}
-
-String _tokenForCell(PlacementCell c) {
-  if (c.kind == 'exact') {
-    return _pieceTypeToToken(c.pieceTypes.single);
-  }
-  final StringBuffer alt = StringBuffer('[');
-  for (final String pt in c.pieceTypes) {
-    alt.write(_pieceTypeToToken(pt));
-  }
-  alt.write(']');
-  return alt.toString();
-}
-
-String _pieceTypeToToken(String pieceType) {
-  switch (pieceType) {
-    case 'king':
-      return 'K';
-    case 'rook':
-      return 'R';
-    case 'bishop':
-      return 'B';
-    case 'gold':
-      return 'G';
-    case 'silver':
-      return 'S';
-    case 'knight':
-      return 'N';
-    case 'lance':
-      return 'L';
-    case 'pawn':
-      return 'P';
-    case 'promPawn':
-      return '+P';
-    case 'promLance':
-      return '+L';
-    case 'promKnight':
-      return '+N';
-    case 'promSilver':
-      return '+S';
-    case 'horse':
-      return '+B';
-    case 'dragon':
-      return '+R';
-    default:
-      throw FormatException('unknown pieceType: $pieceType');
-  }
 }

@@ -30,33 +30,48 @@ class ParsedTemplate {
   /// 戦法のみ使用: 'ibisha' | 'furibisha' | 'either' | null
   final String? side;
 
-  /// 9×9 グリッドから抽出した placement セル群
+  /// グリッド + ヘッダから抽出した要件セル群。
+  ///
+  /// `PlacementCell.kind` の値で per-cell / position-wide を区別する:
+  /// - per-cell:  `'exact'`, `'anyOf'`, `'empty'`, `'notOf'`, `'anyPiece'`
+  /// - position-wide: `'pieceAnywhere'`, `'handPiece'`
   final List<PlacementCell> placements;
 
   /// `=== name: ...` が登場した行番号 (エラーメッセージ用、1-origin)
   final int sourceLine;
 }
 
-/// 配置 1 マス分の中間表現。
+/// 要件 1 件分の中間表現。per-cell と position-wide のどちらも 1 つの型で
+/// 表現する (位置 + 駒種 + min count を選択的に保持)。
 class PlacementCell {
   PlacementCell({
-    required this.file,
-    required this.rank,
     required this.kind,
-    required this.pieceTypes,
+    this.file = 0,
+    this.rank = 0,
+    this.pieceTypes = const <String>[],
+    this.minCount = 1,
   });
 
-  /// 1..9 (盤右が 1)
-  final int file;
-
-  /// 1..9 (盤上が 1)
-  final int rank;
-
-  /// 'exact' | 'anyOf'
+  /// 要件種別。
+  /// - per-cell:  `'exact'`, `'anyOf'`, `'empty'`, `'notOf'`, `'anyPiece'`
+  /// - position-wide: `'pieceAnywhere'`, `'handPiece'`
   final String kind;
 
-  /// PieceType の Dart enum 名 (例: 'king', 'gold', 'promPawn', 'horse')
+  /// 1..9 (盤右が 1)。position-wide kind では 0 (unused)。
+  final int file;
+
+  /// 1..9 (盤上が 1)。position-wide kind では 0 (unused)。
+  final int rank;
+
+  /// PieceType の Dart enum 名 (例: 'king', 'gold', 'promPawn', 'horse')。
+  /// - `'exact'` / `'anyPiece'` / `'empty'`: AnyPiece は空、それ以外は単/複数
+  /// - `'anyOf'`: 候補駒種リスト
+  /// - `'notOf'`: 除外駒種リスト
+  /// - `'pieceAnywhere'` / `'handPiece'`: 単一要素
   final List<String> pieceTypes;
+
+  /// `'handPiece'` 専用: 最低必要枚数 (デフォルト 1)。他 kind では未使用。
+  final int minCount;
 }
 
 const Map<String, String> _sfenToEnum = <String, String>{
@@ -96,6 +111,7 @@ List<ParsedTemplate> parseTemplateFile(String content) {
   String? sectionParent;
   List<String> sectionAliases = <String>[];
   String? sectionSide;
+  final List<PlacementCell> sectionExtras = <PlacementCell>[];
   final List<List<String>> gridRows = <List<String>>[];
 
   void finalizeSection() {
@@ -131,6 +147,8 @@ List<ParsedTemplate> parseTemplateFile(String content) {
         );
       }
     }
+    // board:/hand: ヘッダは grid の後ろに連結 (順序は決定論的)。
+    placements.addAll(sectionExtras);
     results.add(
       ParsedTemplate(
         name: sectionName!,
@@ -149,6 +167,7 @@ List<ParsedTemplate> parseTemplateFile(String content) {
     sectionParent = null;
     sectionAliases = <String>[];
     sectionSide = null;
+    sectionExtras.clear();
     gridRows.clear();
   }
 
@@ -204,6 +223,45 @@ List<ParsedTemplate> parseTemplateFile(String content) {
           }
           sectionSide = v;
           break;
+        case 'board':
+          // `board: B R G` → 駒種ごとに PieceAnywhere セルを 1 つ追加。
+          for (final String token in _splitPieceTokens(header.value)) {
+            sectionExtras.add(
+              PlacementCell(
+                kind: 'pieceAnywhere',
+                pieceTypes: <String>[sfenTokenToEnumName(token)],
+              ),
+            );
+          }
+          break;
+        case 'hand':
+          // `hand: B*2 R` → 各トークンを HandPiece セルに展開。`X*N` で N 枚指定。
+          for (final String token in _splitPieceTokens(header.value)) {
+            final int starIdx = token.indexOf('*');
+            final String pieceToken;
+            final int minCount;
+            if (starIdx < 0) {
+              pieceToken = token;
+              minCount = 1;
+            } else {
+              pieceToken = token.substring(0, starIdx);
+              final int? n = int.tryParse(token.substring(starIdx + 1));
+              if (n == null || n < 1) {
+                throw FormatException(
+                  'line $lineNo: invalid hand count in "$token"',
+                );
+              }
+              minCount = n;
+            }
+            sectionExtras.add(
+              PlacementCell(
+                kind: 'handPiece',
+                pieceTypes: <String>[sfenTokenToEnumName(pieceToken)],
+                minCount: minCount,
+              ),
+            );
+          }
+          break;
         case 'description':
           // Intentionally ignored (human comment).
           break;
@@ -224,6 +282,11 @@ List<ParsedTemplate> parseTemplateFile(String content) {
     finalizeSection();
   }
   return results;
+}
+
+/// `B R G` や `B*2 R` のような whitespace 区切りトークン列を分解する。
+List<String> _splitPieceTokens(String value) {
+  return value.split(RegExp(r'\s+')).where((String s) => s.isNotEmpty).toList();
 }
 
 class _Header {
@@ -270,17 +333,32 @@ class _Cell {
 }
 
 _Cell _parseCellToken(String token, String section, int row) {
+  // Empty marker.
+  if (token == '_') return const _Cell('empty', <String>[]);
+  // Wildcard: any piece of the side.
+  if (token == '*') return const _Cell('anyPiece', <String>[]);
+
   if (token.startsWith('[')) {
     if (!token.endsWith(']')) {
       throw FormatException(
         'section "$section" row $row: unterminated alternation: "$token"',
       );
     }
-    final String inner = token.substring(1, token.length - 1);
+    String inner = token.substring(1, token.length - 1);
     if (inner.isEmpty) {
       throw FormatException(
         'section "$section" row $row: empty alternation "[]"',
       );
+    }
+    // `[!GS]` → NotOfPieces with excluded gold/silver.
+    final bool negated = inner.startsWith('!');
+    if (negated) {
+      inner = inner.substring(1);
+      if (inner.isEmpty) {
+        throw FormatException(
+          'section "$section" row $row: empty exclusion in "[!]"',
+        );
+      }
     }
     final List<String> pieces =
         _tokenizeAlternation(inner).map(sfenTokenToEnumName).toList();
@@ -289,7 +367,7 @@ _Cell _parseCellToken(String token, String section, int row) {
         'section "$section" row $row: empty alternation in "$token"',
       );
     }
-    return _Cell('anyOf', pieces);
+    return _Cell(negated ? 'notOf' : 'anyOf', pieces);
   }
   return _Cell('exact', <String>[sfenTokenToEnumName(token)]);
 }
@@ -350,12 +428,17 @@ String enumNameToSfenToken(String enumName) {
 
 /// 配置リストから 9×9 のグリッド (`.`/トークン) を組み立てる。
 /// 衝突 (同マスに 2 つ) が出たら ArgumentError。
+///
+/// position-wide kind (`pieceAnywhere`, `handPiece`) はグリッドには出ない
+/// ので無視される。これらは `formatBoardHeader` / `formatHandHeader` で
+/// 別途出力する。
 List<List<String>> buildGrid(List<PlacementCell> placements) {
   final List<List<String>> grid = List<List<String>>.generate(
     9,
     (_) => List<String>.filled(9, '.'),
   );
   for (final PlacementCell p in placements) {
+    if (p.kind == 'pieceAnywhere' || p.kind == 'handPiece') continue;
     final int rowIdx = p.rank - 1;
     final int colIdx = 9 - p.file;
     if (rowIdx < 0 || rowIdx > 8 || colIdx < 0 || colIdx > 8) {
@@ -374,10 +457,45 @@ List<List<String>> buildGrid(List<PlacementCell> placements) {
 }
 
 String _cellToToken(PlacementCell p) {
-  if (p.kind == 'exact') {
-    return enumNameToSfenToken(p.pieceTypes.single);
+  switch (p.kind) {
+    case 'exact':
+      return enumNameToSfenToken(p.pieceTypes.single);
+    case 'anyOf':
+      final String joined = p.pieceTypes.map(enumNameToSfenToken).join('');
+      return '[$joined]';
+    case 'notOf':
+      final String joined = p.pieceTypes.map(enumNameToSfenToken).join('');
+      return '[!$joined]';
+    case 'empty':
+      return '_';
+    case 'anyPiece':
+      return '*';
+    default:
+      throw ArgumentError('unsupported per-cell kind: ${p.kind}');
   }
-  // anyOf
-  final String joined = p.pieceTypes.map(enumNameToSfenToken).join('');
-  return '[$joined]';
+}
+
+/// `board: B R G` 形式の 1 行を返す。position-wide な `pieceAnywhere` セルが
+/// 1 つも無ければ `null`。
+String? formatBoardHeader(List<PlacementCell> placements) {
+  final List<String> tokens = <String>[];
+  for (final PlacementCell p in placements) {
+    if (p.kind != 'pieceAnywhere') continue;
+    tokens.add(enumNameToSfenToken(p.pieceTypes.single));
+  }
+  if (tokens.isEmpty) return null;
+  return 'board: ${tokens.join(' ')}';
+}
+
+/// `hand: B*2 R` 形式の 1 行を返す。position-wide な `handPiece` セルが
+/// 1 つも無ければ `null`。`minCount == 1` は `*N` を省略。
+String? formatHandHeader(List<PlacementCell> placements) {
+  final List<String> tokens = <String>[];
+  for (final PlacementCell p in placements) {
+    if (p.kind != 'handPiece') continue;
+    final String piece = enumNameToSfenToken(p.pieceTypes.single);
+    tokens.add(p.minCount == 1 ? piece : '$piece*${p.minCount}');
+  }
+  if (tokens.isEmpty) return null;
+  return 'hand: ${tokens.join(' ')}';
 }

@@ -14,17 +14,91 @@ Position _emptyPosition() {
   return position;
 }
 
-/// テンプレートの placements を [side] 視点で盤に並べる。
-/// AnyOfPieces は最初の候補駒種で代表させる。
-void _placeTemplate(Board board, CastleTemplate template, Color side) {
+/// テンプレートの placements を [side] 視点で盤と持駒に再現する。
+///
+/// - `PiecePlacement` / `AnyOfPieces`: 該当マスに駒を置く (AnyOf は先頭候補)
+/// - `EmptySquare`: マスは触らない (空のまま)
+/// - `NotOfPieces`: 除外リストにない駒種 (歩優先) を仮置きする
+/// - `AnyPiece`: 歩を仮置きする
+/// - `PieceAnywhere`: テンプレ外の空マスに該当駒を 1 つ置く
+/// - `HandPiece`: 該当持駒を minCount 枚積む
+void _placeTemplate(Position position, CastleTemplate template, Color side) {
+  final Board board = position.board;
+  final Set<int> occupied = <int>{};
+  for (final ({Square square, Piece piece}) e in board.listNonEmptySquares()) {
+    occupied.add(e.square.file * 10 + e.square.rank);
+  }
+
+  PieceType firstNotIn(List<PieceType> excluded) {
+    const List<PieceType> fallback = <PieceType>[
+      PieceType.pawn,
+      PieceType.lance,
+      PieceType.knight,
+      PieceType.silver,
+      PieceType.gold,
+      PieceType.bishop,
+      PieceType.rook,
+      PieceType.king,
+    ];
+    for (final PieceType t in fallback) {
+      if (!excluded.contains(t)) return t;
+    }
+    return PieceType.pawn;
+  }
+
   for (final CastleRequirement r in template.placements) {
-    final int file = side == Color.black ? r.file : 10 - r.file;
-    final int rank = side == Color.black ? r.rank : 10 - r.rank;
-    final PieceType type = switch (r) {
-      PiecePlacement(:final pieceType) => pieceType,
-      AnyOfPieces(:final options) => options.first,
-    };
-    board.set(Square(file, rank), Piece(side, type));
+    switch (r) {
+      case PiecePlacement(:final file, :final rank, :final pieceType):
+        final int f = side == Color.black ? file : 10 - file;
+        final int rr = side == Color.black ? rank : 10 - rank;
+        board.set(Square(f, rr), Piece(side, pieceType));
+        occupied.add(f * 10 + rr);
+        break;
+      case AnyOfPieces(:final file, :final rank, :final options):
+        final int f = side == Color.black ? file : 10 - file;
+        final int rr = side == Color.black ? rank : 10 - rank;
+        board.set(Square(f, rr), Piece(side, options.first));
+        occupied.add(f * 10 + rr);
+        break;
+      case EmptySquare(:final file, :final rank):
+        final int f = side == Color.black ? file : 10 - file;
+        final int rr = side == Color.black ? rank : 10 - rank;
+        if (board.at(Square(f, rr)) != null) {
+          board.remove(Square(f, rr));
+        }
+        break;
+      case NotOfPieces(:final file, :final rank, :final excluded):
+        final int f = side == Color.black ? file : 10 - file;
+        final int rr = side == Color.black ? rank : 10 - rank;
+        if (board.at(Square(f, rr)) == null) {
+          board.set(Square(f, rr), Piece(side, firstNotIn(excluded)));
+          occupied.add(f * 10 + rr);
+        }
+        break;
+      case AnyPiece(:final file, :final rank):
+        final int f = side == Color.black ? file : 10 - file;
+        final int rr = side == Color.black ? rank : 10 - rank;
+        if (board.at(Square(f, rr)) == null) {
+          board.set(Square(f, rr), Piece(side, PieceType.pawn));
+          occupied.add(f * 10 + rr);
+        }
+        break;
+      case PieceAnywhere(:final pieceType):
+        for (int file = 1; file <= 9; file++) {
+          for (int rank = 1; rank <= 9; rank++) {
+            if (!occupied.contains(file * 10 + rank)) {
+              board.set(Square(file, rank), Piece(side, pieceType));
+              occupied.add(file * 10 + rank);
+              file = 10; // break outer
+              break;
+            }
+          }
+        }
+        break;
+      case HandPiece(:final pieceType, :final minCount):
+        position.hand(side).set(pieceType, minCount);
+        break;
+    }
   }
 }
 
@@ -61,7 +135,7 @@ void main() {
       for (final CastleTemplate template in knownCastles) {
         test('detects ${template.name}', () {
           final Position position = _emptyPosition();
-          _placeTemplate(position.board, template, Color.black);
+          _placeTemplate(position, template, Color.black);
           final List<DetectedCastle> result =
               detectCastles(position, side: Color.black);
           expect(
@@ -84,7 +158,7 @@ void main() {
           // 白玉が玉テンプレに含まれていない場合は消す処理は不要だが、
           // king 配置のテンプレもあるので一旦白玉も消してから再配置
           // _placeTemplate が king を含む場合は上書きする
-          _placeTemplate(position.board, template, Color.white);
+          _placeTemplate(position, template, Color.white);
           // 上で黒玉が 5九に置かれているがテンプレが file=5,rank=9 を持つと衝突する
           // 例: 居玉 (5,9 玉) は白側で 10-5=5, 10-9=1 → (5,1) なので衝突しない
           final List<DetectedCastle> result =
@@ -102,12 +176,12 @@ void main() {
       final Position position = _emptyPosition();
       // 黒側に金矢倉、白側に本美濃を作る
       _placeTemplate(
-        position.board,
+        position,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '金矢倉'),
         Color.black,
       );
       _placeTemplate(
-        position.board,
+        position,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '本美濃'),
         Color.white,
       );
@@ -123,12 +197,12 @@ void main() {
     test('side filter: white only', () {
       final Position position = _emptyPosition();
       _placeTemplate(
-        position.board,
+        position,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '金矢倉'),
         Color.black,
       );
       _placeTemplate(
-        position.board,
+        position,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '本美濃'),
         Color.white,
       );
@@ -144,12 +218,12 @@ void main() {
     test('side null: both sides detected', () {
       final Position position = _emptyPosition();
       _placeTemplate(
-        position.board,
+        position,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '金矢倉'),
         Color.black,
       );
       _placeTemplate(
-        position.board,
+        position,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '本美濃'),
         Color.white,
       );
@@ -161,7 +235,7 @@ void main() {
     test('parent (矢倉囲い) detected when child (金矢倉) matches', () {
       final Position position = _emptyPosition();
       _placeTemplate(
-        position.board,
+        position,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '金矢倉'),
         Color.black,
       );
@@ -174,7 +248,7 @@ void main() {
     test('parent (美濃囲い) detected when child (本美濃) matches', () {
       final Position position = _emptyPosition();
       _placeTemplate(
-        position.board,
+        position,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '本美濃'),
         Color.black,
       );
@@ -187,7 +261,7 @@ void main() {
     test('parent (穴熊囲い) detected when child (居飛車穴熊) matches', () {
       final Position position = _emptyPosition();
       _placeTemplate(
-        position.board,
+        position,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '居飛車穴熊'),
         Color.black,
       );
@@ -200,7 +274,7 @@ void main() {
     test('negative: missing one piece breaks the match', () {
       final Position position = _emptyPosition();
       _placeTemplate(
-        position.board,
+        position,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '金矢倉'),
         Color.black,
       );
@@ -215,7 +289,7 @@ void main() {
       final Position position = _emptyPosition();
       // 黒側に金矢倉を配置するが 7七銀だけ白駒に
       _placeTemplate(
-        position.board,
+        position,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '金矢倉'),
         Color.black,
       );
@@ -228,7 +302,7 @@ void main() {
     test('negative: wrong piece type does not match', () {
       final Position position = _emptyPosition();
       _placeTemplate(
-        position.board,
+        position,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '本美濃'),
         Color.black,
       );
@@ -242,7 +316,7 @@ void main() {
     test('extra pieces on board do not invalidate a match', () {
       final Position position = _emptyPosition();
       _placeTemplate(
-        position.board,
+        position,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '金矢倉'),
         Color.black,
       );
@@ -276,16 +350,37 @@ void main() {
   // ワイルドカード (AnyOfPieces) の挙動
   // -------------------------------------------------------------------------
   group('wildcards (AnyOfPieces)', () {
+    Position positionWith(Square square, Piece? piece) {
+      final Position p = Position();
+      p.reset(InitialPositionType.empty);
+      if (piece != null) {
+        p.board.set(square, piece);
+      }
+      // 玉 dummy for健全性 (テンプレートマッチに干渉しない安全位置)
+      p.board.set(Square(5, 1), Piece(Color.white, PieceType.king));
+      return p;
+    }
+
     test('AnyOfPieces matches when piece type is in options', () {
       const AnyOfPieces req = AnyOfPieces(
         6,
         7,
         <PieceType>[PieceType.gold, PieceType.silver],
       );
-      final Piece gold = Piece(Color.black, PieceType.gold);
-      final Piece silver = Piece(Color.black, PieceType.silver);
-      expect(req.isSatisfiedBy(gold, Color.black), isTrue);
-      expect(req.isSatisfiedBy(silver, Color.black), isTrue);
+      expect(
+        req.isSatisfiedBy(
+          positionWith(Square(6, 7), Piece(Color.black, PieceType.gold)),
+          Color.black,
+        ),
+        isTrue,
+      );
+      expect(
+        req.isSatisfiedBy(
+          positionWith(Square(6, 7), Piece(Color.black, PieceType.silver)),
+          Color.black,
+        ),
+        isTrue,
+      );
     });
 
     test('AnyOfPieces does NOT match when piece type is NOT in options', () {
@@ -294,8 +389,13 @@ void main() {
         7,
         <PieceType>[PieceType.gold, PieceType.silver],
       );
-      final Piece pawn = Piece(Color.black, PieceType.pawn);
-      expect(req.isSatisfiedBy(pawn, Color.black), isFalse);
+      expect(
+        req.isSatisfiedBy(
+          positionWith(Square(6, 7), Piece(Color.black, PieceType.pawn)),
+          Color.black,
+        ),
+        isFalse,
+      );
     });
 
     test('AnyOfPieces does NOT match when piece color is wrong', () {
@@ -304,8 +404,13 @@ void main() {
         7,
         <PieceType>[PieceType.gold, PieceType.silver],
       );
-      final Piece whiteGold = Piece(Color.white, PieceType.gold);
-      expect(req.isSatisfiedBy(whiteGold, Color.black), isFalse);
+      expect(
+        req.isSatisfiedBy(
+          positionWith(Square(6, 7), Piece(Color.white, PieceType.gold)),
+          Color.black,
+        ),
+        isFalse,
+      );
     });
 
     test('AnyOfPieces does NOT match when square is empty', () {
@@ -314,11 +419,13 @@ void main() {
         7,
         <PieceType>[PieceType.gold, PieceType.silver],
       );
-      expect(req.isSatisfiedBy(null, Color.black), isFalse);
+      expect(
+        req.isSatisfiedBy(positionWith(Square(6, 7), null), Color.black),
+        isFalse,
+      );
     });
 
     test('custom template with PiecePlacement + AnyOfPieces matches', () {
-      // 玉と 6七が金 or 銀のテンプレートを用意し、両パターンで満たされることを確認
       const CastleTemplate custom = CastleTemplate(
         name: 'テスト用ワイルドカード囲い',
         placements: <CastleRequirement>[
@@ -334,11 +441,10 @@ void main() {
       p1.board.set(Square(6, 7), Piece(Color.black, PieceType.gold));
       p1.board.set(Square(5, 1), Piece(Color.white, PieceType.king));
       for (final CastleRequirement r in custom.placements) {
-        final Piece? piece = p1.board.at(Square(r.file, r.rank));
         expect(
-          r.isSatisfiedBy(piece, Color.black),
+          r.isSatisfiedBy(p1, Color.black),
           isTrue,
-          reason: '6七金で ${r.file}${r.rank} が満たされる',
+          reason: '6七金で $r が満たされる',
         );
       }
 
@@ -349,11 +455,10 @@ void main() {
       p2.board.set(Square(6, 7), Piece(Color.black, PieceType.silver));
       p2.board.set(Square(5, 1), Piece(Color.white, PieceType.king));
       for (final CastleRequirement r in custom.placements) {
-        final Piece? piece = p2.board.at(Square(r.file, r.rank));
         expect(
-          r.isSatisfiedBy(piece, Color.black),
+          r.isSatisfiedBy(p2, Color.black),
           isTrue,
-          reason: '6七銀で ${r.file}${r.rank} が満たされる',
+          reason: '6七銀で $r が満たされる',
         );
       }
 
@@ -364,8 +469,7 @@ void main() {
       p3.board.set(Square(6, 7), Piece(Color.black, PieceType.knight));
       p3.board.set(Square(5, 1), Piece(Color.white, PieceType.king));
       final CastleRequirement wildcard = custom.placements[1];
-      final Piece? piece = p3.board.at(Square(wildcard.file, wildcard.rank));
-      expect(wildcard.isSatisfiedBy(piece, Color.black), isFalse);
+      expect(wildcard.isSatisfiedBy(p3, Color.black), isFalse);
     });
 
     test('AnyOfPieces equality / hashCode', () {
@@ -602,7 +706,7 @@ void main() {
     test('金矢倉 placements → 銀矢倉 と誤検出しない', () {
       final Position p = _emptyPosition();
       _placeTemplate(
-        p.board,
+        p,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '金矢倉'),
         Color.black,
       );
@@ -614,7 +718,7 @@ void main() {
     test('銀矢倉 placements → 金矢倉 と誤検出しない', () {
       final Position p = _emptyPosition();
       _placeTemplate(
-        p.board,
+        p,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '銀矢倉'),
         Color.black,
       );
@@ -626,7 +730,7 @@ void main() {
     test('片美濃 → 本美濃 と誤検出しない (5八金欠け)', () {
       final Position p = _emptyPosition();
       _placeTemplate(
-        p.board,
+        p,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '片美濃'),
         Color.black,
       );
@@ -638,7 +742,7 @@ void main() {
     test('本美濃 → 高美濃 と誤検出しない (4七位置の歩/金違い)', () {
       final Position p = _emptyPosition();
       _placeTemplate(
-        p.board,
+        p,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '本美濃'),
         Color.black,
       );
@@ -650,7 +754,7 @@ void main() {
     test('居飛車穴熊 → 振り飛車穴熊・ビッグ4 と誤検出しない', () {
       final Position p = _emptyPosition();
       _placeTemplate(
-        p.board,
+        p,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '居飛車穴熊'),
         Color.black,
       );
@@ -672,7 +776,7 @@ void main() {
     test('金矢倉に近いが 1 マス違い → 何も検出しない (大局的崩れ)', () {
       final Position p = _emptyPosition();
       _placeTemplate(
-        p.board,
+        p,
         knownCastles.firstWhere((CastleTemplate t) => t.name == '金矢倉'),
         Color.black,
       );
@@ -697,11 +801,21 @@ void main() {
       }
     });
 
-    test('全 placements の file/rank が 1..9 に収まる', () {
+    test('全 per-cell placements の file/rank が 1..9 に収まる', () {
       for (final CastleTemplate t in knownCastles) {
         for (final CastleRequirement r in t.placements) {
-          expect(r.file, inInclusiveRange(1, 9), reason: '${t.name}: file');
-          expect(r.rank, inInclusiveRange(1, 9), reason: '${t.name}: rank');
+          final ({int file, int rank})? coord = switch (r) {
+            PiecePlacement(:final file, :final rank) ||
+            AnyOfPieces(:final file, :final rank) ||
+            EmptySquare(:final file, :final rank) ||
+            NotOfPieces(:final file, :final rank) ||
+            AnyPiece(:final file, :final rank) =>
+              (file: file, rank: rank),
+            PieceAnywhere() || HandPiece() => null,
+          };
+          if (coord == null) continue;
+          expect(coord.file, inInclusiveRange(1, 9), reason: '${t.name}: file');
+          expect(coord.rank, inInclusiveRange(1, 9), reason: '${t.name}: rank');
         }
       }
     });
@@ -724,9 +838,19 @@ void main() {
       for (final CastleTemplate t in knownCastles) {
         final Set<int> squares = <int>{};
         for (final CastleRequirement r in t.placements) {
-          final int key = r.file * 10 + r.rank;
+          final ({int file, int rank})? coord = switch (r) {
+            PiecePlacement(:final file, :final rank) ||
+            AnyOfPieces(:final file, :final rank) ||
+            EmptySquare(:final file, :final rank) ||
+            NotOfPieces(:final file, :final rank) ||
+            AnyPiece(:final file, :final rank) =>
+              (file: file, rank: rank),
+            PieceAnywhere() || HandPiece() => null,
+          };
+          if (coord == null) continue;
+          final int key = coord.file * 10 + coord.rank;
           expect(squares.contains(key), isFalse,
-              reason: '${t.name} で ${r.file}${r.rank} が重複');
+              reason: '${t.name} で ${coord.file}${coord.rank} が重複');
           squares.add(key);
         }
       }
@@ -746,18 +870,28 @@ void main() {
     test('親テンプレートの placements は子テンプレートの subset', () {
       // 親要件が AnyOfPieces なら、子の同マスが AnyOfPieces のサブセット
       // (候補が全て親候補に含まれる) または PiecePlacement (種類が親候補に
-      // 含まれる) であれば OK。
+      // 含まれる) であれば OK。per-cell 系のみチェックする (位置のない
+      // PieceAnywhere/HandPiece は親子関係から外れる宣言なので除外)。
+      ({int file, int rank})? coordOf(CastleRequirement r) => switch (r) {
+            PiecePlacement(:final file, :final rank) ||
+            AnyOfPieces(:final file, :final rank) ||
+            EmptySquare(:final file, :final rank) ||
+            NotOfPieces(:final file, :final rank) ||
+            AnyPiece(:final file, :final rank) =>
+              (file: file, rank: rank),
+            PieceAnywhere() || HandPiece() => null,
+          };
       bool isParentReqSatisfiedBy(
           CastleRequirement parent, CastleRequirement child) {
-        if (parent.file != child.file || parent.rank != child.rank) {
-          return false;
-        }
+        final ({int file, int rank})? pc = coordOf(parent);
+        final ({int file, int rank})? cc = coordOf(child);
+        if (pc == null || cc == null) return false;
+        if (pc.file != cc.file || pc.rank != cc.rank) return false;
         if (parent is PiecePlacement) {
           if (child is PiecePlacement) {
             return parent.pieceType == child.pieceType;
           }
           if (child is AnyOfPieces) {
-            // 子が AnyOf なら全候補が親の単一駒種と一致する必要がある
             return child.options.every((PieceType t) => t == parent.pieceType);
           }
         }
@@ -781,11 +915,13 @@ void main() {
         final CastleTemplate? parent = byName[child.parent];
         if (parent == null) continue;
         for (final CastleRequirement pp in parent.placements) {
+          final ({int file, int rank})? pc = coordOf(pp);
+          if (pc == null) continue;
           final bool included = child.placements
               .any((CastleRequirement cp) => isParentReqSatisfiedBy(pp, cp));
           expect(included, isTrue,
               reason: '子 ${child.name} に親 ${parent.name} の '
-                  '${pp.file}${pp.rank} に相当する placement がない');
+                  '${pc.file}${pc.rank} に相当する placement がない');
         }
       }
     });

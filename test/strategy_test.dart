@@ -15,17 +15,95 @@ Position _emptyPosition() {
   return position;
 }
 
-/// テンプレートの placements を [side] 視点で盤に並べる。
-/// AnyOfPieces は最初の候補駒種で代表させる。
-void _placeStrategy(Board board, StrategyTemplate template, Color side) {
+/// テンプレートの placements を [side] 視点で盤と持駒に再現する。
+///
+/// - `PiecePlacement` / `AnyOfPieces`: 該当マスに駒を置く (AnyOf は先頭候補)
+/// - `EmptySquare`: マスは触らない (元から空)
+/// - `NotOfPieces`: 除外リスト外の駒種 (歩 or 玉) を 1 つ仮置きする
+/// - `AnyPiece`: 歩 (代表駒) を仮置きする
+/// - `PieceAnywhere`: テンプレ外のマス (隅) に該当駒を 1 つ置く
+/// - `HandPiece`: 該当持駒を minCount 枚積む
+void _placeStrategy(Position position, StrategyTemplate template, Color side) {
+  final Board board = position.board;
+  final Set<int> occupied = <int>{};
+  void mark(int file, int rank) => occupied.add(file * 10 + rank);
+
+  // 既に盤上にある駒のマスを occupied に登録 (テンプレ間衝突回避)
+  for (final ({Square square, Piece piece}) e in board.listNonEmptySquares()) {
+    mark(e.square.file, e.square.rank);
+  }
+
+  PieceType firstNotIn(List<PieceType> excluded) {
+    const List<PieceType> fallback = <PieceType>[
+      PieceType.pawn,
+      PieceType.lance,
+      PieceType.knight,
+      PieceType.silver,
+      PieceType.gold,
+      PieceType.bishop,
+      PieceType.rook,
+      PieceType.king,
+    ];
+    for (final PieceType t in fallback) {
+      if (!excluded.contains(t)) return t;
+    }
+    return PieceType.pawn;
+  }
+
   for (final CastleRequirement r in template.placements) {
-    final int file = side == Color.black ? r.file : 10 - r.file;
-    final int rank = side == Color.black ? r.rank : 10 - r.rank;
-    final PieceType type = switch (r) {
-      PiecePlacement(:final pieceType) => pieceType,
-      AnyOfPieces(:final options) => options.first,
-    };
-    board.set(Square(file, rank), Piece(side, type));
+    switch (r) {
+      case PiecePlacement(:final file, :final rank, :final pieceType):
+        final int f = side == Color.black ? file : 10 - file;
+        final int rr = side == Color.black ? rank : 10 - rank;
+        board.set(Square(f, rr), Piece(side, pieceType));
+        mark(f, rr);
+        break;
+      case AnyOfPieces(:final file, :final rank, :final options):
+        final int f = side == Color.black ? file : 10 - file;
+        final int rr = side == Color.black ? rank : 10 - rank;
+        board.set(Square(f, rr), Piece(side, options.first));
+        mark(f, rr);
+        break;
+      case EmptySquare(:final file, :final rank):
+        final int f = side == Color.black ? file : 10 - file;
+        final int rr = side == Color.black ? rank : 10 - rank;
+        if (board.at(Square(f, rr)) != null) {
+          board.remove(Square(f, rr));
+        }
+        break;
+      case NotOfPieces(:final file, :final rank, :final excluded):
+        final int f = side == Color.black ? file : 10 - file;
+        final int rr = side == Color.black ? rank : 10 - rank;
+        if (board.at(Square(f, rr)) == null) {
+          board.set(Square(f, rr), Piece(side, firstNotIn(excluded)));
+          mark(f, rr);
+        }
+        break;
+      case AnyPiece(:final file, :final rank):
+        final int f = side == Color.black ? file : 10 - file;
+        final int rr = side == Color.black ? rank : 10 - rank;
+        if (board.at(Square(f, rr)) == null) {
+          board.set(Square(f, rr), Piece(side, PieceType.pawn));
+          mark(f, rr);
+        }
+        break;
+      case PieceAnywhere(:final pieceType):
+        // テンプレ外の隅 (rank 5 中央寄り) に置く。衝突回避は順次走査。
+        for (int file = 1; file <= 9; file++) {
+          for (int rank = 1; rank <= 9; rank++) {
+            if (!occupied.contains(file * 10 + rank)) {
+              board.set(Square(file, rank), Piece(side, pieceType));
+              mark(file, rank);
+              file = 10; // break outer
+              break;
+            }
+          }
+        }
+        break;
+      case HandPiece(:final pieceType, :final minCount):
+        position.hand(side).set(pieceType, minCount);
+        break;
+    }
   }
 }
 
@@ -66,7 +144,7 @@ void main() {
       for (final StrategyTemplate template in knownStrategies) {
         test('detects ${template.name}', () {
           final Position position = _emptyPosition();
-          _placeStrategy(position.board, template, Color.black);
+          _placeStrategy(position, template, Color.black);
           final List<DetectedStrategy> result =
               detectStrategies(position, side: Color.black);
           expect(
@@ -90,7 +168,7 @@ void main() {
           // ただし「棒玉」テンプレは (5,5) に黒玉を置くので、ここはあえて何も
           // 置かない方が安全。Position の king 数バリデーションは reset 直後の
           // 空盤では問われない。
-          _placeStrategy(position.board, template, Color.white);
+          _placeStrategy(position, template, Color.white);
           final List<DetectedStrategy> result =
               detectStrategies(position, side: Color.white);
           expect(
@@ -105,12 +183,12 @@ void main() {
     test('side filter: black only', () {
       final Position position = _emptyPosition();
       _placeStrategy(
-        position.board,
+        position,
         knownStrategies.firstWhere((StrategyTemplate t) => t.name == '中飛車'),
         Color.black,
       );
       _placeStrategy(
-        position.board,
+        position,
         knownStrategies.firstWhere((StrategyTemplate t) => t.name == '四間飛車'),
         Color.white,
       );
@@ -128,12 +206,12 @@ void main() {
     test('side filter: white only', () {
       final Position position = _emptyPosition();
       _placeStrategy(
-        position.board,
+        position,
         knownStrategies.firstWhere((StrategyTemplate t) => t.name == '中飛車'),
         Color.black,
       );
       _placeStrategy(
-        position.board,
+        position,
         knownStrategies.firstWhere((StrategyTemplate t) => t.name == '四間飛車'),
         Color.white,
       );
@@ -151,12 +229,12 @@ void main() {
     test('side null: both sides detected', () {
       final Position position = _emptyPosition();
       _placeStrategy(
-        position.board,
+        position,
         knownStrategies.firstWhere((StrategyTemplate t) => t.name == '中飛車'),
         Color.black,
       );
       _placeStrategy(
-        position.board,
+        position,
         knownStrategies.firstWhere((StrategyTemplate t) => t.name == '四間飛車'),
         Color.white,
       );
@@ -168,7 +246,7 @@ void main() {
     test('parent (中飛車) is also detected when child (ゴキゲン中飛車) matches', () {
       final Position position = _emptyPosition();
       _placeStrategy(
-        position.board,
+        position,
         knownStrategies.firstWhere((StrategyTemplate t) => t.name == 'ゴキゲン中飛車'),
         Color.black,
       );
@@ -181,7 +259,7 @@ void main() {
     test('parent (石田流) is also detected when child (石田流本組み) matches', () {
       final Position position = _emptyPosition();
       _placeStrategy(
-        position.board,
+        position,
         knownStrategies.firstWhere((StrategyTemplate t) => t.name == '石田流本組み'),
         Color.black,
       );
@@ -198,7 +276,7 @@ void main() {
     test('parent (四間飛車) detected when child (藤井システム) matches', () {
       final Position position = _emptyPosition();
       _placeStrategy(
-        position.board,
+        position,
         knownStrategies.firstWhere((StrategyTemplate t) => t.name == '藤井システム'),
         Color.black,
       );
@@ -211,7 +289,7 @@ void main() {
     test('negative: missing one piece breaks the match', () {
       final Position position = _emptyPosition();
       _placeStrategy(
-        position.board,
+        position,
         knownStrategies.firstWhere((StrategyTemplate t) => t.name == 'ゴキゲン中飛車'),
         Color.black,
       );
@@ -227,7 +305,7 @@ void main() {
     test('negative: wrong piece color does not match', () {
       final Position position = _emptyPosition();
       _placeStrategy(
-        position.board,
+        position,
         knownStrategies.firstWhere((StrategyTemplate t) => t.name == '中飛車'),
         Color.black,
       );
@@ -241,7 +319,7 @@ void main() {
     test('中飛車 placements do not erroneously trigger 四間飛車', () {
       final Position position = _emptyPosition();
       _placeStrategy(
-        position.board,
+        position,
         knownStrategies.firstWhere((StrategyTemplate t) => t.name == '中飛車'),
         Color.black,
       );
@@ -256,7 +334,7 @@ void main() {
     test('四間飛車 placements do not erroneously trigger 中飛車', () {
       final Position position = _emptyPosition();
       _placeStrategy(
-        position.board,
+        position,
         knownStrategies.firstWhere((StrategyTemplate t) => t.name == '四間飛車'),
         Color.black,
       );
@@ -271,7 +349,7 @@ void main() {
       // 中飛車
       final Position p1 = _emptyPosition();
       _placeStrategy(
-        p1.board,
+        p1,
         knownStrategies.firstWhere((StrategyTemplate t) => t.name == '中飛車'),
         Color.black,
       );
@@ -287,7 +365,7 @@ void main() {
       // 三間飛車
       final Position p2 = _emptyPosition();
       _placeStrategy(
-        p2.board,
+        p2,
         knownStrategies.firstWhere((StrategyTemplate t) => t.name == '三間飛車'),
         Color.black,
       );
@@ -352,18 +430,40 @@ void main() {
       }
     });
 
-    test('all placement file/rank are within 1..9', () {
+    test('all per-cell placement file/rank are within 1..9', () {
       for (final StrategyTemplate t in knownStrategies) {
         for (final CastleRequirement r in t.placements) {
+          final ({int file, int rank})? coord = switch (r) {
+            PiecePlacement(:final file, :final rank) => (
+                file: file,
+                rank: rank,
+              ),
+            AnyOfPieces(:final file, :final rank) => (
+                file: file,
+                rank: rank,
+              ),
+            EmptySquare(:final file, :final rank) => (
+                file: file,
+                rank: rank,
+              ),
+            NotOfPieces(:final file, :final rank) => (
+                file: file,
+                rank: rank,
+              ),
+            AnyPiece(:final file, :final rank) => (file: file, rank: rank),
+            PieceAnywhere() => null,
+            HandPiece() => null,
+          };
+          if (coord == null) continue;
           expect(
-            r.file,
+            coord.file,
             inInclusiveRange(1, 9),
-            reason: '${t.name} has file out of range: ${r.file}',
+            reason: '${t.name} has file out of range: ${coord.file}',
           );
           expect(
-            r.rank,
+            coord.rank,
             inInclusiveRange(1, 9),
-            reason: '${t.name} has rank out of range: ${r.rank}',
+            reason: '${t.name} has rank out of range: ${coord.rank}',
           );
         }
       }
@@ -409,6 +509,33 @@ void main() {
       expect(_detected(result, '石田流', Color.black), isTrue);
       expect(_detected(result, '三間飛車', Color.black), isTrue);
       expect(_detected(result, '向かい飛車', Color.black), isFalse);
+    });
+
+    test('矢倉 vs 角換わり は 盤上 角 / 手駒 角 で峻別される', () {
+      // どちらも 7七銀 + 2八飛 (居飛車組み) で配置は同一だが、
+      // - 矢倉 は 盤上に 角 (どこかにいれば良い)
+      // - 角換わり / 一手損角換わり / 丸山ワクチン は 手駒に 角
+      // でテンプレを区別する。
+      final StrategyTemplate yagura = knownStrategies.firstWhere(
+        (StrategyTemplate t) => t.name == '矢倉',
+      );
+      final StrategyTemplate kakuwagari = knownStrategies.firstWhere(
+        (StrategyTemplate t) => t.name == '角換わり',
+      );
+
+      // ケース 1: 角が盤上 → 矢倉のみ
+      final Position p1 = _emptyPosition();
+      _placeStrategy(p1, yagura, Color.black);
+      final List<DetectedStrategy> r1 = detectStrategies(p1, side: Color.black);
+      expect(_detected(r1, '矢倉', Color.black), isTrue);
+      expect(_detected(r1, '角換わり', Color.black), isFalse);
+
+      // ケース 2: 角を手駒に → 角換わりのみ
+      final Position p2 = _emptyPosition();
+      _placeStrategy(p2, kakuwagari, Color.black);
+      final List<DetectedStrategy> r2 = detectStrategies(p2, side: Color.black);
+      expect(_detected(r2, '角換わり', Color.black), isTrue);
+      expect(_detected(r2, '矢倉', Color.black), isFalse);
     });
 
     test('棒銀 + 矢倉棒銀 は 駒組によって両方検出されうる', () {
