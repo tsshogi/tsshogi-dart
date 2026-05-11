@@ -98,13 +98,14 @@ class DetectedCastle {
 // が正しい。各テンプレ直前のコメントに採用した形を簡潔に記載している。
 
 // --- 矢倉系 ----------------------------------------------------------------
-// 親カテゴリ。8八玉・7八金 を骨格とし、6七金 or 7七銀 のいずれかを満たすもの。
+// 親カテゴリ。8八玉系の囲いの総称。子テンプレ (金矢倉/銀矢倉/片矢倉/総矢倉/
+// 菱矢倉) は全て 8八玉 を共有するため、骨格は玉の位置のみで定義する
+// (個別の駒位置は子テンプレに譲る)。これにより subset 性が保たれる。
 const CastleTemplate _yaguraFamily = CastleTemplate(
   name: '矢倉囲い',
   aliases: <String>['矢倉'],
   placements: <PiecePlacement>[
     PiecePlacement(8, 8, PieceType.king),
-    PiecePlacement(7, 8, PieceType.gold),
   ],
 );
 
@@ -191,9 +192,10 @@ const CastleTemplate _hishiYagura = CastleTemplate(
 );
 
 /// 矢倉穴熊: 矢倉の玉を 9九まで深く囲った発展形。居飛車穴熊への組み替え途中で現れる。
+/// 構造的には穴熊系 (9九玉) なので親は 穴熊囲い とする。
 const CastleTemplate _yaguraAnaguma = CastleTemplate(
   name: '矢倉穴熊',
-  parent: '矢倉囲い',
+  parent: '穴熊囲い',
   placements: <PiecePlacement>[
     PiecePlacement(9, 9, PieceType.king),
     PiecePlacement(9, 8, PieceType.lance),
@@ -205,9 +207,9 @@ const CastleTemplate _yaguraAnaguma = CastleTemplate(
 );
 
 /// 早囲い: 矢倉戦の急ぎ囲い。6八玉・7九金・6九銀。手数を節約して攻めに回る。
+/// 玉が 6八 で矢倉系 (8八玉) と subset 関係を結ばないため、parent は持たない。
 const CastleTemplate _hayagakoi = CastleTemplate(
   name: '早囲い',
-  parent: '矢倉囲い',
   placements: <PiecePlacement>[
     PiecePlacement(6, 8, PieceType.king),
     PiecePlacement(7, 9, PieceType.gold),
@@ -217,14 +219,14 @@ const CastleTemplate _hayagakoi = CastleTemplate(
 );
 
 // --- 美濃系 ----------------------------------------------------------------
-// 親カテゴリ。3八玉・4八金 を骨格とした振り飛車の基本囲い。
+// 親カテゴリ。3八玉系の振り飛車基本囲いの総称。子テンプレで金/銀の位置は
+// 揺れる (本美濃の 4八金 vs 高美濃の 4七金、本美濃の 3九銀 vs 高美濃の 3七銀
+// 等) ため、骨格は玉の位置のみとする。
 const CastleTemplate _minoFamily = CastleTemplate(
   name: '美濃囲い',
   aliases: <String>['美濃'],
   placements: <PiecePlacement>[
     PiecePlacement(3, 8, PieceType.king),
-    PiecePlacement(4, 8, PieceType.gold),
-    PiecePlacement(3, 9, PieceType.silver),
   ],
 );
 
@@ -326,9 +328,9 @@ const CastleTemplate _kimuraMino = CastleTemplate(
 );
 
 /// 左美濃: 居飛車側の美濃。玉は 7八/8八、金 6八・5九。対振り飛車急戦/持久戦両対応。
+/// 玉が 7八 で振り飛車の美濃 (3八玉) と subset 関係を結ばないため parent なし。
 const CastleTemplate _hidariMino = CastleTemplate(
   name: '左美濃',
-  parent: '美濃囲い',
   placements: <PiecePlacement>[
     PiecePlacement(7, 8, PieceType.king),
     PiecePlacement(6, 8, PieceType.gold),
@@ -341,9 +343,9 @@ const CastleTemplate _hidariMino = CastleTemplate(
 );
 
 /// 天守閣美濃: 左美濃の玉を 8七まで上げた形。対四間飛車の代表的囲い。
+/// 玉が 8七 で振り飛車の美濃 (3八玉) と subset 関係を結ばないため parent なし。
 const CastleTemplate _tenshukakuMino = CastleTemplate(
   name: '天守閣美濃',
-  parent: '美濃囲い',
   placements: <PiecePlacement>[
     PiecePlacement(8, 7, PieceType.king),
     PiecePlacement(6, 8, PieceType.gold),
@@ -356,13 +358,14 @@ const CastleTemplate _tenshukakuMino = CastleTemplate(
 );
 
 // --- 穴熊系 ----------------------------------------------------------------
-// 親カテゴリ。香落とし or 玉香組み換えで端に玉を逃がした堅陣の総称。
+// 親カテゴリ。9九玉系の堅陣の総称 (居飛車穴熊・ビッグ4・松尾流穴熊・矢倉穴熊)。
+// 1九玉の振り飛車穴熊は別系統 (parent なし) として扱う。
+// 子テンプレで香位置等が揺れる可能性に備え骨格は玉のみ。
 const CastleTemplate _anagumaFamily = CastleTemplate(
   name: '穴熊囲い',
   aliases: <String>['穴熊'],
   placements: <PiecePlacement>[
     PiecePlacement(9, 9, PieceType.king),
-    PiecePlacement(9, 8, PieceType.lance),
   ],
 );
 
@@ -380,9 +383,9 @@ const CastleTemplate _ibishaAnaguma = CastleTemplate(
 );
 
 /// 振り飛車穴熊: 1九玉・1八香・2九金・2八銀。振り飛車側の居飛車穴熊。
+/// 玉が 1九 で 穴熊囲い (9九玉) と subset 関係を結ばないため parent なし。
 const CastleTemplate _furibishaAnaguma = CastleTemplate(
   name: '振り飛車穴熊',
-  parent: '穴熊囲い',
   placements: <PiecePlacement>[
     PiecePlacement(1, 9, PieceType.king),
     PiecePlacement(1, 8, PieceType.lance),
