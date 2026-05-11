@@ -59,7 +59,6 @@ jobs:
                }' coverage/lcov.info | sort
 
       - name: Upload coverage artifact
-        if: ${{ !env.ACT }}
         uses: actions/upload-artifact@v4
         with:
           name: coverage-lcov
