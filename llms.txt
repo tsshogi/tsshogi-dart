@@ -1,0 +1,93 @@
+# tsshogi (Dart port)
+
+> Japanese shogi (将棋) library for Dart. Port of the TypeScript library
+> [sunfish-shogi/tsshogi](https://github.com/sunfish-shogi/tsshogi) plus
+> castle / strategy / technique detection ported from
+> [akicho8/bioshogi](https://github.com/akicho8/bioshogi). MIT license.
+
+Use the documents below to integrate this package. The single-file
+context dump under `docs/llm-context.md` is the recommended starting
+point for any LLM coding assistant.
+
+## Setup
+
+- [README.md](README.md): user-facing setup, dependency snippet, license.
+- [pubspec.yaml](pubspec.yaml): package metadata (name, version 2.3.2,
+  Dart SDK ^3.4.0, dev deps only).
+
+## Comprehensive context (load this first)
+
+- [docs/llm-context.md](docs/llm-context.md): single-file dump intended
+  for LLM context. Covers public API, data model, examples, gotchas.
+
+## Public API surface
+
+- [lib/tsshogi.dart](lib/tsshogi.dart): barrel of public exports.
+- [lib/src/position.dart](lib/src/position.dart): `Position` /
+  `ImmutablePosition` — board, hands, SFEN, doMove, isValidMove,
+  legal-move helpers, jishogi scoring.
+- [lib/src/record.dart](lib/src/record.dart): `Record` /
+  `ImmutableRecord` — kifu tree, branches, USI / USEN serialization,
+  metadata, events.
+- [lib/src/move.dart](lib/src/move.dart): `Move`, `SpecialMove` family,
+  `parseUSIMove`, `areSameMoves`.
+- [lib/src/board.dart](lib/src/board.dart), [lib/src/hand.dart](lib/src/hand.dart):
+  read-only and mutable views of board and hand state.
+- [lib/src/square.dart](lib/src/square.dart),
+  [lib/src/piece.dart](lib/src/piece.dart),
+  [lib/src/color.dart](lib/src/color.dart),
+  [lib/src/direction.dart](lib/src/direction.dart): primitives.
+- [lib/src/castle.dart](lib/src/castle.dart): castle detection — the
+  `CastleRequirement` sealed family (PiecePlacement / AnyOfPieces /
+  EmptySquare / NotOfPieces / AnyPiece / PieceAnywhere / HandPiece /
+  PieceUnmoved / PieceVisited / KingIgyoku), `detectCastles`,
+  `record.castles` extension.
+- [lib/src/strategy.dart](lib/src/strategy.dart): strategy detection
+  reusing the castle requirement engine. `detectStrategies`,
+  `record.strategies`.
+- [lib/src/technique.dart](lib/src/technique.dart): tactical pattern
+  detection (per-move predicate model). `detectTechniques`,
+  `record.techniques`.
+- [lib/src/move_history.dart](lib/src/move_history.dart): MoveHistory
+  tracker used by history-dependent requirements (outbreak_turn,
+  kingFirstMovedTurn, visited squares).
+
+## Data sources (editable)
+
+- [data/castles.txt](data/castles.txt): 113 castle templates (ASCII
+  grid + headers). Edit this, regenerate Dart with
+  `dart run tool/generate_castles.dart`.
+- [data/strategies.txt](data/strategies.txt): 241 strategy templates.
+  Regenerate with `dart run tool/generate_strategies.dart`.
+
+## Codegen tooling
+
+- [tool/template_parser.dart](tool/template_parser.dart): ASCII format
+  parser (cell tokens, header lines).
+- [tool/generate_castles.dart](tool/generate_castles.dart),
+  [tool/generate_strategies.dart](tool/generate_strategies.dart):
+  ASCII → `lib/src/generated/*.g.dart` generators.
+- [tool/import_bioshogi.dart](tool/import_bioshogi.dart): one-shot
+  importer reading bioshogi's Ruby source. Names + coordinates only,
+  no expression copy.
+
+## Plans / coverage notes
+
+- [docs/plans/tsshogi-dart-port.md](docs/plans/tsshogi-dart-port.md):
+  original port plan (what's done / what's deferred to Phase 3+).
+- [docs/plans/castle-detection.md](docs/plans/castle-detection.md):
+  castle detection design.
+- [docs/plans/strategy-technique-detection.md](docs/plans/strategy-technique-detection.md):
+  strategy + technique design.
+- [docs/technique-coverage.md](docs/technique-coverage.md): per-technique
+  status (94 implemented, 43 skipped, ~20 FIXME).
+
+## Optional
+
+- [test/](test/): all test files. Useful as executable examples.
+- [bin/check_detection.dart](bin/check_detection.dart): dev script that
+  runs detection on sample USIs.
+
+## License
+
+- [LICENSE](LICENSE): MIT (preserves upstream tsshogi copyright).
