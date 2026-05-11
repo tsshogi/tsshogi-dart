@@ -257,7 +257,10 @@ workers/db/src/generated/
 workers/app/public/commits.json
 
 # Large SFEN dataset files
-data/
+data/*
+# 例外: ASCII テンプレ source-of-truth (codegen 入力) は追跡する
+!data/castles.txt
+!data/strategies.txt
 
 # Dart / Flutter
 .dart_tool/
