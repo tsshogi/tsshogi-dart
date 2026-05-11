@@ -82,11 +82,16 @@ class MoveHistory {
     (_visited[key] ??= <Square>{}).add(move.to);
 
     final PieceType? captured = move.capturedPieceType;
-    if (captured != null &&
-        captured != PieceType.pawn &&
-        captured != PieceType.bishop &&
-        _outbreakTurn == null) {
-      _outbreakTurn = ply;
+    if (captured != null && _outbreakTurn == null) {
+      // bioshogi の `piece.key` は基底駒種を返す (馬→角、竜→飛、と→歩 等)。
+      // 取られた成駒も基底に戻してから「歩・角以外」を判定する。
+      //   pawn / promPawn → pawn (除外)
+      //   bishop / horse  → bishop (除外)
+      //   rook / dragon   → rook (outbreak 立つ)
+      final PieceType basic = unpromotedPieceType(captured);
+      if (basic != PieceType.pawn && basic != PieceType.bishop) {
+        _outbreakTurn = ply;
+      }
     }
   }
 
