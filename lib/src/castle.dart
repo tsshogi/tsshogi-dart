@@ -707,10 +707,14 @@ extension ImmutableRecordCastles on ImmutableRecord {
       node = node.next;
     }
 
-    // game-end フェーズ: 最終 MoveHistory に基づいて評価する。各陣営の
-    // 居玉 emission ply は「king が動いていればそのply、動いていなければ
-    // 棋譜の最終 ply」を採用する。これにより bioshogi の game-end tag に
-    // 近い、過剰検出のない結果が得られる。
+    // 既に検出されている囲い (per-ply emit 分) を陣営別に集計する。game-end
+    // フェーズの「居玉」系テンプレは、その陣営に他の囲いが何も無いときだ
+    // け emit する (他の囲いが組めていれば 居玉 は表示価値が薄いため)。
+    final Set<Color> sidesWithOtherCastle = <Color>{
+      for (final DetectedCastleAt d in results) d.side,
+    };
+
+    // game-end フェーズ: 最終 MoveHistory に基づいて評価する。
     //
     // ply 0 (= 初期局面のみ、指し手が 1 つもない記録) は走査対象外なので
     // game-end フェーズ自体も実行しない (`lastPly == 0` で skip)。
@@ -718,6 +722,9 @@ extension ImmutableRecordCastles on ImmutableRecord {
       for (final CastleTemplate template in knownCastles) {
         if (!template.evaluateAtGameEnd) continue;
         for (final Color side in const <Color>[Color.black, Color.white]) {
+          // 同陣営に既に「ちゃんとした囲い」(per-ply 検出のもの) があれば、
+          // game-end の 居玉 は emit しない。
+          if (sidesWithOtherCastle.contains(side)) continue;
           if (!_matchesTemplate(pos, template, side, history: history)) {
             continue;
           }
