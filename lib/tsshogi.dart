@@ -21,3 +21,4 @@ export 'src/board.dart';
 export 'src/hand.dart';
 export 'src/position.dart';
 export 'src/record.dart';
+export 'src/castle.dart';
