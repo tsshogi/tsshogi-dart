@@ -143,11 +143,16 @@ List<TechniqueTemplate> detectTechniquesAtMove(
   ];
 }
 
-/// 棋譜全体を走査して各手で発動した手筋を集める。
+/// 棋譜全体を走査して各手で発動した手筋を集める (重複あり版)。
 ///
 /// 走査経路はアクティブブランチに従う ([Record.first.next] から線形)。
 /// 分岐は辿らない。各手は `Position.doMove(..., ignoreValidation: true)` で
 /// 適用するため、合法性チェックは行わない。
+///
+/// **重複あり**: 同じ手筋が複数手で発動すれば、その都度報告する。
+/// 「たすきの銀」のように頻発する手筋は全 ply 分エントリが出る。
+/// 「最初の 1 回だけ報告」が欲しい場合は [detectTechniquesFirstOccurrence] か
+/// `record.techniques` (デフォルトは first-occurrence) を使う。
 List<DetectedTechnique> detectTechniques(ImmutableRecord record) {
   final List<DetectedTechnique> results = <DetectedTechnique>[];
   final Position pos = record.initialPosition.clone();
@@ -173,8 +178,44 @@ List<DetectedTechnique> detectTechniques(ImmutableRecord record) {
   return results;
 }
 
+/// 棋譜全体を走査し、各 (テンプレ名, 陣営) を **最初に発動した 1 回だけ**
+/// 報告する。同じ手筋が後続の手で再発動しても無視する (snapshot 重複防止)。
+List<DetectedTechnique> detectTechniquesFirstOccurrence(
+    ImmutableRecord record) {
+  final List<DetectedTechnique> results = <DetectedTechnique>[];
+  final Set<String> seen = <String>{};
+  final Position pos = record.initialPosition.clone();
+  ImmutableNode? node = record.first.next;
+  while (node != null) {
+    final Object raw = node.move;
+    if (raw is Move) {
+      final ImmutablePosition before = pos.clone();
+      pos.doMove(raw, ignoreValidation: true);
+      final ImmutablePosition after = pos.clone();
+      for (final TechniqueTemplate t in knownTechniques) {
+        if (!t.matches(raw, before, after)) continue;
+        final String key = '${t.name}|${raw.color.value}';
+        if (!seen.add(key)) continue;
+        results.add(DetectedTechnique(
+          template: t,
+          ply: node.ply,
+          color: raw.color,
+        ));
+      }
+    }
+    node = node.next;
+  }
+  return results;
+}
+
 /// 棋譜からの手筋検出ユーティリティ。プロパティ形式で
 /// `record.techniques` のように呼べる。
+///
+/// **デフォルトは first-occurrence**: 同じ (手筋, 陣営) は最初の 1 回のみ
+/// 報告する。たすきの銀のように繰り返し発動する手筋でもエントリは 1 件
+/// になる。
+///
+/// 全発動を取得したい場合は [detectTechniques] を直接呼ぶ。
 ///
 /// ```dart
 /// final r = Record.newByUSI(usi)!;
@@ -183,8 +224,10 @@ List<DetectedTechnique> detectTechniques(ImmutableRecord record) {
 /// }
 /// ```
 extension ImmutableRecordTechniques on ImmutableRecord {
-  /// この棋譜のアクティブブランチを走査し、各手で発動した手筋を返す。
-  List<DetectedTechnique> get techniques => detectTechniques(this);
+  /// この棋譜のアクティブブランチを走査し、各 (手筋, 陣営) を最初の 1 回
+  /// だけ返す。
+  List<DetectedTechnique> get techniques =>
+      detectTechniquesFirstOccurrence(this);
 }
 
 // ---------------------------------------------------------------------------

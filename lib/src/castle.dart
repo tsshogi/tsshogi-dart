@@ -479,8 +479,10 @@ class DetectedCastleAt {
 extension ImmutableRecordCastles on ImmutableRecord {
   /// アクティブブランチを走査し、初めて成立した囲いを ply 順に返す。
   ///
-  /// ply 制約 (`plyEq` / `plyMax`) を持つテンプレートは、各 ply で制約を満
-  /// たすときのみ評価される。
+  /// - ply 0 (初期局面) は走査対象外。最初の指し手以降のみ評価する。
+  /// - ply 制約 (`plyEq` / `plyMax`) を持つテンプレートは、各 ply で制約
+  ///   を満たすときのみ評価される。
+  /// - 同じ (テンプレ名, 陣営) は最初の 1 回のみ報告 (snapshot 重複防止)。
   List<DetectedCastleAt> get castles {
     final List<DetectedCastleAt> results = <DetectedCastleAt>[];
     final Set<String> seen = <String>{};
@@ -515,7 +517,7 @@ extension ImmutableRecordCastles on ImmutableRecord {
     }
 
     final Position pos = initialPosition.clone();
-    emitAt(0, pos);
+    // ply 0 はスキップ。最初の指し手以降のみ評価する。
     ImmutableNode? node = first.next;
     while (node != null) {
       final Object raw = node.move;

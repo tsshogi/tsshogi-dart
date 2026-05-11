@@ -119,13 +119,15 @@ void main() {
   });
 
   group('record.castles (first-occurrence) getter', () {
-    test('居玉 は初期局面 ply 0 で 1 回だけ報告される', () {
+    test('居玉 は最初の指し手 (ply 1) で 1 回だけ報告される', () {
+      // ply 0 (初期局面) は走査対象外。最初の指し手以降から評価される
+      // ため、居玉 (初期玉位置) は ply 1 で初検出される。
       final Record r = Record.newByUSI('position startpos moves 7g7f 3c3d')!;
       final List<DetectedCastleAt> blackIgyoku = r.castles
           .where((c) => c.template.name == '居玉' && c.side == Color.black)
           .toList();
       expect(blackIgyoku.length, 1, reason: '居玉 (黒) は最初の 1 回だけ報告されるはず');
-      expect(blackIgyoku.first.ply, 0);
+      expect(blackIgyoku.first.ply, 1);
     });
 
     test('スナップショット (position.castles) は手数分繰り返し検出', () {
@@ -153,11 +155,11 @@ void main() {
       }
     });
 
-    test('空棋譜 = 初期局面の検出のみ', () {
+    test('空棋譜 (指し手なし) = 空リスト (ply 0 は走査対象外)', () {
+      // ply 0 はスキップする仕様のため、指し手のない Record では何も
+      // 検出されない。
       final Record r = Record();
-      final List<DetectedCastleAt> list = r.castles;
-      expect(list, isNotEmpty);
-      expect(list.every((c) => c.ply == 0), isTrue);
+      expect(r.castles, isEmpty);
     });
 
     test('DetectedCastleAt equality / hashCode', () {
@@ -194,10 +196,11 @@ void main() {
       expect(keys.length, list.length, reason: '同じ (テンプレ名, 陣営) が 2 回以上現れない');
     });
 
-    test('空棋譜 = 初期局面の検出のみ', () {
+    test('空棋譜 = 空リスト (ply 0 は走査対象外)', () {
+      // ply 0 はスキップする仕様のため、指し手のない Record では戦法も検出
+      // されない。
       final Record r = Record();
-      final List<DetectedStrategyAt> list = r.strategies;
-      expect(list.every((s) => s.ply == 0), isTrue);
+      expect(r.strategies, isEmpty);
     });
 
     test('DetectedStrategyAt equality / hashCode', () {
