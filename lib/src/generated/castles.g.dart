@@ -1433,8 +1433,9 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: '居玉',
+    evaluateAtGameEnd: true,
     placements: <CastleRequirement>[
-      PieceUnmoved(5, 9),
+      KingIgyoku(),
     ],
   ),
 ];

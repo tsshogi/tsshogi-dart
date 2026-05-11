@@ -23,6 +23,7 @@ import 'package:tsshogi/src/move_history.dart';
 import 'package:tsshogi/src/piece.dart';
 import 'package:tsshogi/src/position.dart';
 import 'package:tsshogi/src/record.dart';
+import 'package:tsshogi/src/square.dart';
 import 'package:tsshogi/src/strategy.dart';
 
 void main() {
@@ -45,7 +46,7 @@ void main() {
       // 7g7f (▲7六歩) を適用
       final Move? move = p.createMoveByUSI('7g7f');
       expect(move, isNotNull);
-      h.recordMove(move!);
+      h.recordMove(move!, 1);
       // 7g (7,7) から動いたので isUnmoved(black, 7, 7) は false
       expect(h.isUnmoved(Color.black, 7, 7), isFalse);
       // 動いていない別マス 7,8 (玉?ではないが) は依然 unmoved
@@ -78,7 +79,7 @@ void main() {
       final MoveHistory h = MoveHistory()..initFromPosition(p);
       final Move? move = p.createMoveByUSI('5i6h');
       expect(move, isNotNull);
-      h.recordMove(move!);
+      h.recordMove(move!, 1);
       p.doMove(move, ignoreValidation: true);
       expect(req.isSatisfiedBy(p, Color.black, h), isFalse);
       expect(req.isSatisfiedBy(p, Color.white, h), isTrue);
@@ -88,10 +89,12 @@ void main() {
       const PieceUnmoved req = PieceUnmoved(5, 9);
       final Position p = Position();
       final MoveHistory h = MoveHistory()..initFromPosition(p);
+      int ply = 0;
       for (final String usi in <String>['5i6h', '5a5b', '6h5i']) {
+        ply += 1;
         final Move? move = p.createMoveByUSI(usi);
         expect(move, isNotNull, reason: 'failed to parse $usi');
-        h.recordMove(move!);
+        h.recordMove(move!, ply);
         p.doMove(move, ignoreValidation: true);
       }
       // 黒玉は再び 5九 にあるが、過去に 5九 から動いた事実は消えない
@@ -111,10 +114,12 @@ void main() {
       final Position p = Position();
       final MoveHistory h = MoveHistory()..initFromPosition(p);
       // 飛車を 2八 → 6八 → 2八 と移動 (validation は無視)
+      int ply = 0;
       for (final String usi in <String>['2h6h', '3a3b', '6h2h']) {
+        ply += 1;
         final Move? move = p.createMoveByUSI(usi);
         expect(move, isNotNull);
-        h.recordMove(move!);
+        h.recordMove(move!, ply);
         p.doMove(move, ignoreValidation: true);
       }
       expect(req.isSatisfiedBy(p, Color.black, h), isTrue);
@@ -127,18 +132,83 @@ void main() {
       final Position p = Position();
       final MoveHistory h = MoveHistory()..initFromPosition(p);
       // 飛車を動かさず別の駒だけ進めた局面
+      int ply = 0;
       for (final String usi in <String>['7g7f', '3c3d']) {
+        ply += 1;
         final Move? move = p.createMoveByUSI(usi);
         expect(move, isNotNull);
-        h.recordMove(move!);
+        h.recordMove(move!, ply);
         p.doMove(move, ignoreValidation: true);
       }
       expect(req.isSatisfiedBy(p, Color.black, h), isFalse);
     });
   });
 
-  group('record.castles 居玉 (PieceUnmoved 統合)', () {
-    test('king が動かない短い棋譜 → 居玉 は黒/白それぞれ 1 回ずつ報告', () {
+  group('KingIgyoku unit', () {
+    test('history == null → 常に false', () {
+      const KingIgyoku req = KingIgyoku();
+      final Position p = Position();
+      expect(req.isSatisfiedBy(p, Color.black), isFalse);
+      expect(req.isSatisfiedBy(p, Color.black, null), isFalse);
+    });
+
+    test('king まだ動いていない (kingFirstMoved=null) → true', () {
+      const KingIgyoku req = KingIgyoku();
+      final Position p = Position();
+      final MoveHistory h = MoveHistory()..initFromPosition(p);
+      expect(req.isSatisfiedBy(p, Color.black, h), isTrue);
+      expect(req.isSatisfiedBy(p, Color.white, h), isTrue);
+    });
+
+    test('king が outbreak 前に動いた → false (戦いが起きる前に玉が動いた)', () {
+      const KingIgyoku req = KingIgyoku();
+      final Position p = Position();
+      final MoveHistory h = MoveHistory()..initFromPosition(p);
+      // 1 手目で黒玉が動く。outbreak は起きていない (capture 無し)。
+      final Move? move = p.createMoveByUSI('5i6h');
+      expect(move, isNotNull);
+      h.recordMove(move!, 1);
+      p.doMove(move, ignoreValidation: true);
+      expect(req.isSatisfiedBy(p, Color.black, h), isFalse);
+      // 白玉は動いていないので依然 true。
+      expect(req.isSatisfiedBy(p, Color.white, h), isTrue);
+    });
+
+    test('king が outbreak 後に動いた → true', () {
+      const KingIgyoku req = KingIgyoku();
+      final Position p = Position();
+      final MoveHistory h = MoveHistory()..initFromPosition(p);
+      // 銀を取る手で outbreak を起こす (capturedPieceType = silver)。
+      // 手筋に縛られず、Move を直接合成して capturedPieceType を渡す。
+      final Move silverCapture = Move(
+        FromSquare(Square(7, 8)),
+        Square(7, 1),
+        false,
+        Color.black,
+        PieceType.bishop,
+        PieceType.silver,
+      );
+      h.recordMove(silverCapture, 1);
+      expect(h.outbreakTurn, 1);
+      // その後で 玉を動かす (ply 5 とする)
+      final Move kingMove = Move(
+        FromSquare(Square(5, 9)),
+        Square(6, 8),
+        false,
+        Color.black,
+        PieceType.king,
+        null,
+      );
+      h.recordMove(kingMove, 5);
+      expect(h.kingFirstMovedTurn(Color.black), 5);
+      // 5 >= 1 なので 居玉 = true (戦いが激しくなってから動いた)
+      expect(req.isSatisfiedBy(p, Color.black, h), isTrue);
+    });
+  });
+
+  group('record.castles 居玉 (KingIgyoku + game-end 評価)', () {
+    test('king が動かない短い棋譜 → 居玉 は黒/白それぞれ 1 回ずつ報告 (最終 ply)', () {
+      // 4 手で双方の玉が動かない → 双方とも 居玉。emit ply は最終 ply (4)。
       final Record r = Record.newByUSI('startpos moves 7g7f 3c3d 2g2f 8c8d')!;
       final List<DetectedCastleAt> ig = r.castles
           .where((DetectedCastleAt c) => c.template.name == '居玉')
@@ -146,44 +216,37 @@ void main() {
       expect(ig.length, 2);
       expect(ig.map((DetectedCastleAt c) => c.side).toSet(),
           <Color>{Color.black, Color.white});
+      // game-end 評価なので emit ply は最終 ply (= 4)。
+      for (final DetectedCastleAt c in ig) {
+        expect(c.ply, 4, reason: '${c.side.value} 居玉 は最終 ply で 1 回 emit');
+      }
     });
 
-    test('5九玉を動かすと黒の 居玉 は出ない (5i6h が早期に入る棋譜)', () {
-      // 1 手目 5i6h: 黒玉が 5九 から動く → 黒 居玉 は永遠に発火しない。
-      // 白 居玉 は white-king が動かないため出る。
+    test('5九玉を動かすと黒の 居玉 は出ない (outbreak 起きない場合)', () {
+      // 1 手目 5i6h: 黒玉が 5九 から動く。outbreak は起きない (capture 無し)。
+      // → 黒は kingMoved=1, outbreak=null → 居玉 false。
+      // 白は king 動かない → 居玉 true (emit ply は最終 ply)。
       final Record r = Record.newByUSI('startpos moves 5i6h 3c3d 7g7f 8c8d')!;
       final List<DetectedCastleAt> ig = r.castles
           .where((DetectedCastleAt c) => c.template.name == '居玉')
           .toList();
-      // 黒は出ない、白だけ出る (ply=2 で初検出)
-      expect(ig.any((DetectedCastleAt c) => c.side == Color.black), isFalse);
-      expect(ig.any((DetectedCastleAt c) => c.side == Color.white), isTrue);
+      expect(ig.any((DetectedCastleAt c) => c.side == Color.black), isFalse,
+          reason: '黒玉は outbreak 前に動いたので 居玉 (黒) は出ない');
+      expect(ig.any((DetectedCastleAt c) => c.side == Color.white), isTrue,
+          reason: '白玉は動いていないので 居玉 (白) は出る');
     });
 
-    test('5i6h→5a5b→6h5i→5b5a と双方の玉が戻っても 居玉 はどちらも発火しない', () {
-      // 1 手目: 黒玉 5i→6h で sourceTouched に (black, 5九) が入る。以後
-      //   PieceUnmoved(5, 9, black) は永遠に false。
-      // 2 手目: 白玉 5a→5b で sourceTouched に (white, 5一) が入る。以後
-      //   PieceUnmoved(5, 9, white) (= 5一 mirror) も永遠に false。
-      // ply 1 評価時点で black は既に false、white は true (まだ動いてない)
-      // のに見えるが、record.castles は emitAt を doMove + recordMove の
-      // 「後」で呼ぶため、ply 1 評価時点で「直前の指し手」の history は反映
-      // 済み。白玉はまだ ply 2 まで動かないので ply 1 で white 居玉 が出る。
-      // 結局この棋譜では:
-      //   ply 1: black=false, white=true → white 居玉 だけ出る
-      //   ply 2: black=false, white=false → 既出なので追加なし
+    test('双方の玉が outbreak 前に動く → 居玉 はどちらも発火しない', () {
+      // 5i6h→5a5b→6h5i→5b5a (capture 無し) → 黒/白とも king 動いて
+      // outbreak null → 双方 false。
       final Record r = Record.newByUSI('startpos moves 5i6h 5a5b 6h5i 5b5a')!;
       final List<DetectedCastleAt> ig = r.castles
           .where((DetectedCastleAt c) => c.template.name == '居玉')
           .toList();
-      // 黒は ply 1 で既に動いたので決して出ない
       expect(ig.any((DetectedCastleAt c) => c.side == Color.black), isFalse,
-          reason: '黒玉は ply 1 で 5九 を離れたので 居玉 (黒) は永久に出ない');
-      // 白は ply 1 ではまだ 5一 に居る (1 手目は黒の手) → 1 回出る
-      // (この時点で seen に登録され、ply 2 以降の動きで状態が崩れても再評価
-      //  は first-occurrence なので影響しない)
-      expect(ig.any((DetectedCastleAt c) => c.side == Color.white), isTrue,
-          reason: '白玉は ply 1 評価時点でまだ動いていないので white 居玉 は出る');
+          reason: '黒玉は outbreak 前に動いたので 居玉 (黒) は出ない');
+      expect(ig.any((DetectedCastleAt c) => c.side == Color.white), isFalse,
+          reason: '白玉も outbreak 前に動いたので 居玉 (白) も出ない');
     });
   });
 
@@ -240,19 +303,22 @@ void main() {
           reason: '黒は飛車が 2筋から動かず、白は 8b4b で 4二 のままなので、どちらも visited 全制約は満たさない');
     });
 
-    test('居玉 は ply 1 で黒/白それぞれ 1 回ずつ報告される', () {
-      // 黒は 5i6h で 11 手目に king が動くが、それ以前 (1〜10手目) は 5九 玉
-      // 維持なので first-occurrence で ply=1 報告。
-      // 白は 5a6b で 6 手目に king が動くが、同様に ply=1 で初検出済み。
+    test('居玉 は両陣営とも発火しない (bioshogi 同等)', () {
+      // 40 手棋譜の特性:
+      // - 黒は 5i6h で 11 手目に king が動く (capture 無し → outbreak 起きない)
+      // - 白は 5a6b で 6 手目に king が動く (同上)
+      // - 駒交換が起きていない (歩・角以外の駒が取られていない) ので
+      //   outbreak_turn = null
+      // 結果: 黒は kingMoved=11, outbreak=null → 居玉 false
+      //       白は kingMoved=6,  outbreak=null → 居玉 false
+      // 両陣営とも 居玉 は emit されない (bioshogi の挙動と一致)。
       final Record? r = Record.newByUSI(usi);
       expect(r, isNotNull);
       final List<DetectedCastleAt> hits = r!.castles
           .where((DetectedCastleAt c) => c.template.name == '居玉')
           .toList();
-      expect(hits.length, 2);
-      for (final DetectedCastleAt h in hits) {
-        expect(h.ply, 1, reason: '${h.side.value} 居玉 は ply 1 で初検出');
-      }
+      expect(hits, isEmpty,
+          reason: 'outbreak が起きていない + king が早期に動いた → 居玉 は両陣営とも発火しない');
     });
   });
 }

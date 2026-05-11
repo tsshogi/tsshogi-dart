@@ -50,6 +50,9 @@ String generateCastleDart(List<ParsedTemplate> templates) {
     if (t.plyMax != null) {
       buf.writeln('    plyMax: ${t.plyMax},');
     }
+    if (t.evaluateAtGameEnd) {
+      buf.writeln('    evaluateAtGameEnd: true,');
+    }
     if (t.placements.isEmpty) {
       buf.writeln('    placements: <CastleRequirement>[],');
     } else {
@@ -95,6 +98,8 @@ String _formatPlacement(PlacementCell p) {
     case 'pieceVisited':
       final String name = p.pieceTypes.single;
       return 'PieceVisited(${p.file}, ${p.rank}, PieceType.$name)';
+    case 'kingIgyoku':
+      return 'KingIgyoku()';
     default:
       throw ArgumentError('unsupported placement kind: ${p.kind}');
   }

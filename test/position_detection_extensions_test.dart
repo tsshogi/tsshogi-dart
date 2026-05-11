@@ -121,21 +121,22 @@ void main() {
   });
 
   group('record.castles (first-occurrence) getter', () {
-    test('居玉 は最初の指し手 (ply 1) で 1 回だけ報告される', () {
-      // ply 0 (初期局面) は走査対象外。最初の指し手以降から評価される
-      // ため、居玉 (初期玉位置) は ply 1 で初検出される。
+    test('居玉 は棋譜の最終 ply で 1 回だけ報告される (king 未動の場合)', () {
+      // 居玉 は evaluateAtGameEnd 評価なので、king が動かなければ最終 ply
+      // で 1 度だけ emit される。"position startpos moves 7g7f 3c3d" の
+      // 最終 ply は 2。
       final Record r = Record.newByUSI('position startpos moves 7g7f 3c3d')!;
       final List<DetectedCastleAt> blackIgyoku = r.castles
           .where((c) => c.template.name == '居玉' && c.side == Color.black)
           .toList();
-      expect(blackIgyoku.length, 1, reason: '居玉 (黒) は最初の 1 回だけ報告されるはず');
-      expect(blackIgyoku.first.ply, 1);
+      expect(blackIgyoku.length, 1, reason: '居玉 (黒) は最後に 1 回だけ報告されるはず');
+      expect(blackIgyoku.first.ply, 2);
     });
 
     test('履歴依存 居玉 は record.castles では 1 回ずつ報告される', () {
       // position.castles では 居玉 (履歴依存) は出ない。record.castles は
-      // 履歴を保持しているため、初手以降ずっと玉が動いてない陣営にだけ
-      // 1 回ずつ報告される。
+      // 履歴を保持しているため、game-end 評価で双方の玉が動いていない
+      // 陣営にだけ 1 回ずつ報告される。
       final Record r = Record.newByUSI('position startpos moves 7g7f 3c3d')!;
       // position 単体では出ない
       expect(r.initialPosition.castles.any((c) => c.template.name == '居玉'),

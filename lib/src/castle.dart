@@ -325,6 +325,45 @@ class PieceUnmoved extends CastleRequirement {
   int get hashCode => Object.hash('PieceUnmoved', file, rank);
 }
 
+/// 居玉 (bioshogi 同等の判定)。
+///
+/// 「玉が一度も動いていない」OR「玉の最初の移動が outbreak (歩・角以外の
+/// 駒が初めて取られた手) 以降」の場合に満たされる。"戦いが始まるまで玉を
+/// 囲わなかった" 状況を含めて評価する。
+///
+/// 履歴情報 (`MoveHistory`) が無い (=`null`) 場合は常に `false` を返す。
+///
+/// 判定ロジック (per-ply 呼び出し前提):
+/// - `kingFirstMovedTurn(side)` が `null` → `true` (まだ動いていない)
+/// - `outbreakTurn` が `null` AND king は既に動いている → `false`
+///   (戦いが始まる前に玉が動いた = 居玉ではない)
+/// - `kingFirstMovedTurn(side) >= outbreakTurn` → `true`
+/// - それ以外 → `false`
+///
+/// 注: 本要件を含むテンプレートは `evaluateAtGameEnd: true` でマークすべき
+/// で、`record.castles` / `record.strategies` の game-end 評価フェーズで
+/// 最終状態に基づいて判定される。
+class KingIgyoku extends CastleRequirement {
+  const KingIgyoku();
+
+  @override
+  bool isSatisfiedBy(ImmutablePosition position, Color side,
+      [MoveHistory? history]) {
+    if (history == null) return false;
+    final int? kingMoved = history.kingFirstMovedTurn(side);
+    if (kingMoved == null) return true;
+    final int? outbreak = history.outbreakTurn;
+    if (outbreak == null) return false;
+    return kingMoved >= outbreak;
+  }
+
+  @override
+  bool operator ==(Object other) => other is KingIgyoku;
+
+  @override
+  int get hashCode => Object.hash('KingIgyoku', 0);
+}
+
 /// [side] の [pieceType] が指定マスを過去に通過したことを要求する履歴依存
 /// 要件。
 ///
@@ -379,6 +418,7 @@ class CastleTemplate {
     this.parent,
     this.plyEq,
     this.plyMax,
+    this.evaluateAtGameEnd = false,
   });
 
   /// 囲い名 (例: '金矢倉')
@@ -413,10 +453,19 @@ class CastleTemplate {
   /// このテンプレートが ply 制約 (`plyEq` または `plyMax`) を持つかを返す。
   bool get hasPlyConstraint => plyEq != null || plyMax != null;
 
-  /// このテンプレートが履歴依存要件 (`PieceUnmoved` または `PieceVisited`) を
-  /// 含むかを返す。`true` の場合、位置ベース検出
+  /// このテンプレートが履歴依存要件 (`PieceUnmoved` / `PieceVisited` /
+  /// `KingIgyoku`) を含むかを返す。`true` の場合、位置ベース検出
   /// (`detectCastles(position)`) では常にスキップされる。
   bool get hasHistoryRequirement => _hasHistoryRequirement(placements);
+
+  /// このテンプレートを「棋譜の最終手まで評価を遅延し、最終状態で 1 度だけ
+  /// 判定する」べきかを示すフラグ。
+  ///
+  /// `KingIgyoku` のように「最終状態 (= ゲーム終了時の MoveHistory) でしか
+  /// 厳密に判定できない」要件を持つテンプレートに付与する。`record.castles`
+  /// / `record.strategies` の per-ply 評価では本フラグが立っているテンプレ
+  /// ートはスキップし、走査終了後に 1 度だけ評価して emit する。
+  final bool evaluateAtGameEnd;
 
   /// 与えられた手数 [ply] でこのテンプレートが満たすべき ply 制約を満たすか。
   bool satisfiesPlyConstraint(int ply) {
@@ -429,7 +478,9 @@ class CastleTemplate {
 /// 任意の placement 列が履歴依存要件を含むかを返す内部ヘルパ。
 bool _hasHistoryRequirement(List<CastleRequirement> placements) {
   for (final CastleRequirement req in placements) {
-    if (req is PieceUnmoved || req is PieceVisited) return true;
+    if (req is PieceUnmoved || req is PieceVisited || req is KingIgyoku) {
+      return true;
+    }
   }
   return false;
 }
@@ -591,6 +642,8 @@ extension ImmutableRecordCastles on ImmutableRecord {
   /// - ply 制約 (`plyEq` / `plyMax`) を持つテンプレートは、各 ply で制約
   ///   を満たすときのみ評価される。
   /// - 同じ (テンプレ名, 陣営) は最初の 1 回のみ報告 (snapshot 重複防止)。
+  /// - `evaluateAtGameEnd: true` を持つテンプレ (例: 居玉) は per-ply
+  ///   評価をスキップし、走査終了後の最終 ply で 1 度だけ評価する。
   List<DetectedCastleAt> get castles {
     final List<DetectedCastleAt> results = <DetectedCastleAt>[];
     final Set<String> seen = <String>{};
@@ -610,7 +663,9 @@ extension ImmutableRecordCastles on ImmutableRecord {
         }
       }
       // 2. ply 制約付き / 履歴依存テンプレートは個別に評価。
+      //    ただし evaluateAtGameEnd のものは per-ply で評価しない。
       for (final CastleTemplate template in knownCastles) {
+        if (template.evaluateAtGameEnd) continue;
         if (!template.hasPlyConstraint && !template.hasHistoryRequirement) {
           continue;
         }
@@ -637,17 +692,46 @@ extension ImmutableRecordCastles on ImmutableRecord {
     final Position pos = initialPosition.clone();
     // ply 0 はスキップ。最初の指し手以降のみ評価する。
     ImmutableNode? node = first.next;
+    int lastPly = 0;
     while (node != null) {
       final Object raw = node.move;
       if (raw is Move) {
         // 履歴は doMove の前に記録する: PieceUnmoved は「from」が
         // sourceTouched に居ない (まだ動いていない) ことを判定するため、
         // 動かす直前のマス情報を必要とする。
-        history.recordMove(raw);
+        history.recordMove(raw, node.ply);
         pos.doMove(raw, ignoreValidation: true);
         emitAt(node.ply, pos);
+        lastPly = node.ply;
       }
       node = node.next;
+    }
+
+    // game-end フェーズ: 最終 MoveHistory に基づいて評価する。各陣営の
+    // 居玉 emission ply は「king が動いていればそのply、動いていなければ
+    // 棋譜の最終 ply」を採用する。これにより bioshogi の game-end tag に
+    // 近い、過剰検出のない結果が得られる。
+    //
+    // ply 0 (= 初期局面のみ、指し手が 1 つもない記録) は走査対象外なので
+    // game-end フェーズ自体も実行しない (`lastPly == 0` で skip)。
+    if (lastPly > 0) {
+      for (final CastleTemplate template in knownCastles) {
+        if (!template.evaluateAtGameEnd) continue;
+        for (final Color side in const <Color>[Color.black, Color.white]) {
+          if (!_matchesTemplate(pos, template, side, history: history)) {
+            continue;
+          }
+          final String key = '${template.name}|${side.value}';
+          if (!seen.add(key)) continue;
+          final int? kingMoved = history.kingFirstMovedTurn(side);
+          final int emitPly = kingMoved ?? lastPly;
+          results.add(DetectedCastleAt(
+            template: template,
+            side: side,
+            ply: emitPly,
+          ));
+        }
+      }
     }
     return results;
   }

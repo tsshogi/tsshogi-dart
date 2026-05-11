@@ -106,6 +106,9 @@ void _placeTemplate(Position position, CastleTemplate template, Color side) {
       case PieceVisited():
         // 同上。
         break;
+      case KingIgyoku():
+        // 居玉も同上 — 履歴依存。
+        break;
     }
   }
 }
@@ -845,7 +848,8 @@ void main() {
             PieceAnywhere() ||
             HandPiece() ||
             PieceUnmoved() ||
-            PieceVisited() =>
+            PieceVisited() ||
+            KingIgyoku() =>
               null,
           };
           if (coord == null) continue;
@@ -896,7 +900,8 @@ void main() {
             PieceAnywhere() ||
             HandPiece() ||
             PieceUnmoved() ||
-            PieceVisited() =>
+            PieceVisited() ||
+            KingIgyoku() =>
               null,
           };
           if (coord == null) continue;
@@ -945,7 +950,8 @@ void main() {
             PieceAnywhere() ||
             HandPiece() ||
             PieceUnmoved() ||
-            PieceVisited() =>
+            PieceVisited() ||
+            KingIgyoku() =>
               null,
           };
       bool isParentReqSatisfiedBy(

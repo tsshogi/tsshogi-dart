@@ -108,6 +108,8 @@ void _placeStrategy(Position position, StrategyTemplate template, Color side) {
         break;
       case PieceVisited():
         break;
+      case KingIgyoku():
+        break;
     }
   }
 }
@@ -471,6 +473,7 @@ void main() {
             HandPiece() => null,
             PieceUnmoved() => null,
             PieceVisited() => null,
+            KingIgyoku() => null,
           };
           if (coord == null) continue;
           expect(

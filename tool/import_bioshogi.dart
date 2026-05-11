@@ -469,6 +469,8 @@ String _formatTemplate({
   if (side != null) buf.writeln('side: $side');
   final String? plyLine = formatPlyHeader(plyEq: plyEq, plyMax: plyMax);
   if (plyLine != null) buf.writeln(plyLine);
+  final String? igyokuLine = formatIgyokuHeader(cells);
+  if (igyokuLine != null) buf.writeln(igyokuLine);
   for (final String line in formatUnmovedHeaders(cells)) {
     buf.writeln(line);
   }
@@ -486,7 +488,8 @@ String _formatTemplate({
     if (p.kind == 'pieceAnywhere' ||
         p.kind == 'handPiece' ||
         p.kind == 'pieceUnmoved' ||
-        p.kind == 'pieceVisited') {
+        p.kind == 'pieceVisited' ||
+        p.kind == 'kingIgyoku') {
       continue;
     }
     final int rowIdx = p.rank - 1;
@@ -631,9 +634,10 @@ void main(List<String> args) {
   // 居玉 は shape_info に無いが、defense_info にあり、テストや UX 上重要
   // なので合成テンプレートで追加する。
   //
-  // 居玉 = 玉が初期マス (先手なら 5九) から一度も動いていない状態。盤上の
-  // K@5九 という静的条件だと「動いて戻った」も誤検出するため、履歴依存の
-  // PieceUnmoved 要件で表現する。
+  // bioshogi 同等の判定:「玉が一度も動いていない」OR「玉の最初の移動が
+  // outbreak (歩・角以外が初めて取られた手) 以降」。`KingIgyoku()` 要件
+  // 1 つで表現し、評価は per-ply ではなく game-end に遅延する
+  // (evaluate_at_game_end は parser が igyoku: true から自動的に立てる)。
   bool emittedIgyoku = false;
   void emitIgyoku() {
     if (emittedIgyoku) return;
@@ -644,7 +648,7 @@ void main(List<String> args) {
       aliases: const <String>[],
       side: null,
       cells: <PlacementCell>[
-        PlacementCell(kind: 'pieceUnmoved', file: 5, rank: 9),
+        PlacementCell(kind: 'kingIgyoku'),
       ],
     ));
     castleCount++;

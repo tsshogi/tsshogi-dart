@@ -33,6 +33,8 @@ void main() {
     if (boardLine != null) buf.writeln(boardLine);
     final String? handLine = formatHandHeader(cells);
     if (handLine != null) buf.writeln(handLine);
+    final String? igyokuLine = formatIgyokuHeader(cells);
+    if (igyokuLine != null) buf.writeln(igyokuLine);
     for (final String line in formatUnmovedHeaders(cells)) {
       buf.writeln(line);
     }
@@ -117,6 +119,8 @@ List<PlacementCell> _toCells(List<CastleRequirement> placements) {
           rank: req.rank,
           pieceTypes: <String>[req.pieceType.name],
         ));
+      case KingIgyoku():
+        out.add(PlacementCell(kind: 'kingIgyoku'));
     }
   }
   return out;

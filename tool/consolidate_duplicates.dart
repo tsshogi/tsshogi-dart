@@ -140,6 +140,12 @@ String _signature(ParsedTemplate t) {
         return 'board,${c.pieceTypes.single}';
       case 'handPiece':
         return 'hand,${c.pieceTypes.single},${c.minCount}';
+      case 'pieceUnmoved':
+        return 'unmoved,${c.file},${c.rank}';
+      case 'pieceVisited':
+        return 'visited,${c.file},${c.rank},${c.pieceTypes.single}';
+      case 'kingIgyoku':
+        return 'kingIgyoku';
       default:
         throw ArgumentError('unknown kind: ${c.kind}');
     }

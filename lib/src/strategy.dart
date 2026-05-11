@@ -50,6 +50,7 @@ class StrategyTemplate {
     this.parent,
     this.plyEq,
     this.plyMax,
+    this.evaluateAtGameEnd = false,
   });
 
   /// 戦法名 (例: '四間飛車')
@@ -87,15 +88,22 @@ class StrategyTemplate {
   /// このテンプレートが ply 制約 (`plyEq` または `plyMax`) を持つかを返す。
   bool get hasPlyConstraint => plyEq != null || plyMax != null;
 
-  /// このテンプレートが履歴依存要件 (`PieceUnmoved` または `PieceVisited`) を
-  /// 含むかを返す。`true` の場合、位置ベース検出
+  /// このテンプレートが履歴依存要件 (`PieceUnmoved` / `PieceVisited` /
+  /// `KingIgyoku`) を含むかを返す。`true` の場合、位置ベース検出
   /// (`detectStrategies(position)`) では常にスキップされる。
   bool get hasHistoryRequirement {
     for (final CastleRequirement req in placements) {
-      if (req is PieceUnmoved || req is PieceVisited) return true;
+      if (req is PieceUnmoved || req is PieceVisited || req is KingIgyoku) {
+        return true;
+      }
     }
     return false;
   }
+
+  /// このテンプレートを「棋譜の最終手まで評価を遅延し、最終状態で 1 度だけ
+  /// 判定する」べきかを示すフラグ。詳細は [CastleTemplate.evaluateAtGameEnd]
+  /// を参照。
+  final bool evaluateAtGameEnd;
 
   /// 与えられた手数 [ply] でこのテンプレートが ply 制約を満たすか。
   bool satisfiesPlyConstraint(int ply) {
@@ -264,7 +272,9 @@ extension ImmutableRecordStrategies on ImmutableRecord {
         }
       }
       // 2. ply 制約付き / 履歴依存テンプレートは個別に評価。
+      //    ただし evaluateAtGameEnd のものは per-ply で評価しない。
       for (final StrategyTemplate template in knownStrategies) {
+        if (template.evaluateAtGameEnd) continue;
         if (!template.hasPlyConstraint && !template.hasHistoryRequirement) {
           continue;
         }
@@ -292,14 +302,40 @@ extension ImmutableRecordStrategies on ImmutableRecord {
     final Position pos = initialPosition.clone();
     // ply 0 はスキップ。最初の指し手以降のみ評価する。
     ImmutableNode? node = first.next;
+    int lastPly = 0;
     while (node != null) {
       final Object raw = node.move;
       if (raw is Move) {
-        history.recordMove(raw);
+        history.recordMove(raw, node.ply);
         pos.doMove(raw, ignoreValidation: true);
         emitAt(node.ply, pos);
+        lastPly = node.ply;
       }
       node = node.next;
+    }
+
+    // game-end フェーズ: 最終 MoveHistory に基づいて 1 度だけ評価する。
+    // 居玉 を持つ戦法テンプレートが該当する場合の挙動を castle.dart 側と
+    // 揃える。`lastPly == 0` のとき (= 指し手 0) は走査対象外なので skip。
+    if (lastPly > 0) {
+      for (final StrategyTemplate template in knownStrategies) {
+        if (!template.evaluateAtGameEnd) continue;
+        for (final Color side in const <Color>[Color.black, Color.white]) {
+          if (!_matchesStrategyTemplate(pos, template, side,
+              history: history)) {
+            continue;
+          }
+          final String key = '${template.name}|${side.value}';
+          if (!seen.add(key)) continue;
+          final int? kingMoved = history.kingFirstMovedTurn(side);
+          final int emitPly = kingMoved ?? lastPly;
+          results.add(DetectedStrategyAt(
+            template: template,
+            side: side,
+            ply: emitPly,
+          ));
+        }
+      }
     }
     return results;
   }

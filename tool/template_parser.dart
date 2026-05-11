@@ -18,6 +18,7 @@ class ParsedTemplate {
     required this.sourceLine,
     this.plyEq,
     this.plyMax,
+    this.evaluateAtGameEnd = false,
   });
 
   /// 必須: テンプレ名 (例: '金矢倉')
@@ -47,6 +48,11 @@ class ParsedTemplate {
 
   /// `ply:` ヘッダから抽出した手数上限制約。
   final int? plyMax;
+
+  /// `evaluate_at_game_end: true` ヘッダから抽出した「最終手評価」フラグ。
+  ///
+  /// `igyoku: true` ヘッダが指定された場合、本フラグも自動的に true になる。
+  final bool evaluateAtGameEnd;
 }
 
 /// 要件 1 件分の中間表現。per-cell と position-wide のどちらも 1 つの型で
@@ -63,7 +69,7 @@ class PlacementCell {
   /// 要件種別。
   /// - per-cell:  `'exact'`, `'anyOf'`, `'empty'`, `'notOf'`, `'anyPiece'`
   /// - position-wide: `'pieceAnywhere'`, `'handPiece'`
-  /// - history-based: `'pieceUnmoved'`, `'pieceVisited'`
+  /// - history-based: `'pieceUnmoved'`, `'pieceVisited'`, `'kingIgyoku'`
   final String kind;
 
   /// 1..9 (盤右が 1)。position-wide kind では 0 (unused)。
@@ -122,6 +128,7 @@ List<ParsedTemplate> parseTemplateFile(String content) {
   String? sectionSide;
   int? sectionPlyEq;
   int? sectionPlyMax;
+  bool sectionEvaluateAtGameEnd = false;
   final List<PlacementCell> sectionExtras = <PlacementCell>[];
   final List<List<String>> gridRows = <List<String>>[];
 
@@ -170,6 +177,7 @@ List<ParsedTemplate> parseTemplateFile(String content) {
         sourceLine: sectionStartLine ?? 0,
         plyEq: sectionPlyEq,
         plyMax: sectionPlyMax,
+        evaluateAtGameEnd: sectionEvaluateAtGameEnd,
       ),
     );
   }
@@ -182,6 +190,7 @@ List<ParsedTemplate> parseTemplateFile(String content) {
     sectionSide = null;
     sectionPlyEq = null;
     sectionPlyMax = null;
+    sectionEvaluateAtGameEnd = false;
     sectionExtras.clear();
     gridRows.clear();
   }
@@ -315,6 +324,22 @@ List<ParsedTemplate> parseTemplateFile(String content) {
             ),
           );
           break;
+        case 'igyoku':
+          // `igyoku: true` → KingIgyoku() を placements に追加し、
+          // evaluate_at_game_end も自動的に true にする。値が "true" 以外
+          // は無効。
+          final bool flag = _parseBoolHeader(header.value, lineNo, 'igyoku');
+          if (flag) {
+            sectionExtras.add(PlacementCell(kind: 'kingIgyoku'));
+            sectionEvaluateAtGameEnd = true;
+          }
+          break;
+        case 'evaluate_at_game_end':
+          // `evaluate_at_game_end: true` → CastleTemplate.evaluateAtGameEnd
+          // を true にする。`igyoku: true` でも自動的に true になる。
+          sectionEvaluateAtGameEnd =
+              _parseBoolHeader(header.value, lineNo, 'evaluate_at_game_end');
+          break;
         default:
           throw FormatException(
             'line $lineNo: unknown header "${header.key}"',
@@ -397,6 +422,16 @@ _Header _parseHeaderTriple(String line, int lineNo) {
     );
   }
   return (file: file, rank: rank);
+}
+
+/// `key: true` / `key: false` 形式の真偽値ヘッダをパースする。
+bool _parseBoolHeader(String value, int lineNo, String headerKey) {
+  final String trimmed = value.trim();
+  if (trimmed == 'true') return true;
+  if (trimmed == 'false') return false;
+  throw FormatException(
+    'line $lineNo: $headerKey must be "true" or "false", got "$value"',
+  );
 }
 
 /// `visited: R 6 8` の値部分 (`R 6 8`) をパースする。
@@ -590,7 +625,8 @@ List<List<String>> buildGrid(List<PlacementCell> placements) {
     if (p.kind == 'pieceAnywhere' ||
         p.kind == 'handPiece' ||
         p.kind == 'pieceUnmoved' ||
-        p.kind == 'pieceVisited') {
+        p.kind == 'pieceVisited' ||
+        p.kind == 'kingIgyoku') {
       continue;
     }
     final int rowIdx = p.rank - 1;
@@ -682,6 +718,17 @@ List<String> formatVisitedHeaders(List<PlacementCell> placements) {
     out.add('visited: $piece ${p.file} ${p.rank}');
   }
   return out;
+}
+
+/// `igyoku: true` 形式の 1 行を返す。`kingIgyoku` セルが 1 つも無ければ
+/// `null`。本ヘッダが出力されると、forward parser は自動的に
+/// `evaluateAtGameEnd=true` を立てるので `evaluate_at_game_end: true` の
+/// 重複出力は不要。
+String? formatIgyokuHeader(List<PlacementCell> placements) {
+  for (final PlacementCell p in placements) {
+    if (p.kind == 'kingIgyoku') return 'igyoku: true';
+  }
+  return null;
 }
 
 /// `hand: B*2 R` 形式の 1 行を返す。position-wide な `handPiece` セルが
