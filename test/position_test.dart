@@ -120,8 +120,8 @@ void main() {
       }
 
       // not normalized
-      final List<({String input, String output})> testCases2 = <
-          ({String input, String output})>[
+      final List<({String input, String output})> testCases2 =
+          <({String input, String output})>[
         (
           input:
               'l+B5nl/4g1gk1/2b1p2p1/p1p2pp2/3s1P2p/P1P3PP1/1P2PSN1P/2G2GK2/L7L b RSNPrsn2p 100',
@@ -168,8 +168,7 @@ void main() {
     test('doMove', () {
       final Position position = Position();
       // 26FU(27)
-      Move? move =
-          position.createMove(FromSquare(Square(2, 7)), Square(2, 6));
+      Move? move = position.createMove(FromSquare(Square(2, 7)), Square(2, 6));
       expect(move, isA<Move>());
       expect(move?.color, Color.black);
       expect(position.isValidMove(move!), isTrue);
@@ -231,10 +230,9 @@ void main() {
         )!;
         Move buildMove(int ff, int fr, int tf, int tr) {
           return position.createMove(
-                FromSquare(Square(ff, fr)),
-                Square(tf, tr),
-              ) as
-              Move;
+            FromSquare(Square(ff, fr)),
+            Square(tf, tr),
+          ) as Move;
         }
 
         Move buildDrop(PieceType type, int tf, int tr) {
@@ -323,10 +321,9 @@ void main() {
         )!;
         Move buildMove(int ff, int fr, int tf, int tr) {
           return position.createMove(
-                FromSquare(Square(ff, fr)),
-                Square(tf, tr),
-              ) as
-              Move;
+            FromSquare(Square(ff, fr)),
+            Square(tf, tr),
+          ) as Move;
         }
 
         Move buildDrop(PieceType type, int tf, int tr) {
@@ -441,10 +438,9 @@ void main() {
           '7B1/3R2n2/5kn2/4P4/5G3/9/9/9/4K4 b P 1',
         )!;
         final Move move = position.createMove(
-              const FromHand(PieceType.pawn),
-              Square(4, 4),
-            )
-            as Move;
+          const FromHand(PieceType.pawn),
+          Square(4, 4),
+        ) as Move;
         expect(position.isPawnDropMate(move), isTrue);
         expect(position.isValidMove(move), isFalse);
       });
@@ -454,10 +450,9 @@ void main() {
           '9/3R2n2/5kn2/4P4/5G3/9/9/9/4K4 b P 1',
         )!;
         final Move move = position.createMove(
-              const FromHand(PieceType.pawn),
-              Square(4, 4),
-            )
-            as Move;
+          const FromHand(PieceType.pawn),
+          Square(4, 4),
+        ) as Move;
         expect(position.isPawnDropMate(move), isFalse);
         expect(position.isValidMove(move), isTrue);
       });
@@ -467,10 +462,9 @@ void main() {
           '7B1/3R2n2/5kn2/4P4/6G2/9/9/9/4K4 b P 1',
         )!;
         final Move move = position.createMove(
-              const FromHand(PieceType.pawn),
-              Square(4, 4),
-            )
-            as Move;
+          const FromHand(PieceType.pawn),
+          Square(4, 4),
+        ) as Move;
         expect(position.isPawnDropMate(move), isFalse);
         expect(position.isValidMove(move), isTrue);
       });
@@ -480,10 +474,9 @@ void main() {
           '7B1/3R2n2/5kn2/3+R5/9/9/9/9/4K4 b P 1',
         )!;
         final Move move = position.createMove(
-              const FromHand(PieceType.pawn),
-              Square(4, 4),
-            )
-            as Move;
+          const FromHand(PieceType.pawn),
+          Square(4, 4),
+        ) as Move;
         expect(position.isPawnDropMate(move), isFalse);
         expect(position.isValidMove(move), isTrue);
       });
@@ -493,10 +486,9 @@ void main() {
           '4k4/2l6/9/6r2/3KS2r1/3P5/4+p4/9/9 w p 1',
         )!;
         final Move move = position.createMove(
-              const FromHand(PieceType.pawn),
-              Square(6, 4),
-            )
-            as Move;
+          const FromHand(PieceType.pawn),
+          Square(6, 4),
+        ) as Move;
         expect(position.isPawnDropMate(move), isTrue);
         expect(position.isValidMove(move), isFalse);
       });
@@ -506,10 +498,9 @@ void main() {
           '4k4/2l6/9/6r2/3KS4/3P5/4+p4/9/9 w p 1',
         )!;
         final Move move = position.createMove(
-              const FromHand(PieceType.pawn),
-              Square(6, 4),
-            )
-            as Move;
+          const FromHand(PieceType.pawn),
+          Square(6, 4),
+        ) as Move;
         expect(position.isPawnDropMate(move), isFalse);
         expect(position.isValidMove(move), isTrue);
       });
@@ -519,10 +510,9 @@ void main() {
           '4k4/9/9/6r2/3KS2r1/3P5/4+p4/9/9 w p 1',
         )!;
         final Move move = position.createMove(
-              const FromHand(PieceType.pawn),
-              Square(6, 4),
-            )
-            as Move;
+          const FromHand(PieceType.pawn),
+          Square(6, 4),
+        ) as Move;
         expect(position.isPawnDropMate(move), isFalse);
         expect(position.isValidMove(move), isTrue);
       });
@@ -532,10 +522,9 @@ void main() {
           '4k4/9/9/6r2/1g1KS2r1/3P5/4+p4/9/9 w p 1',
         )!;
         final Move move = position.createMove(
-              const FromHand(PieceType.pawn),
-              Square(6, 4),
-            )
-            as Move;
+          const FromHand(PieceType.pawn),
+          Square(6, 4),
+        ) as Move;
         expect(position.isPawnDropMate(move), isFalse);
         expect(position.isValidMove(move), isTrue);
       });
@@ -638,8 +627,7 @@ void main() {
       expect(
         position.edit(
           PositionChange(
-            move:
-                PositionMoveChange(from: Square(4, 9), to: Square(8, 5)),
+            move: PositionMoveChange(from: Square(4, 9), to: Square(8, 5)),
           ),
         ),
         isTrue,
@@ -653,8 +641,7 @@ void main() {
       expect(
         position.edit(
           PositionChange(
-            move:
-                PositionMoveChange(from: Square(4, 9), to: Square(8, 5)),
+            move: PositionMoveChange(from: Square(4, 9), to: Square(8, 5)),
           ),
         ),
         isFalse,
@@ -795,18 +782,7 @@ void main() {
     });
 
     group('judgeJishogiDeclaration', () {
-      final List<({
-        String title,
-        String sfen,
-        int blackTotalPoint,
-        int whiteTotalPoint,
-        int blackPoint,
-        int whitePoint,
-        JishogiDeclarationResult black24,
-        JishogiDeclarationResult black27,
-        JishogiDeclarationResult white24,
-        JishogiDeclarationResult white27,
-      })> testCases = <
+      final List<
           ({
             String title,
             String sfen,
@@ -818,7 +794,18 @@ void main() {
             JishogiDeclarationResult black27,
             JishogiDeclarationResult white24,
             JishogiDeclarationResult white27,
-          })>[
+          })> testCases = <({
+        String title,
+        String sfen,
+        int blackTotalPoint,
+        int whiteTotalPoint,
+        int blackPoint,
+        int whitePoint,
+        JishogiDeclarationResult black24,
+        JishogiDeclarationResult black27,
+        JishogiDeclarationResult white24,
+        JishogiDeclarationResult white27,
+      })>[
         (
           title: 'sente_10pieces_28points',
           sfen:
@@ -938,7 +925,8 @@ void main() {
         ),
         (
           title: 'hirate_initial',
-          sfen: 'lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1',
+          sfen:
+              'lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1',
           blackTotalPoint: 27,
           whiteTotalPoint: 27,
           blackPoint: 0,

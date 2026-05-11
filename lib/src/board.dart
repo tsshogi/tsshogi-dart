@@ -98,7 +98,8 @@ class Board implements ImmutableBoard {
   }
 
   /// 指定した手番の駒があるマスの一覧を取得します。
-  Iterable<({Square square, Piece piece})> listSquaresByColor(Color color) sync* {
+  Iterable<({Square square, Piece piece})> listSquaresByColor(
+      Color color) sync* {
     for (final Square square in Square.all) {
       final Piece? piece = _squares[square.index];
       if (piece != null && piece.color == color) {
@@ -108,7 +109,8 @@ class Board implements ImmutableBoard {
   }
 
   /// 指定した駒があるマスの一覧を取得します。
-  Iterable<({Square square, Piece piece})> listSquaresByPiece(Piece target) sync* {
+  Iterable<({Square square, Piece piece})> listSquaresByPiece(
+      Piece target) sync* {
     for (final Square square in Square.all) {
       final Piece? piece = _squares[square.index];
       if (piece != null && target.equals(piece)) {
@@ -217,8 +219,7 @@ class Board implements ImmutableBoard {
           }
           final Direction rdir = reverseDirection(dir);
           final MoveType? type = resolveMoveType(piece, rdir);
-          if (type == MoveType.long ||
-              (type == MoveType.short && step == 1)) {
+          if (type == MoveType.long || (type == MoveType.short && step == 1)) {
             found = true;
           }
           break;

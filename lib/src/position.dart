@@ -37,20 +37,16 @@ enum InitialPositionSFEN {
       '1nsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1'),
   handicapBishop(
       'lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1'),
-  handicapRook(
-      'lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1'),
+  handicapRook('lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1'),
   handicapRookLance(
       'lnsgkgsn1/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1'),
   handicap2Pieces(
       'lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1'),
   handicap4Pieces(
       '1nsgkgsn1/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1'),
-  handicap6Pieces(
-      '2sgkgs2/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1'),
-  handicap8Pieces(
-      '3gkg3/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1'),
-  handicap10Pieces(
-      '4k4/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1'),
+  handicap6Pieces('2sgkgs2/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1'),
+  handicap8Pieces('3gkg3/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1'),
+  handicap10Pieces('4k4/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1'),
   tsumeShogi('4k4/9/9/9/9/9/9/9/9 b 2r2b4g4s4n4l18p 1'),
   tsumeShogi2Kings('4k4/9/9/9/9/9/9/9/4K4 b 2r2b4g4s4n4l18p 1');
 
@@ -122,9 +118,7 @@ bool isPromotableRank(Color color, int rank) {
 bool _pawnExists(Color color, Board board, int file) {
   for (int rank = 1; rank <= 9; rank += 1) {
     final Piece? piece = board.at(Square(file, rank));
-    if (piece != null &&
-        piece.type == PieceType.pawn &&
-        piece.color == color) {
+    if (piece != null && piece.type == PieceType.pawn && piece.color == color) {
       return true;
     }
   }

@@ -29,24 +29,21 @@ void main() {
           .setStandardMetadata(RecordMetadataKey.blackShortName, '羽生');
       expect(getBlackPlayerName(record.metadata), '羽生');
       expect(getBlackPlayerNamePreferShort(record.metadata), '羽生');
-      record.metadata
-          .setStandardMetadata(RecordMetadataKey.blackName, '羽生善治');
+      record.metadata.setStandardMetadata(RecordMetadataKey.blackName, '羽生善治');
       expect(getBlackPlayerName(record.metadata), '羽生善治');
       expect(getBlackPlayerNamePreferShort(record.metadata), '羽生');
     });
 
     test('getWhitePlayerName', () {
       final record = Record();
-      record.metadata
-          .setStandardMetadata(RecordMetadataKey.uwateName, '羽生結弦');
+      record.metadata.setStandardMetadata(RecordMetadataKey.uwateName, '羽生結弦');
       expect(getWhitePlayerName(record.metadata), '羽生結弦');
       expect(getWhitePlayerNamePreferShort(record.metadata), '羽生結弦');
       record.metadata
           .setStandardMetadata(RecordMetadataKey.whiteShortName, '羽生');
       expect(getWhitePlayerName(record.metadata), '羽生');
       expect(getWhitePlayerNamePreferShort(record.metadata), '羽生');
-      record.metadata
-          .setStandardMetadata(RecordMetadataKey.whiteName, '羽生善治');
+      record.metadata.setStandardMetadata(RecordMetadataKey.whiteName, '羽生善治');
       expect(getWhitePlayerName(record.metadata), '羽生善治');
       expect(getWhitePlayerNamePreferShort(record.metadata), '羽生');
     });
@@ -425,7 +422,8 @@ void main() {
 
     // 空文字を渡すと削除される
     record.metadata.setStandardMetadata(RecordMetadataKey.title, '');
-    expect(record.metadata.getStandardMetadata(RecordMetadataKey.title), isNull);
+    expect(
+        record.metadata.getStandardMetadata(RecordMetadataKey.title), isNull);
   });
 
   test('USEN round-trip / single mainline', () {

@@ -76,7 +76,8 @@ class Move {
   }
 
   @override
-  int get hashCode => Object.hash(from, to, promote, color, pieceType, capturedPieceType);
+  int get hashCode =>
+      Object.hash(from, to, promote, color, pieceType, capturedPieceType);
 
   /// 成る手を返します。
   Move withPromote() {

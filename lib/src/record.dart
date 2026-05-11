@@ -409,8 +409,7 @@ abstract interface class ImmutableRecord {
 class Record implements ImmutableRecord {
   Record({ImmutablePosition? position})
       : _metadata = RecordMetadata(),
-        _initialPosition =
-            position != null ? position.clone() : Position() {
+        _initialPosition = position != null ? position.clone() : Position() {
     _position = _initialPosition.clone();
     _first = _NodeImpl.newRootEntry(_initialPosition);
     _current = _first;
@@ -1076,7 +1075,8 @@ class Record implements ImmutableRecord {
           moves.add('win');
         }
       }
-      if (p._next == null || (opts?.allMoves != true && identical(p, _current))) {
+      if (p._next == null ||
+          (opts?.allMoves != true && identical(p, _current))) {
         break;
       }
       p = p._next!;
@@ -1303,8 +1303,7 @@ class Record implements ImmutableRecord {
     );
   }
 
-  static Object _newByUSIFromMoves(String data,
-      {ImmutablePosition? position}) {
+  static Object _newByUSIFromMoves(String data, {ImmutablePosition? position}) {
     final Record record = Record(position: position);
     if (data.isEmpty) {
       return record;
@@ -1357,8 +1356,7 @@ class Record implements ImmutableRecord {
     return result is Record ? result : null;
   }
 
-  static Object _newByUSEN(String usen,
-      {int branchIndex = 0, int ply = 0}) {
+  static Object _newByUSEN(String usen, {int branchIndex = 0, int ply = 0}) {
     final List<String> sections = usen.split('~');
     if (sections.length < 2) {
       return Exception('USEN must have at least 2 sections.');
@@ -1463,11 +1461,9 @@ Color getNextColorFromUSI(String usi) {
   }
   final int firstMoveIndex;
   if (sections.length > 1 && sections[1] == 'startpos') {
-    firstMoveIndex =
-        sections.length > 2 && sections[2] == 'moves' ? 3 : 2;
+    firstMoveIndex = sections.length > 2 && sections[2] == 'moves' ? 3 : 2;
   } else {
-    firstMoveIndex =
-        sections.length > 6 && sections[6] == 'moves' ? 7 : 6;
+    firstMoveIndex = sections.length > 6 && sections[6] == 'moves' ? 7 : 6;
   }
   return (sections.length - firstMoveIndex) % 2 == 0
       ? baseColor

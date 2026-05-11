@@ -119,7 +119,8 @@ void main() {
       expect(Piece.isValidSFEN(''), isFalse);
       expect(Piece.isValidSFEN(' '), isFalse);
 
-      expect(Piece.newBySFEN('+N'), equals(Piece(Color.black, PieceType.promKnight)));
+      expect(Piece.newBySFEN('+N'),
+          equals(Piece(Color.black, PieceType.promKnight)));
       expect(Piece.newBySFEN('k'), equals(Piece(Color.white, PieceType.king)));
       expect(Piece.newBySFEN('XX'), isNull);
     });

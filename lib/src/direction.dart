@@ -65,7 +65,8 @@ enum MoveType {
   final String value;
 }
 
-const Map<Color, Map<PieceType, Map<Direction, MoveType>>> _movableDirectionMap = {
+const Map<Color, Map<PieceType, Map<Direction, MoveType>>>
+    _movableDirectionMap = {
   Color.black: {
     PieceType.pawn: {Direction.up: MoveType.short},
     PieceType.lance: {Direction.up: MoveType.long},
@@ -290,7 +291,8 @@ const Map<Direction, ({int x, int y})> directionToDeltaMap = {
 
 /// ベクトルを方向と距離に変換します。
 /// 揃った方向に変換できない場合は null を返します(TS の `ok: false` 相当)。
-({Direction direction, int distance})? vectorToDirectionAndDistance(int x, int y) {
+({Direction direction, int distance})? vectorToDirectionAndDistance(
+    int x, int y) {
   if (x == 1 && y == -2) {
     return (direction: Direction.rightUpKnight, distance: 1);
   }

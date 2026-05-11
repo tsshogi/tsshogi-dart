@@ -127,7 +127,8 @@ class Square {
   }
 
   /// 全てのマス目の一覧
-  static final List<Square> all = List<Square>.generate(81, Square.newByIndex, growable: false);
+  static final List<Square> all =
+      List<Square>.generate(81, Square.newByIndex, growable: false);
 
   /// SFEN形式の文字列を取得します。
   @Deprecated('Use usi instead.')
