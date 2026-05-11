@@ -327,8 +327,9 @@ extension ImmutableRecordStrategies on ImmutableRecord {
           }
           final String key = '${template.name}|${side.value}';
           if (!seen.add(key)) continue;
-          final int? kingMoved = history.kingFirstMovedTurn(side);
-          final int emitPly = kingMoved ?? lastPly;
+          // 居玉系: 戦い開始 (outbreak_turn) を emit ply に使う。
+          // 戦いが起きなかった棋譜なら最終 ply。
+          final int emitPly = history.outbreakTurn ?? lastPly;
           results.add(DetectedStrategyAt(
             template: template,
             side: side,

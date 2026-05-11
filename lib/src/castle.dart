@@ -723,8 +723,10 @@ extension ImmutableRecordCastles on ImmutableRecord {
           }
           final String key = '${template.name}|${side.value}';
           if (!seen.add(key)) continue;
-          final int? kingMoved = history.kingFirstMovedTurn(side);
-          final int emitPly = kingMoved ?? lastPly;
+          // 居玉 = 「戦いが起きた時点で玉が動いてない」状態。emit ply は
+          // 戦い開始 (outbreak_turn) を使う。戦いが起きなかった棋譜なら
+          // 最終 ply にフォールバック。
+          final int emitPly = history.outbreakTurn ?? lastPly;
           results.add(DetectedCastleAt(
             template: template,
             side: side,
