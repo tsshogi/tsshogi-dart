@@ -47,6 +47,8 @@ class StrategyTemplate {
     this.aliases = const <String>[],
     this.side = StrategySide.either,
     this.parent,
+    this.plyEq,
+    this.plyMax,
   });
 
   /// 戦法名 (例: '四間飛車')
@@ -64,6 +66,32 @@ class StrategyTemplate {
 
   /// 親戦法 (例: 「ゴキゲン中飛車」の親は「中飛車」)
   final String? parent;
+
+  /// この戦法が成立する手数 (ply) の制約 (厳密一致)。
+  ///
+  /// 例: 「初手▲3六歩戦法」は `plyEq: 1` で、初手の局面のみマッチさせる。
+  /// 非 null の場合、棋譜走査ベース検出 (`record.strategies`) では現在 ply が
+  /// この値と一致するときのみマッチする。`plyMax` と併用可。
+  /// 位置ベース検出 (`detectStrategies(position)`) では ply 情報が無いため、
+  /// 非 null のテンプレートはスキップされる。
+  final int? plyEq;
+
+  /// この戦法が成立する手数 (ply) の上限。
+  ///
+  /// 例: 「相掛かり」は `plyMax: 6` で、序盤に限定。非 null の場合、棋譜走査
+  /// ベース検出では現在 ply が <= plyMax のときのみマッチする。`plyEq` と
+  /// 併用可。位置ベース検出では非 null のテンプレートはスキップされる。
+  final int? plyMax;
+
+  /// このテンプレートが ply 制約 (`plyEq` または `plyMax`) を持つかを返す。
+  bool get hasPlyConstraint => plyEq != null || plyMax != null;
+
+  /// 与えられた手数 [ply] でこのテンプレートが ply 制約を満たすか。
+  bool satisfiesPlyConstraint(int ply) {
+    if (plyEq != null && plyEq != ply) return false;
+    if (plyMax != null && ply > plyMax!) return false;
+    return true;
+  }
 }
 
 /// 検出結果。
@@ -100,12 +128,18 @@ const List<StrategyTemplate> knownStrategies = gen.strategies;
 /// 照合する。テンプレートの全 placements を満たす駒が盤上にあれば検出。
 /// テンプレートに含まれていない駒が他のマスにあっても判定には影響しない。
 /// 複数の戦法 (例: 中飛車とゴキゲン中飛車) が同時にマッチすることがある。
+///
+/// 注: ply 制約 (`plyEq` / `plyMax`) を持つテンプレートは position のみでは
+/// 検証できないため、本関数では **常にスキップ** される。
+/// ply 制約を考慮した検出が必要な場合は `record.strategies` を使う。
 List<DetectedStrategy> detectStrategies(
   ImmutablePosition position, {
   Color? side,
 }) {
   final List<DetectedStrategy> results = <DetectedStrategy>[];
   for (final StrategyTemplate template in knownStrategies) {
+    // ply 制約付きテンプレートは Record 経由でのみ判定可能。
+    if (template.hasPlyConstraint) continue;
     if (side == null || side == Color.black) {
       if (_matchesStrategyTemplate(position, template, Color.black)) {
         results.add(DetectedStrategy(template: template, side: Color.black));
@@ -191,10 +225,14 @@ class DetectedStrategyAt {
 /// ```
 extension ImmutableRecordStrategies on ImmutableRecord {
   /// アクティブブランチを走査し、初めて成立した戦法を ply 順に返す。
+  ///
+  /// ply 制約 (`plyEq` / `plyMax`) を持つテンプレートは、各 ply で制約を満
+  /// たすときのみ評価される。
   List<DetectedStrategyAt> get strategies {
     final List<DetectedStrategyAt> results = <DetectedStrategyAt>[];
     final Set<String> seen = <String>{};
     void emitAt(int ply, ImmutablePosition pos) {
+      // ply 制約なしテンプレートは detectStrategies(pos) で一括判定。
       for (final DetectedStrategy d in detectStrategies(pos)) {
         final String key = '${d.template.name}|${d.side.value}';
         if (seen.add(key)) {
@@ -203,6 +241,22 @@ extension ImmutableRecordStrategies on ImmutableRecord {
             side: d.side,
             ply: ply,
           ));
+        }
+      }
+      // ply 制約付きテンプレートは個別に評価。
+      for (final StrategyTemplate template in knownStrategies) {
+        if (!template.hasPlyConstraint) continue;
+        if (!template.satisfiesPlyConstraint(ply)) continue;
+        for (final Color side in const <Color>[Color.black, Color.white]) {
+          if (!_matchesStrategyTemplate(pos, template, side)) continue;
+          final String key = '${template.name}|${side.value}';
+          if (seen.add(key)) {
+            results.add(DetectedStrategyAt(
+              template: template,
+              side: side,
+              ply: ply,
+            ));
+          }
         }
       }
     }

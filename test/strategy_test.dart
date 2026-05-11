@@ -142,6 +142,10 @@ void main() {
     // パラメトリック: 各テンプレートを盤上に再現して自己マッチを確認 (黒)
     group('each strategy self-match (black)', () {
       for (final StrategyTemplate template in knownStrategies) {
+        // ply 制約付きテンプレートは position ベース検出ではマッチしない
+        // (record 経由でのみ有効)。これらは ply_constraint_test.dart で別途
+        // 検証する。
+        if (template.hasPlyConstraint) continue;
         test('detects ${template.name}', () {
           final Position position = _emptyPosition();
           _placeStrategy(position, template, Color.black);
@@ -159,6 +163,7 @@ void main() {
     // パラメトリック: 後手側のミラー検出
     group('each strategy self-match (white, mirrored)', () {
       for (final StrategyTemplate template in knownStrategies) {
+        if (template.hasPlyConstraint) continue;
         test('detects ${template.name} for white', () {
           final Position position = Position();
           position.reset(InitialPositionType.empty);
@@ -252,7 +257,10 @@ void main() {
       );
       final List<DetectedStrategy> result =
           detectStrategies(position, side: Color.black);
-      expect(_detected(result, 'ゴキゲン中飛車', Color.black), isTrue);
+      // ゴキゲン中飛車 は plyMax 制約付きなので position 検出ではスキップ
+      // される (record 経由でのみ検出可能)。一方、親に相当する 中飛車 は
+      // ply 制約を持たないので、ゴキゲン中飛車 の placements の部分集合と
+      // なっている限り通常通り検出される。
       expect(_detected(result, '中飛車', Color.black), isTrue);
     });
 

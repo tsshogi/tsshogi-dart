@@ -8,7 +8,7 @@
 #
 # Source ASCII parsed by: tool/import_bioshogi.dart
 
-# Last regenerated: 2026-05-11T18:41:08.328792
+# Last regenerated: 2026-05-11T18:55:00.611532
 # Source: attack_info.rb (246 metadata rows)
 #  ∩  shape_info.rb (394 ASCII templates)
 
@@ -27,6 +27,7 @@ side: ibisha
 
 === name: 矢倉▲3七銀戦法
 side: ibisha
+ply: max 25
 
 . . . . . . . . .
 . . . . . _ . . .
@@ -64,6 +65,7 @@ side: ibisha
 . . . . _ . . . .
 
 === name: 森下システム
+ply: max 29
 
 . . . . . . . . .
 . . . . . _ . . .
@@ -114,6 +116,7 @@ side: ibisha
 
 === name: 矢倉旧24手組
 side: ibisha
+ply: 24
 
 . . . . . . . . .
 . . . . . . . . .
@@ -127,6 +130,7 @@ side: ibisha
 
 === name: 矢倉新24手組
 side: ibisha
+ply: 24
 
 . . . . . . . . .
 . . . . . . . . .
@@ -244,6 +248,7 @@ side: ibisha
 
 === name: 相掛かり
 side: ibisha
+ply: max 6
 
 . . . . . . . . .
 . . . . . . . . .
@@ -297,6 +302,7 @@ side: ibisha
 . . S . . . . . .
 
 === name: 5手爆弾
+ply: 5
 
 . . . . . . . . .
 . . . . . . . . .
@@ -309,6 +315,7 @@ side: ibisha
 . . . . . . . . .
 
 === name: 7手爆弾
+ply: 7
 
 . . . . . . . . .
 . . . . . . . . .
@@ -323,6 +330,7 @@ side: ibisha
 === name: 必笑ひっかけ戦法
 parent: 5手爆弾
 aliases: 原内流
+ply: 7
 
 . . . . . . . . .
 . . . . . . . . .
@@ -335,6 +343,7 @@ aliases: 原内流
 . . . . . . . . .
 
 === name: ノーガード戦法
+ply: max 21
 
 . . . . . . . +R .
 . . . . . . . . .
@@ -402,6 +411,7 @@ parent: 横歩取り
 === name: 竹部スペシャル
 parent: 横歩取り
 aliases: 竹部流
+ply: 19
 
 . . . . . . . . .
 . . . . . . . . .
@@ -428,6 +438,7 @@ aliases: 竹部流
 === name: 中座飛車
 parent: △3三角型空中戦法
 aliases: △8五飛車戦法, 横歩取り△8五飛
+ply: 20
 
 . . . . . . . . .
 . . . . . . . . .
@@ -489,6 +500,7 @@ parent: 袖飛車
 . . . . . . . . .
 
 === name: 森安流袖飛車穴熊
+ply: max 25
 
 . . . . . . . . .
 . . . . . . . . .
@@ -501,6 +513,7 @@ parent: 袖飛車
 . . . . _ G S N K
 
 === name: 羽生式袖飛車
+ply: max 5
 
 . . . . . . . . .
 . . . . . . . . .
@@ -539,6 +552,7 @@ parent: 袖飛車
 . . . . . . . . .
 
 === name: 初手▲3六歩戦法
+ply: 1
 
 . . . . . . . . .
 . . . . . . . . .
@@ -551,6 +565,7 @@ parent: 袖飛車
 . . . . . . . . .
 
 === name: 2手目△7四歩戦法
+ply: 2
 
 . . . . . . . . .
 . . . . . . . . .
@@ -606,6 +621,7 @@ side: furibisha
 === name: 右四間飛車超急戦
 parent: 右四間飛車
 side: furibisha
+ply: max 9
 
 . . . . . . _ . .
 . . . . . . . . .
@@ -720,6 +736,7 @@ side: ibisha
 . . . . . . . . .
 
 === name: 3手目▲7七角戦法
+ply: 3
 
 . . . . . . . . .
 . . . . . . . . .
@@ -732,6 +749,7 @@ side: ibisha
 . . . . . . . . .
 
 === name: 4手目△3三角戦法
+ply: 4
 
 . . . . . . . . .
 . . . . . . . . .
@@ -769,6 +787,7 @@ side: ibisha
 
 === name: 筋違い角阪田流
 side: furibisha
+ply: max 11
 
 . . . . . . . . .
 . . _ _ _ . . . .
@@ -793,6 +812,7 @@ side: furibisha
 . . . . . . . . .
 
 === name: ゴリ違い角
+ply: max 13
 
 . . . . . . . . .
 . . . . . . . . .
@@ -829,6 +849,7 @@ side: furibisha
 . . B . . . . . .
 
 === name: 嬉野流
+ply: max 2
 
 . . . . . . . . .
 . . . . . . . . .
@@ -842,6 +863,7 @@ side: furibisha
 
 === name: 新嬉野流
 parent: 嬉野流
+ply: max 10
 
 . . . . . . . . .
 . . . . . . . . .
@@ -933,6 +955,7 @@ side: ibisha
 parent: 棒銀
 aliases: 対矢倉急戦棒銀
 side: ibisha
+ply: max 12
 
 . . . . . . . . .
 . . . . . . . . .
@@ -971,6 +994,7 @@ side: ibisha
 
 === name: 極限早繰り銀
 parent: 早繰り銀
+ply: max 16
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1217,6 +1241,7 @@ _ . _ . . . N . .
 . . S . . . . . .
 
 === name: 玉頭位取り
+ply: max 41
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1229,6 +1254,7 @@ _ . _ . . . N . .
 . . . . . . . . .
 
 === name: 6筋位取り
+ply: max 41
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1241,6 +1267,7 @@ _ . _ . . . N . .
 . . . . . . . . .
 
 === name: 5筋位取り
+ply: max 41
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1364,6 +1391,7 @@ L _ G S . . . . .
 K N S . . . . . .
 
 === name: 2手目△6二銀戦法
+ply: 2
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1376,6 +1404,7 @@ K N S . . . . . .
 . . . . . . . . .
 
 === name: 丸山ワクチン
+ply: max 11
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1389,6 +1418,7 @@ P . . . . . . . .
 
 === name: 超速▲3七銀
 aliases: 超速
+ply: max 17
 
 . . . . _ . . . .
 . . . . . . . . .
@@ -1401,6 +1431,7 @@ aliases: 超速
 . . . . _ . . . .
 
 === name: 超急戦
+ply: max 19
 
 . . . . . . . +R .
 . . . _ . _ . . .
@@ -1413,6 +1444,7 @@ aliases: 超速
 . . . G K _ . . .
 
 === name: 村田システム
+ply: max 15
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1425,6 +1457,7 @@ aliases: 超速
 . . . . K G . . .
 
 === name: 新村田システム
+ply: max 30
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1659,6 +1692,7 @@ parent: ひねり飛車
 
 === name: xaby角戦法
 parent: 一手損角換わり
+ply: max 8
 
 . . . . . . . . .
 . . _ _ _ _ _ . .
@@ -1673,6 +1707,7 @@ parent: 一手損角換わり
 === name: 鏡の左早繰り銀
 parent: 一手損角換わり
 aliases: 新xaby角戦法
+ply: max 10
 
 . . . . . . . . .
 . _ _ _ . _ . . .
@@ -1686,6 +1721,7 @@ aliases: 新xaby角戦法
 
 === name: 目くらまし戦法
 aliases: 浮き浮き飛車戦法
+ply: max 8
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1711,6 +1747,7 @@ R . . . . . . . .
 
 === name: ウソ矢倉
 side: ibisha
+ply: max 8
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1723,6 +1760,7 @@ side: ibisha
 . . . . . . . . .
 
 === name: きんとうん戦法
+ply: 9
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1735,6 +1773,7 @@ side: ibisha
 . . S . . . . . .
 
 === name: 都成流△3一金
+ply: max 9
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1809,6 +1848,7 @@ side: furibisha
 
 === name: 原始中飛車
 side: furibisha
+ply: max 3
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1848,6 +1888,7 @@ side: furibisha
 
 === name: 矢倉流中飛車
 side: furibisha
+ply: max 23
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1887,6 +1928,7 @@ side: furibisha
 
 === name: 英ちゃん流中飛車
 side: furibisha
+ply: max 13
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1914,6 +1956,7 @@ K . . . . . . . .
 === name: ▲5五龍中飛車
 parent: 原始中飛車
 side: furibisha
+ply: max 8
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1939,6 +1982,7 @@ B . . . . . . . .
 
 === name: ゴキゲン中飛車
 side: furibisha
+ply: max 8
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2046,6 +2090,7 @@ side: furibisha
 === name: 角道オープン四間飛車
 parent: 四間飛車
 side: furibisha
+ply: max 4
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2211,6 +2256,7 @@ side: furibisha
 === name: 初手▲7八飛戦法
 parent: 三間飛車
 aliases: 猫だまし戦法
+ply: 1
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2224,6 +2270,7 @@ aliases: 猫だまし戦法
 
 === name: 2手目△3二飛戦法
 parent: 三間飛車
+ply: 2
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2252,6 +2299,7 @@ side: furibisha
 
 === name: 3→4→3戦法
 parent: 三間飛車
+ply: 12
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2265,6 +2313,7 @@ parent: 三間飛車
 
 === name: 戸辺流4→3戦法
 parent: 3→4→3戦法
+ply: 10
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2376,6 +2425,7 @@ side: furibisha
 === name: うっかり三間飛車
 parent: 三間飛車
 side: furibisha
+ply: max 6
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2472,6 +2522,7 @@ parent: 三間飛車
 
 === name: ムリヤリ早石田
 parent: 三間飛車
+ply: max 6
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2486,6 +2537,7 @@ parent: 三間飛車
 === name: 升田式石田流
 parent: 早石田
 side: furibisha
+ply: max 8
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2514,6 +2566,7 @@ side: furibisha
 === name: 新石田流
 parent: 三間飛車
 side: furibisha
+ply: 7
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2527,6 +2580,7 @@ side: furibisha
 
 === name: 鈴木流早石田
 parent: 三間飛車
+ply: 13
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2540,6 +2594,7 @@ parent: 三間飛車
 
 === name: 久保流早石田
 parent: 三間飛車
+ply: 11
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2554,6 +2609,7 @@ parent: 三間飛車
 === name: 鬼殺し
 parent: 三間飛車
 side: furibisha
+ply: 3
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2568,6 +2624,7 @@ side: furibisha
 === name: 新鬼殺し
 parent: 三間飛車
 side: furibisha
+ply: 9
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2651,6 +2708,7 @@ side: furibisha
 === name: 阪田流向かい飛車
 parent: 向かい飛車
 side: furibisha
+ply: 10
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2665,6 +2723,7 @@ side: furibisha
 === name: 鬼殺し向かい飛車
 parent: 向かい飛車
 side: furibisha
+ply: 8
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2690,6 +2749,7 @@ parent: 向かい飛車
 . R . . . . . . .
 
 === name: 角頭歩戦法
+ply: max 4
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2702,6 +2762,7 @@ parent: 向かい飛車
 . . . . . . . . .
 
 === name: 金沢流
+ply: max 4
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2714,6 +2775,7 @@ parent: 向かい飛車
 . . . . . . . . .
 
 === name: 菜々河流△4四角
+ply: max 8
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2740,6 +2802,7 @@ side: furibisha
 . . . . . . . . .
 
 === name: 天彦流▲6六角
+ply: max 3
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2754,6 +2817,7 @@ side: furibisha
 === name: 天彦流向かい飛車
 parent: 向かい飛車
 side: furibisha
+ply: max 9
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2767,6 +2831,7 @@ side: furibisha
 
 === name: ショーダンシステム
 parent: 向かい飛車
+ply: max 45
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2793,6 +2858,7 @@ parent: 向かい飛車
 === name: 鬼六流どっかん飛車
 parent: 原始中飛車
 aliases: 女殺しドッカン飛車, 鬼六流ドッカン飛車
+ply: max 19
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2856,6 +2922,7 @@ side: furibisha
 B * . . . . . . .
 
 === name: 初手▲7八銀戦法
+ply: 1
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2868,6 +2935,7 @@ B * . . . . . . .
 . . . . . . . . .
 
 === name: 2手目△3二銀システム
+ply: 2
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2881,6 +2949,7 @@ B * . . . . . . .
 
 === name: メイドシステム
 parent: 初手▲7八銀戦法
+ply: max 4
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2943,6 +3012,7 @@ aliases: 対ひねり飛車たこ金戦法
 . . . . K . . . .
 
 === name: パックマン戦法
+ply: 2
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2955,6 +3025,7 @@ aliases: 対ひねり飛車たこ金戦法
 . . . . . . . . .
 
 === name: 山崎流パックマン
+ply: max 6
 
 . . . . . . . . .
 . . _ _ _ . . . .
@@ -3081,6 +3152,7 @@ side: furibisha
 
 === name: 阪田流2手目△9四歩
 side: furibisha
+ply: 2
 
 . . . . . . . . .
 . . . . . . . . .
@@ -3093,6 +3165,7 @@ side: furibisha
 . . . . . . . . .
 
 === name: 新米長玉
+ply: max 2
 
 . . . . . . . . .
 . . . . . . . . .

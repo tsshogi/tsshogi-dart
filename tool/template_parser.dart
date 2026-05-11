@@ -16,6 +16,8 @@ class ParsedTemplate {
     required this.side,
     required this.placements,
     required this.sourceLine,
+    this.plyEq,
+    this.plyMax,
   });
 
   /// 必須: テンプレ名 (例: '金矢倉')
@@ -39,6 +41,12 @@ class ParsedTemplate {
 
   /// `=== name: ...` が登場した行番号 (エラーメッセージ用、1-origin)
   final int sourceLine;
+
+  /// `ply:` ヘッダから抽出した厳密一致制約。
+  final int? plyEq;
+
+  /// `ply:` ヘッダから抽出した手数上限制約。
+  final int? plyMax;
 }
 
 /// 要件 1 件分の中間表現。per-cell と position-wide のどちらも 1 つの型で
@@ -111,6 +119,8 @@ List<ParsedTemplate> parseTemplateFile(String content) {
   String? sectionParent;
   List<String> sectionAliases = <String>[];
   String? sectionSide;
+  int? sectionPlyEq;
+  int? sectionPlyMax;
   final List<PlacementCell> sectionExtras = <PlacementCell>[];
   final List<List<String>> gridRows = <List<String>>[];
 
@@ -157,6 +167,8 @@ List<ParsedTemplate> parseTemplateFile(String content) {
         side: sectionSide,
         placements: List<PlacementCell>.unmodifiable(placements),
         sourceLine: sectionStartLine ?? 0,
+        plyEq: sectionPlyEq,
+        plyMax: sectionPlyMax,
       ),
     );
   }
@@ -167,6 +179,8 @@ List<ParsedTemplate> parseTemplateFile(String content) {
     sectionParent = null;
     sectionAliases = <String>[];
     sectionSide = null;
+    sectionPlyEq = null;
+    sectionPlyMax = null;
     sectionExtras.clear();
     gridRows.clear();
   }
@@ -265,6 +279,15 @@ List<ParsedTemplate> parseTemplateFile(String content) {
         case 'description':
           // Intentionally ignored (human comment).
           break;
+        case 'ply':
+          // `ply: 3` → plyEq=3
+          // `ply: max 10` → plyMax=10
+          // `ply: 3, max 10` → plyEq=3, plyMax=10 (rare)
+          final ({int? eq, int? max}) parsed =
+              _parsePlyHeader(header.value, lineNo);
+          if (parsed.eq != null) sectionPlyEq = parsed.eq;
+          if (parsed.max != null) sectionPlyMax = parsed.max;
+          break;
         default:
           throw FormatException(
             'line $lineNo: unknown header "${header.key}"',
@@ -313,6 +336,43 @@ _Header _parseHeaderTriple(String line, int lineNo) {
   // Strip leading "===".
   final String rest = line.substring(3).trimLeft();
   return _parseHeader(rest, lineNo);
+}
+
+/// `ply:` ヘッダ値をパースする。
+///
+/// 受け入れる形式:
+/// - `3` → eq=3
+/// - `max 10` → max=10
+/// - `3, max 10` → eq=3, max=10
+({int? eq, int? max}) _parsePlyHeader(String value, int lineNo) {
+  int? eq;
+  int? max;
+  final List<String> parts = value
+      .split(',')
+      .map((String s) => s.trim())
+      .where((String s) => s.isNotEmpty)
+      .toList();
+  for (final String part in parts) {
+    if (part.startsWith('max')) {
+      final String numStr = part.substring(3).trim();
+      final int? n = int.tryParse(numStr);
+      if (n == null || n < 0) {
+        throw FormatException(
+          'line $lineNo: invalid ply max value "$part"',
+        );
+      }
+      max = n;
+    } else {
+      final int? n = int.tryParse(part);
+      if (n == null || n < 0) {
+        throw FormatException(
+          'line $lineNo: invalid ply eq value "$part"',
+        );
+      }
+      eq = n;
+    }
+  }
+  return (eq: eq, max: max);
 }
 
 String _stripComments(String line) {
@@ -485,6 +545,17 @@ String? formatBoardHeader(List<PlacementCell> placements) {
   }
   if (tokens.isEmpty) return null;
   return 'board: ${tokens.join(' ')}';
+}
+
+/// `ply: 3, max 10` 形式の 1 行を返す。`plyEq` / `plyMax` が両方 null なら
+/// `null`。両方が null でない場合は `ply: <eq>, max <max>`、いずれか片方なら
+/// 該当部分のみを返す。
+String? formatPlyHeader({int? plyEq, int? plyMax}) {
+  if (plyEq == null && plyMax == null) return null;
+  final List<String> parts = <String>[];
+  if (plyEq != null) parts.add('$plyEq');
+  if (plyMax != null) parts.add('max $plyMax');
+  return 'ply: ${parts.join(', ')}';
 }
 
 /// `hand: B*2 R` 形式の 1 行を返す。position-wide な `handPiece` セルが

@@ -417,6 +417,85 @@ hand: B R
       expect(hp.every((PlacementCell p) => p.minCount == 1), isTrue);
     });
 
+    test('parses ply: <n> as plyEq', () {
+      const String input = '''
+=== name: opening
+ply: 1
+
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. K . . . . . . .
+. . . . . . . . .
+''';
+      final ParsedTemplate t = parseTemplateFile(input).single;
+      expect(t.plyEq, 1);
+      expect(t.plyMax, isNull);
+    });
+
+    test('parses ply: max <n> as plyMax', () {
+      const String input = '''
+=== name: early
+ply: max 8
+
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. K . . . . . . .
+. . . . . . . . .
+''';
+      final ParsedTemplate t = parseTemplateFile(input).single;
+      expect(t.plyEq, isNull);
+      expect(t.plyMax, 8);
+    });
+
+    test('parses ply: <n>, max <m> as both', () {
+      const String input = '''
+=== name: both
+ply: 3, max 10
+
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. K . . . . . . .
+. . . . . . . . .
+''';
+      final ParsedTemplate t = parseTemplateFile(input).single;
+      expect(t.plyEq, 3);
+      expect(t.plyMax, 10);
+    });
+
+    test('omits ply: header → plyEq/plyMax both null', () {
+      const String input = '''
+=== name: noply
+
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. . . . . . . . .
+. K . . . . . . .
+. . . . . . . . .
+''';
+      final ParsedTemplate t = parseTemplateFile(input).single;
+      expect(t.plyEq, isNull);
+      expect(t.plyMax, isNull);
+    });
+
     test('throws on unknown side value', () {
       const String input = '''
 === name: bad
@@ -536,6 +615,22 @@ side: ohno
         ),
       ];
       expect(formatHandHeader(placements), 'hand: B');
+    });
+
+    test('formatPlyHeader returns null when both null', () {
+      expect(formatPlyHeader(plyEq: null, plyMax: null), isNull);
+    });
+
+    test('formatPlyHeader emits "ply: <n>" for plyEq only', () {
+      expect(formatPlyHeader(plyEq: 1, plyMax: null), 'ply: 1');
+    });
+
+    test('formatPlyHeader emits "ply: max <n>" for plyMax only', () {
+      expect(formatPlyHeader(plyEq: null, plyMax: 8), 'ply: max 8');
+    });
+
+    test('formatPlyHeader emits "ply: <n>, max <m>" for both', () {
+      expect(formatPlyHeader(plyEq: 3, plyMax: 10), 'ply: 3, max 10');
     });
 
     test('formatHandHeader includes *N when count > 1', () {

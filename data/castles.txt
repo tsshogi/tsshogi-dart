@@ -8,7 +8,7 @@
 #
 # Source ASCII parsed by: tool/import_bioshogi.dart
 
-# Last regenerated: 2026-05-11T18:41:08.324036
+# Last regenerated: 2026-05-11T18:55:00.606780
 # Source: defense_info.rb (133 metadata rows) 
 #  ∩  shape_info.rb (394 ASCII templates)
 
@@ -362,6 +362,7 @@ aliases: 片矢倉, 藤井矢倉
 . . B . . . . . .
 
 === name: ムリヤリ矢倉
+ply: max 16
 
 . . . . . . . . .
 . . . . . _ . . .

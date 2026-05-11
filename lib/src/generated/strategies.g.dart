@@ -21,6 +21,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '矢倉▲3七銀戦法',
     side: StrategySide.ibisha,
+    plyMax: 25,
     placements: <CastleRequirement>[
       EmptySquare(4, 2),
       EmptySquare(5, 3),
@@ -69,6 +70,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '森下システム',
+    plyMax: 29,
     placements: <CastleRequirement>[
       EmptySquare(4, 2),
       EmptySquare(5, 3),
@@ -125,6 +127,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '矢倉旧24手組',
     side: StrategySide.ibisha,
+    plyEq: 24,
     placements: <CastleRequirement>[
       PiecePlacement(5, 6, PieceType.pawn),
       PiecePlacement(3, 6, PieceType.pawn),
@@ -142,6 +145,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '矢倉新24手組',
     side: StrategySide.ibisha,
+    plyEq: 24,
     placements: <CastleRequirement>[
       PiecePlacement(5, 6, PieceType.pawn),
       PiecePlacement(3, 6, PieceType.pawn),
@@ -279,6 +283,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '相掛かり',
     side: StrategySide.ibisha,
+    plyMax: 6,
     placements: <CastleRequirement>[
       PiecePlacement(2, 5, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.gold),
@@ -328,12 +333,14 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '5手爆弾',
+    plyEq: 5,
     placements: <CastleRequirement>[
       PiecePlacement(2, 4, PieceType.pawn),
     ],
   ),
   StrategyTemplate(
     name: '7手爆弾',
+    plyEq: 7,
     placements: <CastleRequirement>[
       PiecePlacement(2, 4, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -343,12 +350,14 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '必笑ひっかけ戦法',
     parent: '5手爆弾',
     aliases: <String>['原内流'],
+    plyEq: 7,
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.gold),
     ],
   ),
   StrategyTemplate(
     name: 'ノーガード戦法',
+    plyMax: 21,
     placements: <CastleRequirement>[
       PiecePlacement(2, 1, PieceType.dragon),
       PiecePlacement(8, 8, PieceType.silver),
@@ -405,6 +414,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '竹部スペシャル',
     parent: '横歩取り',
     aliases: <String>['竹部流'],
+    plyEq: 19,
     placements: <CastleRequirement>[
       AnyPiece(3, 3),
       EmptySquare(3, 4),
@@ -431,6 +441,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '中座飛車',
     parent: '△3三角型空中戦法',
     aliases: <String>['△8五飛車戦法', '横歩取り△8五飛'],
+    plyEq: 20,
     placements: <CastleRequirement>[
       PiecePlacement(2, 5, PieceType.rook),
       PiecePlacement(7, 7, PieceType.bishop),
@@ -487,6 +498,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '森安流袖飛車穴熊',
+    plyMax: 25,
     placements: <CastleRequirement>[
       PiecePlacement(3, 6, PieceType.pawn),
       PiecePlacement(4, 7, PieceType.pawn),
@@ -505,6 +517,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '羽生式袖飛車',
+    plyMax: 5,
     placements: <CastleRequirement>[
       AnyPiece(7, 7),
       PiecePlacement(3, 7, PieceType.pawn),
@@ -534,12 +547,14 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '初手▲3六歩戦法',
+    plyEq: 1,
     placements: <CastleRequirement>[
       PiecePlacement(3, 6, PieceType.pawn),
     ],
   ),
   StrategyTemplate(
     name: '2手目△7四歩戦法',
+    plyEq: 2,
     placements: <CastleRequirement>[
       PiecePlacement(3, 6, PieceType.pawn),
     ],
@@ -578,6 +593,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '右四間飛車超急戦',
     parent: '右四間飛車',
     side: StrategySide.furibisha,
+    plyMax: 9,
     placements: <CastleRequirement>[
       EmptySquare(3, 1),
       EmptySquare(3, 3),
@@ -677,6 +693,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '3手目▲7七角戦法',
+    plyEq: 3,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.bishop),
@@ -684,6 +701,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '4手目△3三角戦法',
+    plyEq: 4,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.bishop),
@@ -728,6 +746,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '筋違い角阪田流',
     side: StrategySide.furibisha,
+    plyMax: 11,
     placements: <CastleRequirement>[
       EmptySquare(7, 2),
       EmptySquare(6, 2),
@@ -765,6 +784,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'ゴリ違い角',
+    plyMax: 13,
     placements: <CastleRequirement>[
       PiecePlacement(2, 5, PieceType.bishop),
       PiecePlacement(6, 6, PieceType.pawn),
@@ -793,6 +813,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '嬉野流',
+    plyMax: 2,
     placements: <CastleRequirement>[
       PiecePlacement(6, 8, PieceType.silver),
     ],
@@ -800,6 +821,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '新嬉野流',
     parent: '嬉野流',
+    plyMax: 10,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.pawn),
       PiecePlacement(5, 7, PieceType.silver),
@@ -893,6 +915,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '棒銀',
     aliases: <String>['対矢倉急戦棒銀'],
     side: StrategySide.ibisha,
+    plyMax: 12,
     placements: <CastleRequirement>[
       PiecePlacement(2, 5, PieceType.pawn),
       PiecePlacement(2, 6, PieceType.silver),
@@ -937,6 +960,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '極限早繰り銀',
     parent: '早繰り銀',
+    plyMax: 16,
     placements: <CastleRequirement>[
       PiecePlacement(3, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -1183,6 +1207,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '玉頭位取り',
+    plyMax: 41,
     placements: <CastleRequirement>[
       EmptySquare(7, 4),
       PiecePlacement(7, 5, PieceType.pawn),
@@ -1191,6 +1216,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '6筋位取り',
+    plyMax: 41,
     placements: <CastleRequirement>[
       EmptySquare(6, 4),
       PiecePlacement(6, 5, PieceType.pawn),
@@ -1199,6 +1225,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '5筋位取り',
+    plyMax: 41,
     placements: <CastleRequirement>[
       EmptySquare(5, 4),
       PiecePlacement(5, 5, PieceType.pawn),
@@ -1328,12 +1355,14 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '2手目△6二銀戦法',
+    plyEq: 2,
     placements: <CastleRequirement>[
       PiecePlacement(4, 8, PieceType.silver),
     ],
   ),
   StrategyTemplate(
     name: '丸山ワクチン',
+    plyMax: 11,
     placements: <CastleRequirement>[
       PiecePlacement(2, 5, PieceType.pawn),
       PiecePlacement(9, 6, PieceType.pawn),
@@ -1345,6 +1374,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '超速▲3七銀',
     aliases: <String>['超速'],
+    plyMax: 17,
     placements: <CastleRequirement>[
       EmptySquare(5, 1),
       PiecePlacement(4, 6, PieceType.silver),
@@ -1356,6 +1386,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '超急戦',
+    plyMax: 19,
     placements: <CastleRequirement>[
       PiecePlacement(2, 1, PieceType.dragon),
       EmptySquare(6, 2),
@@ -1370,6 +1401,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '村田システム',
+    plyMax: 15,
     placements: <CastleRequirement>[
       PiecePlacement(5, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.pawn),
@@ -1387,6 +1419,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '新村田システム',
+    plyMax: 30,
     placements: <CastleRequirement>[
       PiecePlacement(4, 6, PieceType.silver),
       PiecePlacement(8, 7, PieceType.pawn),
@@ -1637,6 +1670,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'xaby角戦法',
     parent: '一手損角換わり',
+    plyMax: 8,
     placements: <CastleRequirement>[
       EmptySquare(7, 2),
       EmptySquare(6, 2),
@@ -1651,6 +1685,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '鏡の左早繰り銀',
     parent: '一手損角換わり',
     aliases: <String>['新xaby角戦法'],
+    plyMax: 10,
     placements: <CastleRequirement>[
       EmptySquare(8, 2),
       EmptySquare(7, 2),
@@ -1673,6 +1708,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '目くらまし戦法',
     aliases: <String>['浮き浮き飛車戦法'],
+    plyMax: 8,
     placements: <CastleRequirement>[
       EmptySquare(3, 5),
       PiecePlacement(2, 5, PieceType.pawn),
@@ -1689,6 +1725,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'ウソ矢倉',
     side: StrategySide.ibisha,
+    plyMax: 8,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
@@ -1701,6 +1738,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'きんとうん戦法',
+    plyEq: 9,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.gold),
       PiecePlacement(8, 8, PieceType.bishop),
@@ -1710,6 +1748,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '都成流△3一金',
+    plyMax: 9,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(8, 8, PieceType.bishop),
@@ -1768,6 +1807,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '原始中飛車',
     side: StrategySide.furibisha,
+    plyMax: 3,
     placements: <CastleRequirement>[
       AnyPiece(7, 7),
       PiecePlacement(8, 8, PieceType.bishop),
@@ -1799,6 +1839,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '矢倉流中飛車',
     side: StrategySide.furibisha,
+    plyMax: 23,
     placements: <CastleRequirement>[
       PiecePlacement(4, 6, PieceType.silver),
       PiecePlacement(7, 7, PieceType.bishop),
@@ -1851,6 +1892,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '英ちゃん流中飛車',
     side: StrategySide.furibisha,
+    plyMax: 13,
     placements: <CastleRequirement>[
       PiecePlacement(5, 7, PieceType.pawn),
       PiecePlacement(5, 8, PieceType.rook),
@@ -1870,6 +1912,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '▲5五龍中飛車',
     parent: '原始中飛車',
     side: StrategySide.furibisha,
+    plyMax: 8,
     placements: <CastleRequirement>[
       PiecePlacement(9, 6, PieceType.pawn),
       PiecePlacement(5, 6, PieceType.pawn),
@@ -1890,6 +1933,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'ゴキゲン中飛車',
     side: StrategySide.furibisha,
+    plyMax: 8,
     placements: <CastleRequirement>[
       EmptySquare(8, 3),
       EmptySquare(3, 3),
@@ -1997,6 +2041,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '角道オープン四間飛車',
     parent: '四間飛車',
     side: StrategySide.furibisha,
+    plyMax: 4,
     placements: <CastleRequirement>[
       EmptySquare(3, 3),
       EmptySquare(4, 4),
@@ -2154,6 +2199,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '初手▲7八飛戦法',
     parent: '三間飛車',
     aliases: <String>['猫だまし戦法'],
+    plyEq: 1,
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.rook),
     ],
@@ -2161,6 +2207,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '2手目△3二飛戦法',
     parent: '三間飛車',
+    plyEq: 2,
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.rook),
     ],
@@ -2192,6 +2239,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '3→4→3戦法',
     parent: '三間飛車',
+    plyEq: 12,
     placements: <CastleRequirement>[
       EmptySquare(3, 3),
       PiecePlacement(7, 5, PieceType.pawn),
@@ -2207,6 +2255,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '戸辺流4→3戦法',
     parent: '3→4→3戦法',
+    plyEq: 10,
     placements: <CastleRequirement>[
       EmptySquare(3, 3),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -2330,6 +2379,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'うっかり三間飛車',
     parent: '三間飛車',
     side: StrategySide.furibisha,
+    plyMax: 6,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(5, 6, PieceType.pawn),
@@ -2410,6 +2460,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'ムリヤリ早石田',
     parent: '三間飛車',
+    plyMax: 6,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.pawn),
@@ -2422,6 +2473,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '升田式石田流',
     parent: '早石田',
     side: StrategySide.furibisha,
+    plyMax: 8,
     placements: <CastleRequirement>[
       EmptySquare(3, 3),
       EmptySquare(4, 4),
@@ -2448,6 +2500,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '新石田流',
     parent: '三間飛車',
     side: StrategySide.furibisha,
+    plyEq: 7,
     placements: <CastleRequirement>[
       PiecePlacement(7, 4, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.rook),
@@ -2456,6 +2509,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '鈴木流早石田',
     parent: '三間飛車',
+    plyEq: 13,
     placements: <CastleRequirement>[
       PiecePlacement(7, 4, PieceType.rook),
       PiecePlacement(5, 6, PieceType.bishop),
@@ -2464,6 +2518,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '久保流早石田',
     parent: '三間飛車',
+    plyEq: 11,
     placements: <CastleRequirement>[
       PiecePlacement(7, 4, PieceType.pawn),
       PiecePlacement(7, 5, PieceType.rook),
@@ -2474,6 +2529,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '鬼殺し',
     parent: '三間飛車',
     side: StrategySide.furibisha,
+    plyEq: 3,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.knight),
@@ -2483,6 +2539,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '新鬼殺し',
     parent: '三間飛車',
     side: StrategySide.furibisha,
+    plyEq: 9,
     placements: <CastleRequirement>[
       PiecePlacement(7, 5, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.knight),
@@ -2552,6 +2609,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '阪田流向かい飛車',
     parent: '向かい飛車',
     side: StrategySide.furibisha,
+    plyEq: 10,
     placements: <CastleRequirement>[
       EmptySquare(4, 4),
       EmptySquare(5, 5),
@@ -2566,6 +2624,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '鬼殺し向かい飛車',
     parent: '向かい飛車',
     side: StrategySide.furibisha,
+    plyEq: 8,
     placements: <CastleRequirement>[
       PiecePlacement(8, 7, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.knight),
@@ -2583,6 +2642,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '角頭歩戦法',
+    plyMax: 4,
     placements: <CastleRequirement>[
       PiecePlacement(8, 6, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -2590,6 +2650,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '金沢流',
+    plyMax: 4,
     placements: <CastleRequirement>[
       EmptySquare(3, 3),
       PiecePlacement(6, 6, PieceType.bishop),
@@ -2597,6 +2658,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '菜々河流△4四角',
+    plyMax: 8,
     placements: <CastleRequirement>[
       PiecePlacement(6, 6, PieceType.bishop),
     ],
@@ -2613,6 +2675,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '天彦流▲6六角',
+    plyMax: 3,
     placements: <CastleRequirement>[
       PiecePlacement(6, 6, PieceType.bishop),
     ],
@@ -2621,6 +2684,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '天彦流向かい飛車',
     parent: '向かい飛車',
     side: StrategySide.furibisha,
+    plyMax: 9,
     placements: <CastleRequirement>[
       EmptySquare(3, 3),
       EmptySquare(4, 4),
@@ -2633,6 +2697,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'ショーダンシステム',
     parent: '向かい飛車',
+    plyMax: 45,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       AnyPiece(6, 6),
@@ -2673,6 +2738,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '鬼六流どっかん飛車',
     parent: '原始中飛車',
     aliases: <String>['女殺しドッカン飛車', '鬼六流ドッカン飛車'],
+    plyMax: 19,
     placements: <CastleRequirement>[
       PiecePlacement(8, 8, PieceType.rook),
       PiecePlacement(4, 8, PieceType.silver),
@@ -2719,12 +2785,14 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '初手▲7八銀戦法',
+    plyEq: 1,
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.silver),
     ],
   ),
   StrategyTemplate(
     name: '2手目△3二銀システム',
+    plyEq: 2,
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.silver),
     ],
@@ -2732,6 +2800,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'メイドシステム',
     parent: '初手▲7八銀戦法',
+    plyMax: 4,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.silver),
@@ -2781,12 +2850,14 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'パックマン戦法',
+    plyEq: 2,
     placements: <CastleRequirement>[
       PiecePlacement(6, 6, PieceType.pawn),
     ],
   ),
   StrategyTemplate(
     name: '山崎流パックマン',
+    plyMax: 6,
     placements: <CastleRequirement>[
       EmptySquare(7, 2),
       EmptySquare(6, 2),
@@ -2900,12 +2971,14 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '阪田流2手目△9四歩',
     side: StrategySide.furibisha,
+    plyEq: 2,
     placements: <CastleRequirement>[
       PiecePlacement(1, 6, PieceType.pawn),
     ],
   ),
   StrategyTemplate(
     name: '新米長玉',
+    plyMax: 2,
     placements: <CastleRequirement>[
       PiecePlacement(4, 8, PieceType.king),
     ],

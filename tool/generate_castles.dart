@@ -44,6 +44,12 @@ String generateCastleDart(List<ParsedTemplate> templates) {
         '    aliases: <String>[${t.aliases.map(_dartString).join(', ')}],',
       );
     }
+    if (t.plyEq != null) {
+      buf.writeln('    plyEq: ${t.plyEq},');
+    }
+    if (t.plyMax != null) {
+      buf.writeln('    plyMax: ${t.plyMax},');
+    }
     if (t.placements.isEmpty) {
       buf.writeln('    placements: <CastleRequirement>[],');
     } else {

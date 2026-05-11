@@ -28,6 +28,8 @@ void main() {
     buf.writeln('=== name: ${t.name}');
     if (t.parent != null) buf.writeln('parent: ${t.parent}');
     if (t.aliases.isNotEmpty) buf.writeln('aliases: ${t.aliases.join(', ')}');
+    final String? plyLine = formatPlyHeader(plyEq: t.plyEq, plyMax: t.plyMax);
+    if (plyLine != null) buf.writeln(plyLine);
     final List<PlacementCell> cells = _toCells(t.placements);
     final String? boardLine = formatBoardHeader(cells);
     if (boardLine != null) buf.writeln(boardLine);

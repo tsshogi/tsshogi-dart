@@ -344,6 +344,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: 'ムリヤリ矢倉',
+    plyMax: 16,
     placements: <CastleRequirement>[
       EmptySquare(4, 2),
       EmptySquare(5, 3),

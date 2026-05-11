@@ -133,6 +133,10 @@ void main() {
 
     group('each castle detection (black)', () {
       for (final CastleTemplate template in knownCastles) {
+        // ply 制約付きテンプレートは position ベース検出ではマッチしない
+        // (record 経由でのみ有効)。これらは ply_constraint_test.dart で別途
+        // 検証する。
+        if (template.hasPlyConstraint) continue;
         test('detects ${template.name}', () {
           final Position position = _emptyPosition();
           _placeTemplate(position, template, Color.black);
@@ -149,6 +153,7 @@ void main() {
 
     group('each castle detection (white, mirrored)', () {
       for (final CastleTemplate template in knownCastles) {
+        if (template.hasPlyConstraint) continue;
         test('detects ${template.name} for white', () {
           // 白玉が初期位置にあるので一旦消す
           final Position position = Position();

@@ -46,6 +46,12 @@ String generateStrategyDart(List<ParsedTemplate> templates) {
     if (t.side != null && t.side != 'either') {
       buf.writeln('    side: StrategySide.${t.side},');
     }
+    if (t.plyEq != null) {
+      buf.writeln('    plyEq: ${t.plyEq},');
+    }
+    if (t.plyMax != null) {
+      buf.writeln('    plyMax: ${t.plyMax},');
+    }
     if (t.placements.isEmpty) {
       buf.writeln('    placements: <CastleRequirement>[],');
     } else {

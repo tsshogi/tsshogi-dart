@@ -331,11 +331,22 @@ PlacementCell? _toPlacement(_CellTok t, int file, int rank) {
 // ---------------------------------------------------------------------------
 
 class _MetaRecord {
-  _MetaRecord(
-      {required this.key, this.parent, this.aliases = const <String>[]});
+  _MetaRecord({
+    required this.key,
+    this.parent,
+    this.aliases = const <String>[],
+    this.turnEq,
+    this.turnMax,
+  });
   final String key;
   final String? parent;
   final List<String> aliases;
+
+  /// bioshogi の turn_eq (= 当該テンプレが該当する厳密な手数)。
+  final int? turnEq;
+
+  /// bioshogi の turn_max (= 当該テンプレが該当する手数の上限)。
+  final int? turnMax;
 }
 
 // ignore: library_private_types_in_public_api
@@ -376,7 +387,24 @@ List<_MetaRecord> parseMetaInfo(String source) {
         aliases.add(aStrM.group(1)!);
       }
     }
-    out.add(_MetaRecord(key: key, parent: parent, aliases: aliases));
+    // turn_eq / turn_max: 整数 (`turn_eq: 3`) or nil (`turn_eq: nil`)。
+    int? turnEq;
+    final RegExpMatch? tem = RegExp(r'turn_eq:\s*(\d+)').firstMatch(line);
+    if (tem != null) {
+      turnEq = int.tryParse(tem.group(1)!);
+    }
+    int? turnMax;
+    final RegExpMatch? tmm = RegExp(r'turn_max:\s*(\d+)').firstMatch(line);
+    if (tmm != null) {
+      turnMax = int.tryParse(tmm.group(1)!);
+    }
+    out.add(_MetaRecord(
+      key: key,
+      parent: parent,
+      aliases: aliases,
+      turnEq: turnEq,
+      turnMax: turnMax,
+    ));
   }
   return out;
 }
@@ -406,12 +434,16 @@ String _formatTemplate({
   required List<String> aliases,
   required String? side,
   required List<PlacementCell> cells,
+  int? plyEq,
+  int? plyMax,
 }) {
   final StringBuffer buf = StringBuffer();
   buf.writeln('=== name: $name');
   if (parent != null) buf.writeln('parent: $parent');
   if (aliases.isNotEmpty) buf.writeln('aliases: ${aliases.join(', ')}');
   if (side != null) buf.writeln('side: $side');
+  final String? plyLine = formatPlyHeader(plyEq: plyEq, plyMax: plyMax);
+  if (plyLine != null) buf.writeln(plyLine);
   buf.writeln();
 
   // build grid
@@ -603,6 +635,8 @@ void main(List<String> args) {
       aliases: m.aliases,
       side: null,
       cells: sh.cells,
+      plyEq: m.turnEq,
+      plyMax: m.turnMax,
     ));
     castleCount++;
     for (final PlacementCell p in sh.cells) {
@@ -634,6 +668,8 @@ void main(List<String> args) {
       aliases: m.aliases,
       side: _guessSide(m.key),
       cells: sh.cells,
+      plyEq: m.turnEq,
+      plyMax: m.turnMax,
     ));
     strategyCount++;
     for (final PlacementCell p in sh.cells) {

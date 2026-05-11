@@ -286,6 +286,8 @@ class CastleTemplate {
     required this.placements,
     this.aliases = const <String>[],
     this.parent,
+    this.plyEq,
+    this.plyMax,
   });
 
   /// 囲い名 (例: '金矢倉')
@@ -301,6 +303,31 @@ class CastleTemplate {
   /// 必須要件の集合 (先手視点)。per-cell と position-wide の要件を混在さ
   /// せられる。
   final List<CastleRequirement> placements;
+
+  /// この囲いが成立する手数 (ply) の制約 (厳密一致)。
+  ///
+  /// 非 null の場合、棋譜走査ベース検出 (`record.castles`) では現在 ply が
+  /// この値と一致するときのみマッチする。`plyMax` と併用可。
+  /// 位置ベース検出 (`detectCastles(position)`) では ply 情報が無いため、
+  /// 非 null のテンプレートはスキップされる。
+  final int? plyEq;
+
+  /// この囲いが成立する手数 (ply) の上限。
+  ///
+  /// 非 null の場合、棋譜走査ベース検出では現在 ply が <= plyMax のときのみ
+  /// マッチする。`plyEq` と併用可。位置ベース検出では非 null のテンプレートは
+  /// スキップされる。
+  final int? plyMax;
+
+  /// このテンプレートが ply 制約 (`plyEq` または `plyMax`) を持つかを返す。
+  bool get hasPlyConstraint => plyEq != null || plyMax != null;
+
+  /// 与えられた手数 [ply] でこのテンプレートが満たすべき ply 制約を満たすか。
+  bool satisfiesPlyConstraint(int ply) {
+    if (plyEq != null && plyEq != ply) return false;
+    if (plyMax != null && ply > plyMax!) return false;
+    return true;
+  }
 }
 
 /// 局面における囲いの検出結果。
@@ -352,12 +379,18 @@ const List<CastleTemplate> knownCastles = gen.castles;
 /// 180° 回転して照合される。テンプレートの全 placements を満たせば検出。
 /// テンプレートに含まれていない駒が他のマスにあっても判定には影響しない。
 /// 複数の囲い (例: 金矢倉と矢倉囲い) が同時にマッチすることがある。
+///
+/// 注: ply 制約 (`plyEq` / `plyMax`) を持つテンプレートは position のみでは
+/// 検証できないため、本関数では **常にスキップ** される。
+/// ply 制約を考慮した検出が必要な場合は `record.castles` を使う。
 List<DetectedCastle> detectCastles(
   ImmutablePosition position, {
   Color? side,
 }) {
   final List<DetectedCastle> results = <DetectedCastle>[];
   for (final CastleTemplate template in knownCastles) {
+    // ply 制約付きテンプレートは Record 経由でのみ判定可能。
+    if (template.hasPlyConstraint) continue;
     if (side == null || side == Color.black) {
       if (_matchesTemplate(position, template, Color.black)) {
         results.add(DetectedCastle(template: template, side: Color.black));
@@ -445,10 +478,14 @@ class DetectedCastleAt {
 /// ```
 extension ImmutableRecordCastles on ImmutableRecord {
   /// アクティブブランチを走査し、初めて成立した囲いを ply 順に返す。
+  ///
+  /// ply 制約 (`plyEq` / `plyMax`) を持つテンプレートは、各 ply で制約を満
+  /// たすときのみ評価される。
   List<DetectedCastleAt> get castles {
     final List<DetectedCastleAt> results = <DetectedCastleAt>[];
     final Set<String> seen = <String>{};
     void emitAt(int ply, ImmutablePosition pos) {
+      // ply 制約なしテンプレートは detectCastles(pos) で一括判定。
       for (final DetectedCastle d in detectCastles(pos)) {
         final String key = '${d.template.name}|${d.side.value}';
         if (seen.add(key)) {
@@ -457,6 +494,22 @@ extension ImmutableRecordCastles on ImmutableRecord {
             side: d.side,
             ply: ply,
           ));
+        }
+      }
+      // ply 制約付きテンプレートは個別に評価。
+      for (final CastleTemplate template in knownCastles) {
+        if (!template.hasPlyConstraint) continue;
+        if (!template.satisfiesPlyConstraint(ply)) continue;
+        for (final Color side in const <Color>[Color.black, Color.white]) {
+          if (!_matchesTemplate(pos, template, side)) continue;
+          final String key = '${template.name}|${side.value}';
+          if (seen.add(key)) {
+            results.add(DetectedCastleAt(
+              template: template,
+              side: side,
+              ply: ply,
+            ));
+          }
         }
       }
     }
