@@ -155,7 +155,15 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '四間飛車',
-    aliases: <String>['四間'],
+    aliases: <String>[
+      '四間',
+      'はく式四間飛車',
+      '耀龍四間飛車',
+      '幻想四間飛車',
+      '魔界四間飛車',
+      '真部流',
+      '室岡システム'
+    ],
     side: StrategySide.furibisha,
     placements: <CastleRequirement>[
       PiecePlacement(6, 8, PieceType.rook),
@@ -220,38 +228,6 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       PiecePlacement(8, 8, PieceType.silver),
       PiecePlacement(7, 8, PieceType.knight),
-      PiecePlacement(6, 8, PieceType.rook),
-    ],
-  ),
-  StrategyTemplate(
-    name: 'はく式四間飛車',
-    parent: '四間飛車',
-    side: StrategySide.furibisha,
-    placements: <CastleRequirement>[
-      PiecePlacement(6, 8, PieceType.rook),
-    ],
-  ),
-  StrategyTemplate(
-    name: '耀龍四間飛車',
-    parent: '四間飛車',
-    side: StrategySide.furibisha,
-    placements: <CastleRequirement>[
-      PiecePlacement(6, 8, PieceType.rook),
-    ],
-  ),
-  StrategyTemplate(
-    name: '幻想四間飛車',
-    parent: '四間飛車',
-    side: StrategySide.furibisha,
-    placements: <CastleRequirement>[
-      PiecePlacement(6, 8, PieceType.rook),
-    ],
-  ),
-  StrategyTemplate(
-    name: '魔界四間飛車',
-    parent: '四間飛車',
-    side: StrategySide.furibisha,
-    placements: <CastleRequirement>[
       PiecePlacement(6, 8, PieceType.rook),
     ],
   ),
@@ -423,15 +399,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '鬼殺し',
+    aliases: <String>['新鬼殺し'],
     side: StrategySide.furibisha,
-    placements: <CastleRequirement>[
-      PiecePlacement(7, 5, PieceType.pawn),
-      PiecePlacement(7, 7, PieceType.knight),
-    ],
-  ),
-  StrategyTemplate(
-    name: '新鬼殺し',
-    parent: '鬼殺し',
     placements: <CastleRequirement>[
       PiecePlacement(7, 5, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.knight),
@@ -536,22 +505,6 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       PiecePlacement(5, 8, PieceType.rook),
       PiecePlacement(9, 9, PieceType.king),
-    ],
-  ),
-  StrategyTemplate(
-    name: '真部流',
-    parent: '四間飛車',
-    side: StrategySide.furibisha,
-    placements: <CastleRequirement>[
-      PiecePlacement(6, 8, PieceType.rook),
-    ],
-  ),
-  StrategyTemplate(
-    name: '室岡システム',
-    parent: '四間飛車',
-    side: StrategySide.furibisha,
-    placements: <CastleRequirement>[
-      PiecePlacement(6, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -764,6 +717,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '角換わり腰掛け銀',
     parent: '角換わり',
+    aliases: <String>['角換わり腰掛け銀旧型'],
     side: StrategySide.ibisha,
     placements: <CastleRequirement>[
       PiecePlacement(5, 6, PieceType.silver),
@@ -801,16 +755,6 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     ],
   ),
   StrategyTemplate(
-    name: '角換わり腰掛け銀旧型',
-    parent: '角換わり腰掛け銀',
-    side: StrategySide.ibisha,
-    placements: <CastleRequirement>[
-      PiecePlacement(5, 6, PieceType.silver),
-      PiecePlacement(7, 7, PieceType.silver),
-      PiecePlacement(2, 8, PieceType.rook),
-    ],
-  ),
-  StrategyTemplate(
     name: '一手損角換わり',
     parent: '角換わり',
     side: StrategySide.ibisha,
@@ -821,38 +765,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '横歩取り',
-    side: StrategySide.ibisha,
-    placements: <CastleRequirement>[
-      PiecePlacement(3, 6, PieceType.rook),
-    ],
-  ),
-  StrategyTemplate(
-    name: '相横歩取り',
-    parent: '横歩取り',
-    side: StrategySide.ibisha,
-    placements: <CastleRequirement>[
-      PiecePlacement(3, 6, PieceType.rook),
-    ],
-  ),
-  StrategyTemplate(
-    name: '中座飛車',
-    parent: '横歩取り',
-    side: StrategySide.ibisha,
-    placements: <CastleRequirement>[
-      PiecePlacement(3, 6, PieceType.rook),
-    ],
-  ),
-  StrategyTemplate(
-    name: '青野流',
-    parent: '横歩取り',
-    side: StrategySide.ibisha,
-    placements: <CastleRequirement>[
-      PiecePlacement(3, 6, PieceType.rook),
-    ],
-  ),
-  StrategyTemplate(
-    name: '勇気流',
-    parent: '横歩取り',
+    aliases: <String>['相横歩取り', '中座飛車', '青野流', '勇気流'],
     side: StrategySide.ibisha,
     placements: <CastleRequirement>[
       PiecePlacement(3, 6, PieceType.rook),
@@ -860,6 +773,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '相掛かり',
+    aliases: <String>['中原流相掛かり'],
     side: StrategySide.ibisha,
     placements: <CastleRequirement>[
       PiecePlacement(2, 6, PieceType.pawn),
@@ -872,15 +786,6 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.ibisha,
     placements: <CastleRequirement>[
       PiecePlacement(2, 7, PieceType.silver),
-      PiecePlacement(2, 8, PieceType.rook),
-    ],
-  ),
-  StrategyTemplate(
-    name: '中原流相掛かり',
-    parent: '相掛かり',
-    side: StrategySide.ibisha,
-    placements: <CastleRequirement>[
-      PiecePlacement(2, 6, PieceType.pawn),
       PiecePlacement(2, 8, PieceType.rook),
     ],
   ),
@@ -1064,22 +969,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '右四間飛車',
-    side: StrategySide.ibisha,
-    placements: <CastleRequirement>[
-      PiecePlacement(4, 8, PieceType.rook),
-    ],
-  ),
-  StrategyTemplate(
-    name: '右四間飛車急戦',
-    parent: '右四間飛車',
-    side: StrategySide.ibisha,
-    placements: <CastleRequirement>[
-      PiecePlacement(4, 8, PieceType.rook),
-    ],
-  ),
-  StrategyTemplate(
-    name: '右四間飛車超急戦',
-    parent: '右四間飛車',
+    aliases: <String>['右四間飛車急戦', '右四間飛車超急戦'],
     side: StrategySide.ibisha,
     placements: <CastleRequirement>[
       PiecePlacement(4, 8, PieceType.rook),
@@ -1136,14 +1026,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '右玉',
-    side: StrategySide.ibisha,
-    placements: <CastleRequirement>[
-      PiecePlacement(3, 8, PieceType.king),
-    ],
-  ),
-  StrategyTemplate(
-    name: '三段右玉',
-    parent: '右玉',
+    aliases: <String>['三段右玉', '糸谷流右玉', '羽生流右玉'],
     side: StrategySide.ibisha,
     placements: <CastleRequirement>[
       PiecePlacement(3, 8, PieceType.king),
@@ -1156,22 +1039,6 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       PiecePlacement(6, 7, PieceType.silver),
       PiecePlacement(4, 7, PieceType.silver),
-      PiecePlacement(3, 8, PieceType.king),
-    ],
-  ),
-  StrategyTemplate(
-    name: '糸谷流右玉',
-    parent: '右玉',
-    side: StrategySide.ibisha,
-    placements: <CastleRequirement>[
-      PiecePlacement(3, 8, PieceType.king),
-    ],
-  ),
-  StrategyTemplate(
-    name: '羽生流右玉',
-    parent: '右玉',
-    side: StrategySide.ibisha,
-    placements: <CastleRequirement>[
       PiecePlacement(3, 8, PieceType.king),
     ],
   ),
@@ -1383,14 +1250,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '嬉野流',
-    placements: <CastleRequirement>[
-      PiecePlacement(7, 7, PieceType.bishop),
-      PiecePlacement(6, 8, PieceType.silver),
-    ],
-  ),
-  StrategyTemplate(
-    name: '新嬉野流',
-    parent: '嬉野流',
+    aliases: <String>['新嬉野流'],
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.bishop),
       PiecePlacement(6, 8, PieceType.silver),
@@ -1497,13 +1357,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '風車',
-    placements: <CastleRequirement>[
-      PiecePlacement(5, 6, PieceType.pawn),
-    ],
-  ),
-  StrategyTemplate(
-    name: '新風車',
-    parent: '風車',
+    aliases: <String>['新風車'],
     placements: <CastleRequirement>[
       PiecePlacement(5, 6, PieceType.pawn),
     ],
@@ -1563,13 +1417,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'ポンポン桂',
-    placements: <CastleRequirement>[
-      PiecePlacement(3, 7, PieceType.knight),
-    ],
-  ),
-  StrategyTemplate(
-    name: '新ポンポン桂',
-    parent: 'ポンポン桂',
+    aliases: <String>['新ポンポン桂'],
     placements: <CastleRequirement>[
       PiecePlacement(3, 7, PieceType.knight),
     ],
@@ -1636,13 +1484,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'カメレオン戦法',
-    placements: <CastleRequirement>[
-      AnyOfPieces(3, 8, <PieceType>[PieceType.king]),
-    ],
-  ),
-  StrategyTemplate(
-    name: '英春流カメレオン',
-    parent: 'カメレオン戦法',
+    aliases: <String>['英春流カメレオン'],
     placements: <CastleRequirement>[
       AnyOfPieces(3, 8, <PieceType>[PieceType.king]),
     ],
