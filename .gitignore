@@ -264,3 +264,4 @@ data/
 .packages
 build/
 pubspec.lock
+coverage/

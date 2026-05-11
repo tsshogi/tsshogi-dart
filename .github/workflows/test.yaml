@@ -35,5 +35,33 @@ jobs:
       - name: Static analysis
         run: dart analyze --fatal-infos --fatal-warnings
 
-      - name: Run tests
-        run: dart test --reporter expanded
+      - name: Run tests with coverage
+        run: dart test --reporter expanded --coverage=coverage
+
+      - name: Format coverage to lcov
+        run: |
+          dart pub run coverage:format_coverage \
+            --lcov \
+            --in=coverage \
+            --out=coverage/lcov.info \
+            --report-on=lib \
+            --packages=.dart_tool/package_config.json
+
+      - name: Coverage summary
+        run: |
+          awk '/^SF:/{file=$0; sub("SF:","",file); files[file]=1; cur=file}
+               /^DA:/{tot[cur]++; total++; if($0 !~ /,0$/){hit[cur]++; covered++}}
+               END {
+                 for (f in files) {
+                   printf "  %5d/%-5d %5.1f%%  %s\n", hit[f]+0, tot[f], (hit[f]+0)*100/tot[f], f
+                 }
+                 printf "\n  TOTAL: %d/%d lines (%.1f%%)\n", covered, total, covered*100/total
+               }' coverage/lcov.info | sort
+
+      - name: Upload coverage artifact
+        if: ${{ !env.ACT }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-lcov
+          path: coverage/lcov.info
+          retention-days: 14
