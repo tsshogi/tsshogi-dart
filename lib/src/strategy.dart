@@ -156,19 +156,28 @@ List<DetectedStrategy> detectStrategies(
   Color? side,
 }) {
   final List<DetectedStrategy> results = <DetectedStrategy>[];
+  // position-only 評価向け MoveHistory:
+  //   - 標準初期局面の駒位置 (飛 2八 / 香 1九 等) を visited に登録
+  //   - 現局面の駒位置も visited に登録 (現状の配置)
+  // これで「飛車が 2八 (初期) と 6八 (現在) を visited」のような
+  // bioshogi の `★` 由来要件が、棋譜走査無しでも標準ゲーム前提で満たされる。
+  final MoveHistory history = MoveHistory()
+    ..initFromPosition(Position())
+    ..initFromPosition(position);
   for (final StrategyTemplate template in knownStrategies) {
     // ply 制約付きテンプレートは Record 経由でのみ判定可能。
     if (template.hasPlyConstraint) continue;
-    // 履歴依存要件 (PieceUnmoved / PieceVisited) を含むテンプレートも同様に
-    // position 単体では判定不能。
-    if (template.hasHistoryRequirement) continue;
+    // game-end 評価テンプレ (居玉 等) は record.strategies からのみ。
+    if (template.evaluateAtGameEnd) continue;
     if (side == null || side == Color.black) {
-      if (_matchesStrategyTemplate(position, template, Color.black)) {
+      if (_matchesStrategyTemplate(position, template, Color.black,
+          history: history)) {
         results.add(DetectedStrategy(template: template, side: Color.black));
       }
     }
     if (side == null || side == Color.white) {
-      if (_matchesStrategyTemplate(position, template, Color.white)) {
+      if (_matchesStrategyTemplate(position, template, Color.white,
+          history: history)) {
         results.add(DetectedStrategy(template: template, side: Color.white));
       }
     }

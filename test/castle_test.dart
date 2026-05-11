@@ -54,6 +54,14 @@ void _placeTemplate(Position position, CastleTemplate template, Color side) {
         board.set(Square(f, rr), Piece(side, pieceType));
         occupied.add(f * 10 + rr);
         break;
+      case OpponentPiecePlacement(:final file, :final rank, :final pieceType):
+        final int f = side == Color.black ? file : 10 - file;
+        final int rr = side == Color.black ? rank : 10 - rank;
+        // 相手駒を配置 (テンプレ判定の正側 side に対する相手色)。
+        final Color opp = side == Color.black ? Color.white : Color.black;
+        board.set(Square(f, rr), Piece(opp, pieceType));
+        occupied.add(f * 10 + rr);
+        break;
       case AnyOfPieces(:final file, :final rank, :final options):
         final int f = side == Color.black ? file : 10 - file;
         final int rr = side == Color.black ? rank : 10 - rank;
@@ -546,13 +554,28 @@ void main() {
       // 系テンプレは静的盤面パターンとしては存在しない。代わりに AnyOfPieces
       // を含む任意テンプレを 1 つ拾い、そのテンプレが期待通り検出されること
       // を確認する。
+      // AnyOfPieces を含み、かつ history / opponent / handPiece 要件を
+      // 含まないテンプレを選ぶ (_placeTemplate で完全に再現可能なもの)。
       final CastleTemplate? withAnyOf =
           knownCastles.cast<CastleTemplate?>().firstWhere(
-                (CastleTemplate? t) => t!.placements.any(
-                  (CastleRequirement r) => r is AnyOfPieces,
-                ),
-                orElse: () => null,
-              );
+        (CastleTemplate? t) {
+          if (t == null) return false;
+          final placements = t.placements;
+          if (!placements.any((r) => r is AnyOfPieces)) return false;
+          // 完全再現不可な要件を含むテンプレは除外
+          for (final r in placements) {
+            if (r is PieceVisited ||
+                r is PieceUnmoved ||
+                r is KingIgyoku ||
+                r is OpponentPiecePlacement ||
+                r is HandPiece) {
+              return false;
+            }
+          }
+          return true;
+        },
+        orElse: () => null,
+      );
       if (withAnyOf == null) {
         // データが書き換わって AnyOfPieces を含まないテンプレ集合になった
         // 場合は skip 扱い (smoke).
@@ -840,6 +863,7 @@ void main() {
         for (final CastleRequirement r in t.placements) {
           final ({int file, int rank})? coord = switch (r) {
             PiecePlacement(:final file, :final rank) ||
+            OpponentPiecePlacement(:final file, :final rank) ||
             AnyOfPieces(:final file, :final rank) ||
             EmptySquare(:final file, :final rank) ||
             NotOfPieces(:final file, :final rank) ||
@@ -892,6 +916,7 @@ void main() {
         for (final CastleRequirement r in t.placements) {
           final ({int file, int rank})? coord = switch (r) {
             PiecePlacement(:final file, :final rank) ||
+            OpponentPiecePlacement(:final file, :final rank) ||
             AnyOfPieces(:final file, :final rank) ||
             EmptySquare(:final file, :final rank) ||
             NotOfPieces(:final file, :final rank) ||
@@ -942,6 +967,7 @@ void main() {
       // PieceAnywhere/HandPiece は親子関係から外れる宣言なので除外)。
       ({int file, int rank})? coordOf(CastleRequirement r) => switch (r) {
             PiecePlacement(:final file, :final rank) ||
+            OpponentPiecePlacement(:final file, :final rank) ||
             AnyOfPieces(:final file, :final rank) ||
             EmptySquare(:final file, :final rank) ||
             NotOfPieces(:final file, :final rank) ||

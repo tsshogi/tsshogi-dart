@@ -227,6 +227,55 @@ class AnyPiece extends CastleRequirement {
   int get hashCode => Object.hash('AnyPiece', file, rank);
 }
 
+/// 指定マスに **相手陣営** の指定駒種があることを要求する要件
+/// (bioshogi の `v駒` 相当)。
+///
+/// テンプレートの判定対象が [side] のとき、(file, rank) は side 視点で
+/// rotate された後、**相手 (= reverseColor(side))** の駒の存在を確認する。
+///
+/// 例: `OpponentPiecePlacement(2, 2, PieceType.gold)` は、対象 side から
+/// 見て相手の金が「2二」相当マスにあること。
+/// - black 評価時 → 白の金が 2二 にいる
+/// - white 評価時 → 黒の金が 8八 にいる (file/rank 180° 回転)
+///
+/// これにより「△2三歩戦法」(相手駒位置に依存) のような戦法を bioshogi
+/// と同等の精度で表現できる。
+class OpponentPiecePlacement extends CastleRequirement {
+  const OpponentPiecePlacement(this.file, this.rank, this.pieceType);
+
+  /// 1..9 — 先手視点
+  final int file;
+
+  /// 1..9 — 先手視点
+  final int rank;
+
+  /// 相手の駒種 (この時点の色は照合時に決まる)
+  final PieceType pieceType;
+
+  @override
+  bool isSatisfiedBy(ImmutablePosition position, Color side,
+      [MoveHistory? history]) {
+    final int f = side == Color.black ? file : 10 - file;
+    final int r = side == Color.black ? rank : 10 - rank;
+    final Piece? piece = position.board.at(Square(f, r));
+    if (piece == null) return false;
+    if (piece.color == side) return false; // 相手の駒であるべき
+    return piece.type == pieceType;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is OpponentPiecePlacement &&
+        other.file == file &&
+        other.rank == rank &&
+        other.pieceType == pieceType;
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash('OpponentPiecePlacement', file, rank, pieceType);
+}
+
 /// 盤上のいずれかのマスに [side] の指定駒が 1 枚以上あることを要求する要件。
 /// マス指定はない (position-wide)。
 ///
@@ -543,19 +592,26 @@ List<DetectedCastle> detectCastles(
   Color? side,
 }) {
   final List<DetectedCastle> results = <DetectedCastle>[];
+  // position-only 評価向け MoveHistory:
+  //   - 標準初期局面の駒位置を visited に登録
+  //   - 現局面の駒位置も追加で登録
+  // これで「飛車が 2八 (初期) と 6八 (現在) を visited した」のような
+  // 標準ゲーム由来の要件が静的局面でも満たされる。
+  final MoveHistory history = MoveHistory()
+    ..initFromPosition(Position())
+    ..initFromPosition(position);
   for (final CastleTemplate template in knownCastles) {
     // ply 制約付きテンプレートは Record 経由でのみ判定可能。
     if (template.hasPlyConstraint) continue;
-    // 履歴依存要件 (PieceUnmoved / PieceVisited) を含むテンプレートも同様に
-    // position 単体では判定不能。
-    if (template.hasHistoryRequirement) continue;
+    // game-end 評価テンプレ (居玉 等) は record.castles からのみ。
+    if (template.evaluateAtGameEnd) continue;
     if (side == null || side == Color.black) {
-      if (_matchesTemplate(position, template, Color.black)) {
+      if (_matchesTemplate(position, template, Color.black, history: history)) {
         results.add(DetectedCastle(template: template, side: Color.black));
       }
     }
     if (side == null || side == Color.white) {
-      if (_matchesTemplate(position, template, Color.white)) {
+      if (_matchesTemplate(position, template, Color.white, history: history)) {
         results.add(DetectedCastle(template: template, side: Color.white));
       }
     }

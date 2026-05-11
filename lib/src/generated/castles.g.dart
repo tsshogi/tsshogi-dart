@@ -152,6 +152,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
     name: '豆腐矢倉',
     parent: '金矢倉',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(6, 2, PieceType.rook),
+      OpponentPiecePlacement(7, 3, PieceType.knight),
       EmptySquare(8, 5),
       EmptySquare(5, 5),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -185,6 +187,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(7, 8, PieceType.gold),
       EmptySquare(5, 8),
+      PieceVisited(6, 8, PieceType.silver),
     ],
   ),
   CastleTemplate(
@@ -309,6 +312,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       EmptySquare(8, 8),
       PiecePlacement(7, 8, PieceType.king),
       PiecePlacement(6, 9, PieceType.gold),
+      PieceVisited(6, 8, PieceType.king),
     ],
   ),
   CastleTemplate(
@@ -324,6 +328,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       EmptySquare(8, 8),
       PiecePlacement(7, 8, PieceType.king),
       PiecePlacement(6, 8, PieceType.gold),
+      PieceVisited(6, 9, PieceType.gold),
     ],
   ),
   CastleTemplate(
@@ -340,15 +345,21 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       EmptySquare(6, 8),
       PiecePlacement(5, 8, PieceType.gold),
       PiecePlacement(7, 9, PieceType.bishop),
+      PieceVisited(6, 9, PieceType.king),
     ],
   ),
   CastleTemplate(
     name: 'ムリヤリ矢倉',
     plyMax: 16,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 1, PieceType.bishop),
+      OpponentPiecePlacement(8, 2, PieceType.rook),
       EmptySquare(4, 2),
       EmptySquare(5, 3),
+      OpponentPiecePlacement(3, 3, PieceType.silver),
+      OpponentPiecePlacement(2, 3, PieceType.pawn),
       EmptySquare(6, 4),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       EmptySquare(7, 5),
       PiecePlacement(2, 5, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
@@ -410,6 +421,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(6, 8, PieceType.gold),
       PiecePlacement(5, 8, PieceType.gold),
       PiecePlacement(4, 8, PieceType.silver),
+      PieceVisited(6, 9, PieceType.gold),
     ],
   ),
   CastleTemplate(
@@ -475,6 +487,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(7, 8, PieceType.silver),
       PiecePlacement(7, 9, PieceType.king),
       PiecePlacement(6, 9, PieceType.gold),
+      PieceVisited(6, 8, PieceType.king),
     ],
   ),
   CastleTemplate(
@@ -491,6 +504,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(7, 8, PieceType.gold),
       PiecePlacement(8, 9, PieceType.knight),
       PiecePlacement(7, 9, PieceType.silver),
+      PieceVisited(6, 9, PieceType.gold),
     ],
   ),
   CastleTemplate(
@@ -603,6 +617,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(9, 9, PieceType.king),
       PiecePlacement(8, 9, PieceType.knight),
       PiecePlacement(7, 9, PieceType.gold),
+      PieceVisited(6, 9, PieceType.gold),
     ],
   ),
   CastleTemplate(
@@ -644,6 +659,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(9, 9, PieceType.king),
       PiecePlacement(8, 9, PieceType.knight),
       PiecePlacement(7, 9, PieceType.silver),
+      PieceVisited(6, 8, PieceType.silver),
     ],
   ),
   CastleTemplate(
@@ -662,6 +678,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(8, 9, PieceType.knight),
       PiecePlacement(6, 9, PieceType.gold),
       EmptySquare(5, 9),
+      PieceVisited(7, 9, PieceType.silver),
     ],
   ),
   CastleTemplate(
@@ -719,6 +736,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(7, 8, PieceType.gold),
       PiecePlacement(9, 9, PieceType.king),
       PiecePlacement(8, 9, PieceType.knight),
+      PieceVisited(7, 7, PieceType.silver),
     ],
   ),
   CastleTemplate(
@@ -732,6 +750,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
           6, 7, <PieceType>[PieceType.silver, PieceType.gold, PieceType.king]),
       PiecePlacement(8, 8, PieceType.king),
       PiecePlacement(7, 8, PieceType.gold),
+      PieceVisited(7, 7, PieceType.silver),
     ],
   ),
   CastleTemplate(
@@ -1005,6 +1024,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       EmptySquare(2, 8),
       PiecePlacement(4, 9, PieceType.gold),
       PiecePlacement(2, 9, PieceType.knight),
+      PieceVisited(3, 9, PieceType.silver),
     ],
   ),
   CastleTemplate(
@@ -1044,6 +1064,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(3, 8, PieceType.king),
       EmptySquare(2, 8),
       PiecePlacement(3, 9, PieceType.silver),
+      PieceVisited(4, 9, PieceType.gold),
     ],
   ),
   CastleTemplate(
@@ -1193,6 +1214,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       EmptySquare(5, 9),
       PiecePlacement(4, 9, PieceType.gold),
       EmptySquare(3, 9),
+      PieceVisited(5, 6, PieceType.silver),
     ],
   ),
   CastleTemplate(
@@ -1231,6 +1253,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(4, 9, PieceType.gold),
       AnyPiece(2, 9),
       PiecePlacement(1, 9, PieceType.king),
+      PieceVisited(3, 9, PieceType.silver),
     ],
   ),
   CastleTemplate(
@@ -1258,6 +1281,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
     placements: <CastleRequirement>[
       PiecePlacement(3, 7, PieceType.knight),
       PiecePlacement(2, 9, PieceType.king),
+      PieceVisited(3, 8, PieceType.king),
     ],
   ),
   CastleTemplate(
@@ -1391,6 +1415,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(6, 9, PieceType.gold),
       PiecePlacement(5, 9, PieceType.silver),
       PiecePlacement(4, 9, PieceType.gold),
+      PieceVisited(6, 8, PieceType.silver),
     ],
   ),
   CastleTemplate(

@@ -281,8 +281,20 @@ class _CellTok {
 PlacementCell? _toPlacement(_CellTok t, int file, int rank) {
   final String? prefix = t.prefix;
   final String body = t.body;
-  // 相手側マーカー: v / ? / ^ → 全部 SKIP
-  if (prefix == 'v' || prefix == '?' || prefix == '^') return null;
+  // `v駒` = 相手 (後手) の駒が指定マスにある (bioshogi の opponent piece)。
+  // 駒種を解決して OpponentPiecePlacement を emit する。
+  if (prefix == 'v') {
+    final String? sfen = _kanjiToSfen[body];
+    if (sfen == null) return null;
+    return PlacementCell(
+      kind: 'opponent',
+      file: file,
+      rank: rank,
+      pieceTypes: <String>[sfenTokenToEnumName(sfen)],
+    );
+  }
+  // `?駒` = 相手側の OR / `^駒` = 相手側に存在しない。今の所未対応で SKIP。
+  if (prefix == '?' || prefix == '^') return null;
   // 移動元マーカー: ★ / ☆ → SKIP
   if (body == '★' || body == '☆') return null;
   // * prefix は「▲側のどれかの位置にこの駒が存在する」を意味するため、
@@ -509,6 +521,8 @@ String _cellToken(PlacementCell p) {
   switch (p.kind) {
     case 'exact':
       return enumNameToSfenToken(p.pieceTypes.single);
+    case 'opponent':
+      return enumNameToSfenToken(p.pieceTypes.single).toLowerCase();
     case 'anyOf':
       return '[${p.pieceTypes.map(enumNameToSfenToken).join('')}]';
     case 'notOf':

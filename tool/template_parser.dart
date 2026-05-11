@@ -553,7 +553,20 @@ _Cell _parseCellToken(String token, String section, int row) {
     }
     return _Cell(negated ? 'notOf' : 'anyOf', pieces);
   }
+  // Lowercase token = opponent piece (`k r b g s n l p` + `+p` 等)。
+  // bioshogi の `v駒` 相当。
+  if (_isLowercasePieceToken(token)) {
+    final String upper = token.toUpperCase();
+    return _Cell('opponent', <String>[sfenTokenToEnumName(upper)]);
+  }
   return _Cell('exact', <String>[sfenTokenToEnumName(token)]);
+}
+
+bool _isLowercasePieceToken(String token) {
+  if (token.isEmpty) return false;
+  // `+p` / `+l` 等 — `+` の後の文字を見る
+  final String last = token[token.length - 1];
+  return last.toLowerCase() == last && last.toUpperCase() != last;
 }
 
 /// `[GS]` → ['G', 'S'] / `[G+R]` → ['G', '+R'] / `[+P +L]` → ['+P', '+L'].
@@ -629,6 +642,7 @@ List<List<String>> buildGrid(List<PlacementCell> placements) {
         p.kind == 'kingIgyoku') {
       continue;
     }
+    // `opponent` kind is per-cell, falls through to _cellToToken below.
     final int rowIdx = p.rank - 1;
     final int colIdx = 9 - p.file;
     if (rowIdx < 0 || rowIdx > 8 || colIdx < 0 || colIdx > 8) {
@@ -650,6 +664,8 @@ String _cellToToken(PlacementCell p) {
   switch (p.kind) {
     case 'exact':
       return enumNameToSfenToken(p.pieceTypes.single);
+    case 'opponent':
+      return enumNameToSfenToken(p.pieceTypes.single).toLowerCase();
     case 'anyOf':
       final String joined = p.pieceTypes.map(enumNameToSfenToken).join('');
       return '[$joined]';

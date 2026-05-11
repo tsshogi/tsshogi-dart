@@ -260,11 +260,12 @@ void main() {
       expect(fired, isFalse);
     });
 
-    test('飛車 2八→6八→5八→4八→3八→2八 (黒) → Uターン飛車 (黒) 発火', () {
-      // 黒飛車を順次 6八/5八/4八/3八 まで動かして最後 2八 に戻す。
+    test('飛車 2八→8八→7八→6八→5八→2八 (黒) → Uターン飛車 (黒) 発火', () {
+      // bioshogi Uターン飛車テンプレは visited 5/6/7/8 を要求 (★ at 5八〜8八)。
+      // 黒飛車を 8八→7八→6八→5八 と通過させて最後 2八 に戻す。
       // 各 visited マスが履歴に積まれた上で現在位置 2八 を満たすので発火。
       const String usi = 'startpos moves '
-          '2h6h 3c3d 6h5h 5c5d 5h4h 4c4d 4h3h 6c6d 3h2h';
+          '2h8h 3c3d 8h7h 5c5d 7h6h 4c4d 6h5h 6c6d 5h2h';
       final Record? r = Record.newByUSI(usi);
       expect(r, isNotNull);
       final List<DetectedStrategyAt> hits = r!.strategies

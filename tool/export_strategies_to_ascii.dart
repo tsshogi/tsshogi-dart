@@ -67,6 +67,15 @@ List<PlacementCell> _toCells(List<CastleRequirement> placements) {
             pieceTypes: <String>[req.pieceType.name],
           ),
         );
+      case OpponentPiecePlacement():
+        out.add(
+          PlacementCell(
+            file: req.file,
+            rank: req.rank,
+            kind: 'opponent',
+            pieceTypes: <String>[req.pieceType.name],
+          ),
+        );
       case AnyOfPieces():
         out.add(
           PlacementCell(

@@ -23,8 +23,12 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.ibisha,
     plyMax: 25,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(4, 1, PieceType.king),
+      OpponentPiecePlacement(3, 1, PieceType.bishop),
       EmptySquare(4, 2),
+      OpponentPiecePlacement(3, 2, PieceType.gold),
       EmptySquare(5, 3),
+      OpponentPiecePlacement(3, 3, PieceType.silver),
       EmptySquare(6, 4),
       EmptySquare(2, 4),
       EmptySquare(5, 5),
@@ -60,6 +64,11 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '脇システム',
     placements: <CastleRequirement>[
       EmptySquare(5, 1),
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(4, 3, PieceType.gold),
+      OpponentPiecePlacement(3, 3, PieceType.silver),
+      OpponentPiecePlacement(6, 4, PieceType.bishop),
       PiecePlacement(4, 6, PieceType.bishop),
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(6, 7, PieceType.gold),
@@ -72,8 +81,12 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '森下システム',
     plyMax: 29,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 1, PieceType.bishop),
+      OpponentPiecePlacement(8, 2, PieceType.rook),
       EmptySquare(4, 2),
+      OpponentPiecePlacement(3, 2, PieceType.gold),
       EmptySquare(5, 3),
+      OpponentPiecePlacement(3, 3, PieceType.silver),
       EmptySquare(6, 4),
       EmptySquare(5, 5),
       EmptySquare(4, 6),
@@ -86,12 +99,20 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(6, 8, PieceType.bishop),
       PiecePlacement(2, 8, PieceType.rook),
       PiecePlacement(6, 9, PieceType.king),
+      PieceVisited(7, 9, PieceType.bishop),
     ],
   ),
   StrategyTemplate(
     name: '同型矢倉',
     side: StrategySide.ibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(4, 2, PieceType.bishop),
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(2, 2, PieceType.king),
+      OpponentPiecePlacement(4, 3, PieceType.gold),
+      OpponentPiecePlacement(3, 3, PieceType.silver),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       EmptySquare(7, 5),
       EmptySquare(6, 5),
       EmptySquare(5, 5),
@@ -111,6 +132,10 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       PiecePlacement(2, 5, PieceType.pawn),
       PiecePlacement(2, 6, PieceType.bishop),
+      PieceVisited(3, 5, PieceType.bishop),
+      PieceVisited(3, 7, PieceType.bishop),
+      PieceVisited(4, 8, PieceType.bishop),
+      PieceVisited(5, 9, PieceType.bishop),
     ],
   ),
   StrategyTemplate(
@@ -129,6 +154,17 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.ibisha,
     plyEq: 24,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(4, 1, PieceType.king),
+      OpponentPiecePlacement(3, 1, PieceType.bishop),
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(6, 2, PieceType.silver),
+      OpponentPiecePlacement(5, 2, PieceType.gold),
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(6, 3, PieceType.pawn),
+      OpponentPiecePlacement(3, 3, PieceType.silver),
+      OpponentPiecePlacement(8, 4, PieceType.pawn),
+      OpponentPiecePlacement(7, 4, PieceType.pawn),
+      OpponentPiecePlacement(5, 4, PieceType.pawn),
       PiecePlacement(5, 6, PieceType.pawn),
       PiecePlacement(3, 6, PieceType.pawn),
       PiecePlacement(2, 6, PieceType.pawn),
@@ -147,6 +183,17 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.ibisha,
     plyEq: 24,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(4, 1, PieceType.king),
+      OpponentPiecePlacement(3, 1, PieceType.bishop),
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(6, 2, PieceType.silver),
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(8, 3, PieceType.pawn),
+      OpponentPiecePlacement(6, 3, PieceType.pawn),
+      OpponentPiecePlacement(4, 3, PieceType.gold),
+      OpponentPiecePlacement(3, 3, PieceType.silver),
+      OpponentPiecePlacement(7, 4, PieceType.pawn),
+      OpponentPiecePlacement(5, 4, PieceType.pawn),
       PiecePlacement(5, 6, PieceType.pawn),
       PiecePlacement(3, 6, PieceType.pawn),
       PiecePlacement(2, 6, PieceType.pawn),
@@ -178,6 +225,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(6, 8, PieceType.silver),
       PiecePlacement(5, 8, PieceType.rook),
       PiecePlacement(4, 9, PieceType.gold),
+      PieceVisited(2, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -197,6 +245,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(2, 8, PieceType.rook),
       EmptySquare(3, 9),
+      PieceVisited(4, 8, PieceType.silver),
     ],
   ),
   StrategyTemplate(
@@ -241,11 +290,14 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '米長流急戦矢倉',
     side: StrategySide.ibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 4, PieceType.bishop),
+      OpponentPiecePlacement(4, 4, PieceType.gold),
       PiecePlacement(7, 5, PieceType.silver),
       EmptySquare(5, 5),
       PiecePlacement(9, 6, PieceType.pawn),
       EmptySquare(7, 7),
       PiecePlacement(8, 8, PieceType.bishop),
+      PieceVisited(6, 6, PieceType.silver),
     ],
   ),
   StrategyTemplate(
@@ -285,6 +337,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.ibisha,
     plyMax: 6,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(2, 5, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.gold),
     ],
@@ -294,6 +348,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '相掛かり',
     side: StrategySide.ibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(2, 3, PieceType.pawn),
       EmptySquare(2, 5),
       EmptySquare(2, 6),
       PiecePlacement(3, 7, PieceType.pawn),
@@ -308,11 +364,15 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '相掛かり',
     placements: <CastleRequirement>[
       EmptySquare(7, 1),
+      OpponentPiecePlacement(3, 2, PieceType.gold),
       EmptySquare(6, 3),
+      OpponentPiecePlacement(2, 3, PieceType.pawn),
+      OpponentPiecePlacement(6, 4, PieceType.pawn),
       EmptySquare(5, 4),
       EmptySquare(4, 4),
       EmptySquare(3, 4),
       PiecePlacement(2, 4, PieceType.pawn),
+      OpponentPiecePlacement(1, 4, PieceType.pawn),
       PiecePlacement(2, 6, PieceType.rook),
       PiecePlacement(1, 6, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.gold),
@@ -323,6 +383,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '相掛かり',
     side: StrategySide.ibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 1, PieceType.silver),
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(1, 4, PieceType.pawn),
       EmptySquare(3, 6),
       PiecePlacement(2, 6, PieceType.rook),
       PiecePlacement(1, 6, PieceType.pawn),
@@ -336,13 +399,16 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     plyEq: 5,
     placements: <CastleRequirement>[
       PiecePlacement(2, 4, PieceType.pawn),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
     ],
   ),
   StrategyTemplate(
     name: '7手爆弾',
     plyEq: 7,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(2, 4, PieceType.pawn),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
     ],
   ),
@@ -352,6 +418,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     aliases: <String>['原内流'],
     plyEq: 7,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(2, 4, PieceType.pawn),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.gold),
     ],
   ),
@@ -359,7 +427,11 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'ノーガード戦法',
     plyMax: 21,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(5, 1, PieceType.king),
+      OpponentPiecePlacement(3, 1, PieceType.silver),
       PiecePlacement(2, 1, PieceType.dragon),
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
+      OpponentPiecePlacement(8, 6, PieceType.rook),
       PiecePlacement(8, 8, PieceType.silver),
       PiecePlacement(5, 9, PieceType.king),
     ],
@@ -368,7 +440,11 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '横歩取り',
     side: StrategySide.ibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 1, PieceType.silver),
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
       PiecePlacement(3, 4, PieceType.rook),
+      OpponentPiecePlacement(8, 6, PieceType.rook),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(7, 8, PieceType.gold),
@@ -380,8 +456,10 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '横歩取り',
     side: StrategySide.ibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 2, PieceType.gold),
       EmptySquare(3, 3),
       PiecePlacement(3, 4, PieceType.rook),
+      OpponentPiecePlacement(7, 6, PieceType.rook),
       EmptySquare(7, 7),
       PiecePlacement(7, 8, PieceType.gold),
     ],
@@ -390,7 +468,11 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '青野流',
     parent: '横歩取り',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 1, PieceType.silver),
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
       PiecePlacement(3, 4, PieceType.rook),
+      OpponentPiecePlacement(8, 6, PieceType.rook),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(7, 8, PieceType.gold),
@@ -402,7 +484,11 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '勇気流',
     parent: '横歩取り',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 1, PieceType.silver),
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
       PiecePlacement(3, 4, PieceType.rook),
+      OpponentPiecePlacement(8, 6, PieceType.rook),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(7, 8, PieceType.gold),
@@ -416,8 +502,10 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     aliases: <String>['竹部流'],
     plyEq: 19,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 1, PieceType.silver),
       AnyPiece(3, 3),
       EmptySquare(3, 4),
+      OpponentPiecePlacement(8, 6, PieceType.rook),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.bishop),
       PiecePlacement(8, 8, PieceType.bishop),
@@ -428,7 +516,11 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '△3三角型空中戦法',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(2, 4, PieceType.rook),
+      OpponentPiecePlacement(7, 6, PieceType.rook),
       PiecePlacement(7, 7, PieceType.bishop),
       PiecePlacement(7, 8, PieceType.gold),
       PiecePlacement(7, 9, PieceType.silver),
@@ -443,6 +535,12 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     aliases: <String>['△8五飛車戦法', '横歩取り△8五飛'],
     plyEq: 20,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 1, PieceType.silver),
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
+      OpponentPiecePlacement(2, 3, PieceType.pawn),
+      OpponentPiecePlacement(7, 4, PieceType.rook),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(2, 5, PieceType.rook),
       PiecePlacement(7, 7, PieceType.bishop),
       PiecePlacement(8, 8, PieceType.silver),
@@ -452,7 +550,11 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '△3三桂戦法',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(2, 4, PieceType.rook),
+      OpponentPiecePlacement(7, 6, PieceType.rook),
       PiecePlacement(7, 7, PieceType.knight),
       PiecePlacement(7, 8, PieceType.gold),
       PiecePlacement(7, 9, PieceType.silver),
@@ -478,12 +580,16 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       EmptySquare(3, 7),
       PiecePlacement(3, 8, PieceType.rook),
+      PieceVisited(2, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
     name: '△7二飛亜急戦',
     parent: '袖飛車',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 2, PieceType.rook),
+      OpponentPiecePlacement(4, 3, PieceType.silver),
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
       EmptySquare(6, 6),
       PiecePlacement(5, 6, PieceType.pawn),
       PiecePlacement(4, 6, PieceType.pawn),
@@ -500,6 +606,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '森安流袖飛車穴熊',
     plyMax: 25,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(3, 6, PieceType.pawn),
       PiecePlacement(4, 7, PieceType.pawn),
       EmptySquare(3, 7),
@@ -519,6 +626,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '羽生式袖飛車',
     plyMax: 5,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       AnyPiece(7, 7),
       PiecePlacement(3, 7, PieceType.pawn),
       AnyPiece(7, 8),
@@ -529,6 +638,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '加藤流袖飛車',
     parent: '袖飛車',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(5, 2, PieceType.rook),
       PiecePlacement(5, 7, PieceType.silver),
       PiecePlacement(7, 8, PieceType.king),
       PiecePlacement(6, 8, PieceType.silver),
@@ -543,6 +653,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       PiecePlacement(3, 7, PieceType.king),
       PiecePlacement(3, 8, PieceType.rook),
+      PieceVisited(4, 8, PieceType.king),
     ],
   ),
   StrategyTemplate(
@@ -564,6 +675,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.furibisha,
     placements: <CastleRequirement>[
       PiecePlacement(4, 8, PieceType.rook),
+      PieceVisited(2, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -571,6 +683,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '右四間飛車',
     side: StrategySide.furibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(4, 2, PieceType.rook),
       PiecePlacement(5, 6, PieceType.silver),
       PiecePlacement(4, 8, PieceType.rook),
       PiecePlacement(9, 9, PieceType.lance),
@@ -596,7 +709,10 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     plyMax: 9,
     placements: <CastleRequirement>[
       EmptySquare(3, 1),
+      OpponentPiecePlacement(3, 2, PieceType.silver),
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
       EmptySquare(3, 3),
+      OpponentPiecePlacement(4, 4, PieceType.pawn),
       EmptySquare(5, 5),
       PiecePlacement(4, 5, PieceType.pawn),
       EmptySquare(6, 6),
@@ -608,16 +724,20 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '角換わり',
     side: StrategySide.ibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
       PiecePlacement(3, 3, PieceType.horse),
       PiecePlacement(2, 8, PieceType.rook),
+      PieceVisited(8, 8, PieceType.horse),
     ],
   ),
   StrategyTemplate(
     name: '一手損角換わり',
     side: StrategySide.ibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
       PiecePlacement(2, 2, PieceType.horse),
       PiecePlacement(2, 8, PieceType.rook),
+      PieceVisited(8, 8, PieceType.horse),
     ],
   ),
   StrategyTemplate(
@@ -655,6 +775,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '角換わり早繰り銀',
     side: StrategySide.ibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(5, 3, PieceType.pawn),
+      OpponentPiecePlacement(3, 3, PieceType.silver),
       PiecePlacement(2, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(4, 6, PieceType.silver),
@@ -668,6 +791,14 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '木村定跡',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(5, 2, PieceType.gold),
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(2, 2, PieceType.king),
+      OpponentPiecePlacement(7, 3, PieceType.knight),
+      OpponentPiecePlacement(3, 3, PieceType.silver),
+      OpponentPiecePlacement(5, 4, PieceType.silver),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(4, 5, PieceType.pawn),
       PiecePlacement(2, 5, PieceType.pawn),
       PiecePlacement(5, 6, PieceType.silver),
@@ -682,19 +813,27 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '新ポンポン桂',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(3, 2, PieceType.gold),
       EmptySquare(7, 3),
+      OpponentPiecePlacement(4, 3, PieceType.pawn),
+      OpponentPiecePlacement(3, 3, PieceType.silver),
+      OpponentPiecePlacement(2, 3, PieceType.pawn),
+      OpponentPiecePlacement(7, 4, PieceType.pawn),
       EmptySquare(6, 4),
       EmptySquare(4, 4),
       EmptySquare(5, 5),
       PiecePlacement(4, 5, PieceType.knight),
       PiecePlacement(2, 5, PieceType.pawn),
       PiecePlacement(2, 8, PieceType.rook),
+      PieceVisited(3, 7, PieceType.knight),
     ],
   ),
   StrategyTemplate(
     name: '3手目▲7七角戦法',
     plyEq: 3,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.bishop),
     ],
@@ -703,6 +842,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '4手目△3三角戦法',
     plyEq: 4,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 4, PieceType.pawn),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.bishop),
     ],
@@ -713,10 +854,15 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(7, 2),
       EmptySquare(6, 2),
       EmptySquare(5, 2),
+      OpponentPiecePlacement(6, 3, PieceType.pawn),
+      OpponentPiecePlacement(5, 3, PieceType.pawn),
+      OpponentPiecePlacement(4, 3, PieceType.pawn),
       EmptySquare(3, 3),
+      OpponentPiecePlacement(2, 3, PieceType.pawn),
       EmptySquare(6, 4),
       EmptySquare(5, 4),
       EmptySquare(4, 4),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       EmptySquare(6, 5),
       PiecePlacement(4, 5, PieceType.bishop),
     ],
@@ -727,10 +873,15 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(7, 2),
       EmptySquare(6, 2),
       EmptySquare(5, 2),
+      OpponentPiecePlacement(6, 3, PieceType.pawn),
+      OpponentPiecePlacement(5, 3, PieceType.pawn),
+      OpponentPiecePlacement(4, 3, PieceType.pawn),
       EmptySquare(3, 3),
+      OpponentPiecePlacement(2, 3, PieceType.pawn),
       EmptySquare(6, 4),
       EmptySquare(5, 4),
       EmptySquare(4, 4),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(4, 5, PieceType.bishop),
       EmptySquare(6, 6),
       EmptySquare(5, 6),
@@ -748,13 +899,19 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.furibisha,
     plyMax: 11,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
       EmptySquare(7, 2),
       EmptySquare(6, 2),
       EmptySquare(5, 2),
+      OpponentPiecePlacement(6, 3, PieceType.pawn),
+      OpponentPiecePlacement(5, 3, PieceType.pawn),
+      OpponentPiecePlacement(4, 3, PieceType.pawn),
       EmptySquare(3, 3),
+      OpponentPiecePlacement(2, 3, PieceType.pawn),
       EmptySquare(6, 4),
       EmptySquare(5, 4),
       EmptySquare(4, 4),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       EmptySquare(6, 5),
       PiecePlacement(4, 5, PieceType.bishop),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -771,6 +928,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '筋違い角蟻地獄戦法',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(3, 3, PieceType.silver),
+      OpponentPiecePlacement(4, 4, PieceType.pawn),
       EmptySquare(3, 4),
       EmptySquare(4, 5),
       EmptySquare(5, 6),
@@ -786,6 +946,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'ゴリ違い角',
     plyMax: 13,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(2, 4, PieceType.pawn),
+      OpponentPiecePlacement(6, 5, PieceType.bishop),
+      OpponentPiecePlacement(3, 5, PieceType.pawn),
       PiecePlacement(2, 5, PieceType.bishop),
       PiecePlacement(6, 6, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.gold),
@@ -796,6 +959,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '引き角',
     placements: <CastleRequirement>[
       PiecePlacement(7, 9, PieceType.bishop),
+      PieceVisited(8, 8, PieceType.bishop),
     ],
   ),
   StrategyTemplate(
@@ -816,6 +980,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     plyMax: 2,
     placements: <CastleRequirement>[
       PiecePlacement(6, 8, PieceType.silver),
+      PieceVisited(7, 9, PieceType.silver),
     ],
   ),
   StrategyTemplate(
@@ -830,6 +995,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(5, 8),
       PiecePlacement(2, 8, PieceType.rook),
       EmptySquare(7, 9),
+      PieceVisited(6, 8, PieceType.silver),
     ],
   ),
   StrategyTemplate(
@@ -842,6 +1008,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(6, 8),
       PiecePlacement(2, 8, PieceType.rook),
       PiecePlacement(6, 9, PieceType.gold),
+      PieceVisited(7, 9, PieceType.king),
     ],
   ),
   StrategyTemplate(
@@ -860,6 +1027,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(2, 8, PieceType.rook),
       PiecePlacement(7, 9, PieceType.bishop),
       EmptySquare(3, 9),
+      PieceVisited(8, 8, PieceType.bishop),
     ],
   ),
   StrategyTemplate(
@@ -876,6 +1044,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(7, 9, PieceType.bishop),
       PiecePlacement(6, 9, PieceType.king),
       PiecePlacement(3, 9, PieceType.silver),
+      PieceVisited(5, 9, PieceType.silver),
     ],
   ),
   StrategyTemplate(
@@ -888,6 +1057,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(5, 7, PieceType.bishop),
       PiecePlacement(2, 8, PieceType.rook),
       PiecePlacement(8, 9, PieceType.knight),
+      PieceVisited(7, 5, PieceType.bishop),
     ],
   ),
   StrategyTemplate(
@@ -897,6 +1067,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(2, 6, PieceType.silver),
       PiecePlacement(3, 7, PieceType.pawn),
       PiecePlacement(2, 8, PieceType.rook),
+      PieceVisited(2, 7, PieceType.silver),
     ],
   ),
   StrategyTemplate(
@@ -917,6 +1088,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.ibisha,
     plyMax: 12,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 3, PieceType.silver),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(2, 5, PieceType.pawn),
       PiecePlacement(2, 6, PieceType.silver),
       EmptySquare(7, 7),
@@ -924,6 +1097,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(2, 8, PieceType.rook),
       PiecePlacement(5, 9, PieceType.king),
+      PieceVisited(2, 7, PieceType.silver),
     ],
   ),
   StrategyTemplate(
@@ -955,6 +1129,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(4, 7, PieceType.pawn),
       PiecePlacement(2, 8, PieceType.rook),
       EmptySquare(3, 9),
+      PieceVisited(3, 7, PieceType.silver),
     ],
   ),
   StrategyTemplate(
@@ -962,6 +1137,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '早繰り銀',
     plyMax: 16,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(3, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(4, 6, PieceType.silver),
@@ -974,6 +1150,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '△3三金型早繰り銀',
     parent: '角換わり早繰り銀',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(4, 6, PieceType.silver),
       PiecePlacement(3, 6, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.gold),
@@ -990,6 +1168,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(5, 6, PieceType.silver),
       PiecePlacement(4, 6, PieceType.pawn),
       PiecePlacement(5, 7, PieceType.pawn),
+      PieceVisited(4, 7, PieceType.silver),
     ],
   ),
   StrategyTemplate(
@@ -1009,6 +1188,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(3, 6, PieceType.silver),
       PiecePlacement(3, 7, PieceType.pawn),
       PiecePlacement(2, 8, PieceType.rook),
+      PieceVisited(2, 7, PieceType.silver),
     ],
   ),
   StrategyTemplate(
@@ -1017,13 +1197,19 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(2, 6, PieceType.gold),
       PiecePlacement(3, 7, PieceType.pawn),
       PiecePlacement(2, 8, PieceType.rook),
+      PieceVisited(2, 7, PieceType.gold),
     ],
   ),
   StrategyTemplate(
     name: 'きｍきｍ金',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 2, PieceType.rook),
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
+      OpponentPiecePlacement(4, 4, PieceType.pawn),
+      OpponentPiecePlacement(3, 5, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.gold),
       PiecePlacement(8, 8, PieceType.bishop),
+      PieceVisited(7, 7, PieceType.gold),
     ],
   ),
   StrategyTemplate(
@@ -1033,6 +1219,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(3, 6, PieceType.pawn),
       PiecePlacement(4, 7, PieceType.pawn),
       PiecePlacement(2, 8, PieceType.rook),
+      PieceVisited(3, 7, PieceType.gold),
     ],
   ),
   StrategyTemplate(
@@ -1050,6 +1237,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(3, 6, PieceType.gold),
       PiecePlacement(3, 7, PieceType.pawn),
       PiecePlacement(2, 8, PieceType.rook),
+      PieceVisited(2, 7, PieceType.gold),
     ],
   ),
   StrategyTemplate(
@@ -1066,6 +1254,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'カニカニ金',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
       EmptySquare(5, 5),
       EmptySquare(6, 6),
       PiecePlacement(5, 6, PieceType.pawn),
@@ -1081,6 +1270,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '▲4六銀右急戦',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       EmptySquare(5, 5),
       PiecePlacement(3, 5, PieceType.pawn),
       EmptySquare(6, 6),
@@ -1096,6 +1287,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '▲4六銀左急戦',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       EmptySquare(5, 5),
       PiecePlacement(3, 5, PieceType.pawn),
       EmptySquare(6, 6),
@@ -1110,6 +1303,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'エルモ急戦',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
+      OpponentPiecePlacement(4, 4, PieceType.pawn),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       EmptySquare(5, 5),
       PiecePlacement(2, 5, PieceType.pawn),
       EmptySquare(6, 6),
@@ -1129,7 +1325,12 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '山田定跡',
     aliases: <String>['美崎定跡'],
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(4, 2, PieceType.rook),
+      OpponentPiecePlacement(3, 2, PieceType.silver),
       EmptySquare(4, 3),
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
+      OpponentPiecePlacement(4, 4, PieceType.pawn),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(3, 5, PieceType.pawn),
       PiecePlacement(2, 5, PieceType.pawn),
       PiecePlacement(5, 6, PieceType.pawn),
@@ -1145,7 +1346,11 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '鷺宮定跡',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(4, 2, PieceType.rook),
+      OpponentPiecePlacement(3, 2, PieceType.silver),
       EmptySquare(4, 3),
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(3, 6, PieceType.pawn),
       PiecePlacement(5, 7, PieceType.silver),
       PiecePlacement(4, 7, PieceType.pawn),
@@ -1156,6 +1361,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '▲4五歩早仕掛け',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
+      OpponentPiecePlacement(4, 4, PieceType.pawn),
       EmptySquare(5, 5),
       PiecePlacement(4, 5, PieceType.pawn),
       EmptySquare(6, 6),
@@ -1170,6 +1377,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '左美濃急戦',
     aliases: <String>['居角左美濃急戦'],
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(4, 4, PieceType.pawn),
       EmptySquare(5, 5),
       PiecePlacement(2, 5, PieceType.pawn),
       EmptySquare(6, 6),
@@ -1189,6 +1397,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'へなちょこ急戦',
     aliases: <String>['へな急'],
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
+      OpponentPiecePlacement(4, 4, PieceType.pawn),
       EmptySquare(5, 5),
       PiecePlacement(4, 5, PieceType.pawn),
       PiecePlacement(2, 5, PieceType.pawn),
@@ -1209,6 +1419,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '玉頭位取り',
     plyMax: 41,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(7, 3, PieceType.pawn),
       EmptySquare(7, 4),
       PiecePlacement(7, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.silver),
@@ -1218,6 +1429,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '6筋位取り',
     plyMax: 41,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(6, 3, PieceType.pawn),
       EmptySquare(6, 4),
       PiecePlacement(6, 5, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.silver),
@@ -1227,6 +1439,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '5筋位取り',
     plyMax: 41,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(5, 3, PieceType.pawn),
       EmptySquare(5, 4),
       PiecePlacement(5, 5, PieceType.pawn),
       PiecePlacement(5, 6, PieceType.silver),
@@ -1247,12 +1460,14 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(2, 8, PieceType.rook),
       PiecePlacement(8, 9, PieceType.knight),
       PiecePlacement(6, 9, PieceType.king),
+      PieceVisited(5, 7, PieceType.silver),
     ],
   ),
   StrategyTemplate(
     name: '銀雲雀',
     parent: '5筋位取り',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(5, 3, PieceType.pawn),
       EmptySquare(5, 4),
       PiecePlacement(5, 5, PieceType.pawn),
       EmptySquare(6, 6),
@@ -1264,13 +1479,20 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(6, 8),
       PiecePlacement(2, 8, PieceType.rook),
       EmptySquare(7, 9),
+      PieceVisited(5, 7, PieceType.silver),
     ],
   ),
   StrategyTemplate(
     name: 'ポンポン桂',
     aliases: <String>['富沢キック'],
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(2, 1, PieceType.knight),
+      OpponentPiecePlacement(4, 2, PieceType.rook),
       EmptySquare(3, 2),
+      OpponentPiecePlacement(4, 3, PieceType.silver),
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
+      OpponentPiecePlacement(2, 3, PieceType.pawn),
+      OpponentPiecePlacement(4, 4, PieceType.pawn),
       EmptySquare(5, 5),
       PiecePlacement(4, 5, PieceType.knight),
       PiecePlacement(2, 5, PieceType.pawn),
@@ -1278,6 +1500,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(7, 7),
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(2, 8, PieceType.rook),
+      PieceVisited(3, 7, PieceType.knight),
     ],
   ),
   StrategyTemplate(
@@ -1294,6 +1517,10 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '△2三歩戦法',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
+      OpponentPiecePlacement(8, 6, PieceType.rook),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.pawn),
       PiecePlacement(8, 8, PieceType.bishop),
@@ -1308,8 +1535,12 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '△4五角戦法',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(2, 2, PieceType.silver),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(2, 4, PieceType.rook),
       PiecePlacement(6, 5, PieceType.bishop),
+      OpponentPiecePlacement(7, 6, PieceType.rook),
       PiecePlacement(7, 8, PieceType.gold),
       PiecePlacement(7, 9, PieceType.silver),
       PiecePlacement(5, 9, PieceType.king),
@@ -1327,6 +1558,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'へなちょこ持久戦',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(2, 2, PieceType.rook),
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
+      OpponentPiecePlacement(4, 4, PieceType.pawn),
       PiecePlacement(2, 5, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.bishop),
       PiecePlacement(4, 6, PieceType.pawn),
@@ -1337,6 +1571,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(5, 8, PieceType.gold),
       PiecePlacement(2, 8, PieceType.rook),
       PiecePlacement(7, 9, PieceType.silver),
+      PieceVisited(8, 8, PieceType.bishop),
     ],
   ),
   StrategyTemplate(
@@ -1364,6 +1599,12 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '丸山ワクチン',
     plyMax: 11,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(5, 1, PieceType.king),
+      OpponentPiecePlacement(5, 2, PieceType.rook),
+      OpponentPiecePlacement(2, 2, PieceType.silver),
+      OpponentPiecePlacement(9, 4, PieceType.pawn),
+      OpponentPiecePlacement(5, 4, PieceType.pawn),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(2, 5, PieceType.pawn),
       PiecePlacement(9, 6, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.silver),
@@ -1377,26 +1618,35 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     plyMax: 17,
     placements: <CastleRequirement>[
       EmptySquare(5, 1),
+      OpponentPiecePlacement(5, 2, PieceType.rook),
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
+      OpponentPiecePlacement(5, 5, PieceType.pawn),
       PiecePlacement(4, 6, PieceType.silver),
       EmptySquare(7, 7),
       PiecePlacement(5, 7, PieceType.pawn),
       PiecePlacement(2, 8, PieceType.rook),
       EmptySquare(5, 9),
+      PieceVisited(3, 7, PieceType.silver),
     ],
   ),
   StrategyTemplate(
     name: '超急戦',
     plyMax: 19,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(5, 1, PieceType.king),
       PiecePlacement(2, 1, PieceType.dragon),
       EmptySquare(6, 2),
+      OpponentPiecePlacement(5, 2, PieceType.rook),
       EmptySquare(4, 2),
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(5, 6, PieceType.pawn),
       PiecePlacement(8, 8, PieceType.silver),
       PiecePlacement(6, 9, PieceType.gold),
       PiecePlacement(5, 9, PieceType.king),
       EmptySquare(4, 9),
+      PieceVisited(2, 4, PieceType.dragon),
     ],
   ),
   StrategyTemplate(
@@ -1430,6 +1680,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(7, 8, PieceType.gold),
       PiecePlacement(4, 9, PieceType.gold),
+      PieceVisited(3, 7, PieceType.silver),
     ],
   ),
   StrategyTemplate(
@@ -1456,6 +1707,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(7, 8, PieceType.gold),
       PiecePlacement(4, 8, PieceType.king),
+      PieceVisited(5, 9, PieceType.king),
     ],
   ),
   StrategyTemplate(
@@ -1647,20 +1899,25 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(7, 5, PieceType.pawn),
       PiecePlacement(2, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.rook),
+      PieceVisited(2, 6, PieceType.rook),
     ],
   ),
   StrategyTemplate(
     name: 'ひねり飛車',
     aliases: <String>['縦歩取り', '児玉屋組'],
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
       EmptySquare(3, 3),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(3, 6, PieceType.rook),
+      PieceVisited(2, 6, PieceType.rook),
     ],
   ),
   StrategyTemplate(
     name: '耀龍ひねり飛車',
     parent: 'ひねり飛車',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(3, 6, PieceType.rook),
       PiecePlacement(8, 7, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.silver),
@@ -1672,11 +1929,15 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '一手損角換わり',
     plyMax: 8,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
       EmptySquare(7, 2),
       EmptySquare(6, 2),
       EmptySquare(5, 2),
       EmptySquare(4, 2),
       EmptySquare(3, 2),
+      OpponentPiecePlacement(2, 2, PieceType.silver),
+      OpponentPiecePlacement(8, 3, PieceType.pawn),
+      OpponentPiecePlacement(3, 5, PieceType.pawn),
       PiecePlacement(5, 6, PieceType.bishop),
       EmptySquare(8, 8),
     ],
@@ -1690,11 +1951,16 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(8, 2),
       EmptySquare(7, 2),
       EmptySquare(6, 2),
+      OpponentPiecePlacement(5, 2, PieceType.gold),
       EmptySquare(4, 2),
+      OpponentPiecePlacement(3, 2, PieceType.rook),
+      OpponentPiecePlacement(2, 2, PieceType.silver),
+      OpponentPiecePlacement(8, 3, PieceType.pawn),
       EmptySquare(7, 4),
       EmptySquare(3, 4),
       EmptySquare(6, 5),
       EmptySquare(4, 5),
+      OpponentPiecePlacement(3, 5, PieceType.pawn),
       PiecePlacement(5, 6, PieceType.bishop),
       PiecePlacement(7, 7, PieceType.silver),
       EmptySquare(7, 8),
@@ -1710,6 +1976,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     aliases: <String>['浮き浮き飛車戦法'],
     plyMax: 8,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       EmptySquare(3, 5),
       PiecePlacement(2, 5, PieceType.pawn),
       EmptySquare(3, 6),
@@ -1720,6 +1988,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '地下鉄飛車',
     placements: <CastleRequirement>[
       PiecePlacement(9, 9, PieceType.rook),
+      PieceVisited(3, 9, PieceType.rook),
+      PieceVisited(2, 9, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -1727,6 +1997,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.ibisha,
     plyMax: 8,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.pawn),
@@ -1740,6 +2011,10 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'きんとうん戦法',
     plyEq: 9,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 1, PieceType.silver),
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(3, 2, PieceType.gold),
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
       PiecePlacement(7, 7, PieceType.gold),
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(2, 8, PieceType.rook),
@@ -1750,6 +2025,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '都成流△3一金',
     plyMax: 9,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 3, PieceType.pawn),
+      OpponentPiecePlacement(8, 6, PieceType.rook),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(7, 8, PieceType.silver),
@@ -1760,12 +2037,15 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '花村流名古屋戦法',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
       PiecePlacement(7, 5, PieceType.pawn),
       PiecePlacement(6, 5, PieceType.pawn),
       PiecePlacement(5, 5, PieceType.pawn),
+      OpponentPiecePlacement(3, 5, PieceType.rook),
       PiecePlacement(8, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.silver),
       EmptySquare(4, 6),
+      OpponentPiecePlacement(3, 6, PieceType.pawn),
       PiecePlacement(6, 7, PieceType.gold),
       PiecePlacement(4, 8, PieceType.silver),
       PiecePlacement(3, 8, PieceType.gold),
@@ -1780,11 +2060,13 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(5, 6, PieceType.gold),
       PiecePlacement(4, 6, PieceType.pawn),
       PiecePlacement(5, 7, PieceType.pawn),
+      PieceVisited(4, 7, PieceType.gold),
     ],
   ),
   StrategyTemplate(
     name: '暴銀',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(1, 1, PieceType.lance),
       EmptySquare(1, 2),
       EmptySquare(1, 3),
       PiecePlacement(1, 4, PieceType.silver),
@@ -1795,6 +2077,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       PiecePlacement(2, 7, PieceType.king),
       PiecePlacement(2, 8, PieceType.rook),
+      PieceVisited(3, 8, PieceType.king),
     ],
   ),
   StrategyTemplate(
@@ -1821,12 +2104,15 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       PiecePlacement(3, 7, PieceType.knight),
       PiecePlacement(2, 9, PieceType.king),
+      PieceVisited(3, 8, PieceType.king),
     ],
   ),
   StrategyTemplate(
     name: '先手中飛車',
     side: StrategySide.furibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
       EmptySquare(8, 3),
       EmptySquare(3, 3),
       EmptySquare(4, 4),
@@ -1841,10 +2127,16 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.furibisha,
     plyMax: 23,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(2, 2, PieceType.king),
+      OpponentPiecePlacement(5, 3, PieceType.silver),
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(4, 6, PieceType.silver),
       PiecePlacement(7, 7, PieceType.bishop),
       PiecePlacement(5, 8, PieceType.rook),
       PiecePlacement(2, 8, PieceType.king),
+      PieceVisited(5, 7, PieceType.silver),
     ],
   ),
   StrategyTemplate(
@@ -1914,6 +2206,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.furibisha,
     plyMax: 8,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(9, 6, PieceType.pawn),
       PiecePlacement(5, 6, PieceType.pawn),
       PiecePlacement(9, 7, PieceType.bishop),
@@ -1923,6 +2216,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'タランチュラ戦法',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 3, PieceType.knight),
+      OpponentPiecePlacement(2, 4, PieceType.horse),
       PiecePlacement(7, 7, PieceType.bishop),
       EmptySquare(5, 7),
       PiecePlacement(8, 8, PieceType.silver),
@@ -1935,6 +2230,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.furibisha,
     plyMax: 8,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
       EmptySquare(8, 3),
       EmptySquare(3, 3),
       EmptySquare(4, 4),
@@ -2002,6 +2299,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.furibisha,
     placements: <CastleRequirement>[
       PiecePlacement(6, 8, PieceType.rook),
+      PieceVisited(2, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -2035,6 +2333,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(3, 7, PieceType.knight),
       PiecePlacement(6, 8, PieceType.rook),
       PiecePlacement(2, 9, PieceType.king),
+      PieceVisited(3, 8, PieceType.king),
     ],
   ),
   StrategyTemplate(
@@ -2043,6 +2342,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.furibisha,
     plyMax: 4,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
       EmptySquare(3, 3),
       EmptySquare(4, 4),
       EmptySquare(5, 5),
@@ -2098,6 +2398,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(2, 8),
       PiecePlacement(5, 9, PieceType.king),
       PiecePlacement(3, 9, PieceType.silver),
+      PieceVisited(4, 9, PieceType.gold),
     ],
   ),
   StrategyTemplate(
@@ -2105,6 +2406,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '四間飛車',
     side: StrategySide.furibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
       EmptySquare(7, 4),
       EmptySquare(6, 4),
       EmptySquare(4, 4),
@@ -2136,6 +2438,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'やばボーズ流',
     parent: '四間飛車',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.pawn),
@@ -2144,6 +2447,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(7, 8, PieceType.gold),
       PiecePlacement(6, 8, PieceType.rook),
       PiecePlacement(3, 8, PieceType.king),
+      PieceVisited(4, 8, PieceType.king),
     ],
   ),
   StrategyTemplate(
@@ -2151,7 +2455,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '四間飛車',
     aliases: <String>['宗歩四間飛車', '錆刀四間飛車'],
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
       EmptySquare(7, 3),
+      OpponentPiecePlacement(7, 4, PieceType.pawn),
       EmptySquare(6, 4),
       PiecePlacement(6, 5, PieceType.pawn),
       EmptySquare(5, 5),
@@ -2171,12 +2477,15 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '四間飛車',
     side: StrategySide.furibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
       PiecePlacement(5, 6, PieceType.silver),
       PiecePlacement(8, 7, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.bishop),
       PiecePlacement(8, 8, PieceType.rook),
+      PieceVisited(6, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -2202,6 +2511,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     plyEq: 1,
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.rook),
+      PieceVisited(2, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -2241,6 +2551,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '三間飛車',
     plyEq: 12,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
       EmptySquare(3, 3),
       PiecePlacement(7, 5, PieceType.pawn),
       EmptySquare(7, 7),
@@ -2250,6 +2561,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(7, 8, PieceType.rook),
       PiecePlacement(3, 8, PieceType.king),
       EmptySquare(2, 8),
+      PieceVisited(6, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -2257,6 +2569,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '3→4→3戦法',
     plyEq: 10,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
       EmptySquare(3, 3),
       PiecePlacement(7, 6, PieceType.pawn),
       EmptySquare(7, 7),
@@ -2266,6 +2579,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(7, 8, PieceType.rook),
       PiecePlacement(3, 8, PieceType.king),
       EmptySquare(2, 8),
+      PieceVisited(6, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -2289,6 +2603,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(3, 7, PieceType.knight),
       PiecePlacement(7, 8, PieceType.rook),
       PiecePlacement(2, 9, PieceType.king),
+      PieceVisited(3, 8, PieceType.king),
     ],
   ),
   StrategyTemplate(
@@ -2312,6 +2627,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     aliases: <String>['コーヤン流', '中田功XP'],
     side: StrategySide.furibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(1, 1, PieceType.king),
       PiecePlacement(7, 7, PieceType.bishop),
       PiecePlacement(5, 7, PieceType.silver),
       PiecePlacement(3, 7, PieceType.knight),
@@ -2324,6 +2640,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '三間飛車',
     side: StrategySide.furibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(1, 1, PieceType.king),
+      OpponentPiecePlacement(8, 4, PieceType.rook),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(7, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.rook),
       PiecePlacement(6, 6, PieceType.pawn),
@@ -2345,6 +2664,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '三間飛車',
     side: StrategySide.furibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 2, PieceType.king),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
       PiecePlacement(5, 6, PieceType.pawn),
@@ -2373,6 +2693,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(7, 7, PieceType.gold),
       PiecePlacement(5, 7, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.rook),
+      PieceVisited(2, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -2381,10 +2702,13 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.furibisha,
     plyMax: 6,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(5, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.rook),
+      PieceVisited(2, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -2410,6 +2734,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '三間飛車',
     aliases: <String>['トマホーク三間飛車'],
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 3, PieceType.bishop),
+      OpponentPiecePlacement(1, 3, PieceType.pawn),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(2, 5, PieceType.knight),
       PiecePlacement(1, 5, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.bishop),
@@ -2429,6 +2756,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(6, 7, PieceType.pawn),
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(7, 8, PieceType.rook),
+      PieceVisited(2, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -2438,6 +2766,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       PiecePlacement(7, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.rook),
+      PieceVisited(2, 6, PieceType.rook),
+      PieceVisited(7, 7, PieceType.rook),
+      PieceVisited(7, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -2453,6 +2784,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '早石田',
     parent: '三間飛車',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 3, PieceType.pawn),
       PiecePlacement(7, 5, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.rook),
     ],
@@ -2462,11 +2794,14 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '三間飛車',
     plyMax: 6,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.rook),
       PiecePlacement(6, 7, PieceType.pawn),
       PiecePlacement(8, 8, PieceType.bishop),
+      PieceVisited(7, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -2477,6 +2812,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       EmptySquare(3, 3),
       EmptySquare(4, 4),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(7, 5, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.rook),
       PiecePlacement(4, 8, PieceType.king),
@@ -2503,6 +2840,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     plyEq: 7,
     placements: <CastleRequirement>[
       PiecePlacement(7, 4, PieceType.pawn),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.rook),
     ],
   ),
@@ -2512,6 +2851,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     plyEq: 13,
     placements: <CastleRequirement>[
       PiecePlacement(7, 4, PieceType.rook),
+      OpponentPiecePlacement(6, 5, PieceType.bishop),
       PiecePlacement(5, 6, PieceType.bishop),
     ],
   ),
@@ -2520,7 +2860,12 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '三間飛車',
     plyEq: 11,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(7, 2, PieceType.gold),
+      OpponentPiecePlacement(6, 2, PieceType.silver),
+      OpponentPiecePlacement(7, 3, PieceType.pawn),
       PiecePlacement(7, 4, PieceType.pawn),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(7, 5, PieceType.rook),
       PiecePlacement(4, 8, PieceType.king),
     ],
@@ -2531,6 +2876,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.furibisha,
     plyEq: 3,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.knight),
     ],
@@ -2541,6 +2887,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.furibisha,
     plyEq: 9,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(7, 5, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.knight),
       PiecePlacement(7, 8, PieceType.rook),
@@ -2558,12 +2906,14 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '向かい飛車',
     side: StrategySide.ibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
       EmptySquare(8, 3),
       EmptySquare(8, 4),
       EmptySquare(8, 5),
       PiecePlacement(8, 6, PieceType.silver),
       EmptySquare(8, 7),
       PiecePlacement(8, 8, PieceType.rook),
+      PieceVisited(7, 7, PieceType.silver),
     ],
   ),
   StrategyTemplate(
@@ -2571,8 +2921,10 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '向かい飛車',
     side: StrategySide.furibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(8, 8, PieceType.rook),
+      PieceVisited(2, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -2580,6 +2932,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '向かい飛車',
     side: StrategySide.furibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
       PiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(7, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.silver),
@@ -2589,6 +2942,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(7, 8, PieceType.gold),
       EmptySquare(6, 8),
+      PieceVisited(6, 7, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -2596,6 +2950,10 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '向かい飛車',
     side: StrategySide.furibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(7, 5, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.pawn),
@@ -2611,13 +2969,16 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.furibisha,
     plyEq: 10,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
       EmptySquare(4, 4),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       EmptySquare(5, 5),
       EmptySquare(6, 6),
       PiecePlacement(8, 7, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.gold),
       PiecePlacement(8, 8, PieceType.rook),
       PiecePlacement(7, 9, PieceType.silver),
+      PieceVisited(2, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -2626,6 +2987,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.furibisha,
     plyEq: 8,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.knight),
       PiecePlacement(8, 8, PieceType.rook),
@@ -2644,6 +3007,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '角頭歩戦法',
     plyMax: 4,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(8, 6, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
     ],
@@ -2652,6 +3016,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '金沢流',
     plyMax: 4,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
       EmptySquare(3, 3),
       PiecePlacement(6, 6, PieceType.bishop),
     ],
@@ -2660,6 +3025,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '菜々河流△4四角',
     plyMax: 8,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.bishop),
     ],
   ),
@@ -2668,15 +3035,21 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '向かい飛車',
     side: StrategySide.furibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
+      OpponentPiecePlacement(8, 5, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.bishop),
       PiecePlacement(7, 7, PieceType.gold),
       PiecePlacement(8, 8, PieceType.rook),
+      PieceVisited(2, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
     name: '天彦流▲6六角',
     plyMax: 3,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(8, 4, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.bishop),
     ],
   ),
@@ -2686,6 +3059,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.furibisha,
     plyMax: 9,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
       EmptySquare(3, 3),
       EmptySquare(4, 4),
       EmptySquare(5, 5),
@@ -2740,32 +3115,36 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     aliases: <String>['女殺しドッカン飛車', '鬼六流ドッカン飛車'],
     plyMax: 19,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 6, PieceType.rook),
       PiecePlacement(8, 8, PieceType.rook),
       PiecePlacement(4, 8, PieceType.silver),
       PiecePlacement(3, 8, PieceType.gold),
       PiecePlacement(2, 8, PieceType.king),
+      PieceVisited(5, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
     name: '陽動振り飛車',
     side: StrategySide.furibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(8, 2, PieceType.rook),
       EmptySquare(2, 7),
       PiecePlacement(8, 8, PieceType.rook),
       PiecePlacement(7, 8, PieceType.rook),
       PiecePlacement(6, 8, PieceType.rook),
       PiecePlacement(5, 8, PieceType.rook),
       PiecePlacement(9, 9, PieceType.lance),
+      PieceVisited(2, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
     name: 'Uターン飛車',
     placements: <CastleRequirement>[
       PiecePlacement(2, 8, PieceType.rook),
+      PieceVisited(8, 8, PieceType.rook),
+      PieceVisited(7, 8, PieceType.rook),
       PieceVisited(6, 8, PieceType.rook),
       PieceVisited(5, 8, PieceType.rook),
-      PieceVisited(4, 8, PieceType.rook),
-      PieceVisited(3, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -2809,11 +3188,15 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(7, 7, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.silver),
       PiecePlacement(7, 9, PieceType.bishop),
+      PieceVisited(8, 8, PieceType.bishop),
     ],
   ),
   StrategyTemplate(
     name: 'ネコ式タテ歩取り',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
+      OpponentPiecePlacement(3, 3, PieceType.pawn),
+      OpponentPiecePlacement(2, 3, PieceType.pawn),
       EmptySquare(3, 4),
       EmptySquare(2, 4),
       EmptySquare(4, 5),
@@ -2821,17 +3204,23 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(2, 5),
       PiecePlacement(3, 6, PieceType.rook),
       PiecePlacement(3, 7, PieceType.pawn),
+      PieceVisited(2, 6, PieceType.rook),
     ],
   ),
   StrategyTemplate(
     name: '桐山流タテ歩棒銀',
     side: StrategySide.ibisha,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
+      OpponentPiecePlacement(3, 3, PieceType.gold),
+      OpponentPiecePlacement(2, 3, PieceType.pawn),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       EmptySquare(1, 5),
       PiecePlacement(3, 6, PieceType.rook),
       PiecePlacement(1, 6, PieceType.silver),
       PiecePlacement(3, 7, PieceType.pawn),
       PiecePlacement(1, 7, PieceType.pawn),
+      PieceVisited(2, 7, PieceType.silver),
     ],
   ),
   StrategyTemplate(
@@ -2840,6 +3229,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       PiecePlacement(6, 6, PieceType.gold),
       PiecePlacement(8, 8, PieceType.bishop),
+      PieceVisited(7, 7, PieceType.gold),
     ],
   ),
   StrategyTemplate(
@@ -2856,6 +3246,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'パックマン戦法',
     plyEq: 2,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
     ],
   ),
@@ -2881,6 +3272,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(1, 6, PieceType.rook),
       PiecePlacement(2, 7, PieceType.pawn),
       PiecePlacement(1, 9, PieceType.lance),
+      PieceVisited(1, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -2904,6 +3296,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       PiecePlacement(8, 6, PieceType.silver),
       PiecePlacement(8, 7, PieceType.pawn),
+      PieceVisited(9, 7, PieceType.silver),
+      PieceVisited(7, 7, PieceType.silver),
     ],
   ),
   StrategyTemplate(
@@ -2913,6 +3307,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(9, 7, PieceType.lance),
       PiecePlacement(7, 7, PieceType.bishop),
       PiecePlacement(9, 8, PieceType.rook),
+      PieceVisited(2, 8, PieceType.rook),
     ],
   ),
   StrategyTemplate(
@@ -2930,6 +3325,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'カメレオン戦法',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
       EmptySquare(3, 3),
       EmptySquare(6, 4),
       EmptySquare(4, 4),
@@ -2949,12 +3345,18 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '玉頭銀',
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 2, PieceType.king),
+      OpponentPiecePlacement(2, 2, PieceType.bishop),
+      OpponentPiecePlacement(4, 3, PieceType.pawn),
       EmptySquare(3, 3),
+      OpponentPiecePlacement(2, 3, PieceType.pawn),
       EmptySquare(4, 4),
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       EmptySquare(2, 4),
       PiecePlacement(4, 5, PieceType.silver),
       NotOfPieces(2, 8, <PieceType>[PieceType.rook]),
       EmptySquare(7, 9),
+      PieceVisited(5, 6, PieceType.silver),
     ],
   ),
   StrategyTemplate(
@@ -2977,6 +3379,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.furibisha,
     plyEq: 2,
     placements: <CastleRequirement>[
+      OpponentPiecePlacement(3, 4, PieceType.pawn),
       PiecePlacement(1, 6, PieceType.pawn),
     ],
   ),
