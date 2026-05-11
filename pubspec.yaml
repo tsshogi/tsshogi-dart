@@ -1,0 +1,13 @@
+name: tsshogi
+description: Dart port of tsshogi — a library for Japanese shogi (board, position, moves, kifu records).
+version: 2.3.2
+repository: https://github.com/sunfish-shogi/tsshogi
+homepage: https://github.com/sunfish-shogi/tsshogi
+publish_to: none
+
+environment:
+  sdk: ^3.4.0
+
+dev_dependencies:
+  lints: ^4.0.0
+  test: ^1.25.0
