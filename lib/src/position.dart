@@ -156,6 +156,13 @@ abstract interface class ImmutablePosition {
   bool isPawnDropMate(Move move);
   List<Square> listAttackers(Square to);
   List<Square> listAttackersByPiece(Square to, Piece piece);
+
+  /// 盤上の全マスについて、先手・後手それぞれの利き数を計算します。
+  ///
+  /// 戻り値の `black` / `white` はそれぞれ長さ 81 の `List<int>` で、
+  /// 各要素は対応する [Square.index] のマスへ利いている駒の枚数。
+  /// 自分の駒があるマスへの自分の利き(= 守り)もカウントされる。
+  ({List<int> black, List<int> white}) powerMap();
   bool isValidMove(Move move);
   bool isValidEditing(Object from, Object to);
   String get sfen;
@@ -301,6 +308,26 @@ class Position implements ImmutablePosition {
       }
     }
     return result;
+  }
+
+  @override
+  ({List<int> black, List<int> white}) powerMap() {
+    final List<int> black = List<int>.filled(81, 0);
+    final List<int> white = List<int>.filled(81, 0);
+    final List<({Square square, Piece piece})> pieces =
+        _board.listNonEmptySquares().toList();
+    for (final Square to in Square.all) {
+      for (final entry in pieces) {
+        if (_isMovable(entry.square, to)) {
+          if (entry.piece.color == Color.black) {
+            black[to.index]++;
+          } else {
+            white[to.index]++;
+          }
+        }
+      }
+    }
+    return (black: black, white: white);
   }
 
   @override

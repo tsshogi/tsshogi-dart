@@ -752,6 +752,38 @@ void main() {
       );
     });
 
+    test('powerMap/initial', () {
+      final Position position = Position();
+      final powers = position.powerMap();
+      expect(powers.black.length, 81);
+      expect(powers.white.length, 81);
+      // 5六(5筋6段): 5七の歩からの利きで black=1, white=0
+      expect(powers.black[Square(5, 6).index], 1);
+      expect(powers.white[Square(5, 6).index], 0);
+      // 5四(5筋4段): 5三の歩からの利きで white=1, black=0
+      expect(powers.black[Square(5, 4).index], 0);
+      expect(powers.white[Square(5, 4).index], 1);
+      // 5五: どちらの利きも届かない
+      expect(powers.black[Square(5, 5).index], 0);
+      expect(powers.white[Square(5, 5).index], 0);
+    });
+
+    test('powerMap/midgame', () {
+      final Position position = Position.newBySFEN(
+        '+B3kg3/4n2b1/9/4p1+P2/9/4P4/3S5/5R3/4K4 w - 1',
+      )!;
+      final powers = position.powerMap();
+      // listAttackers のテストと同じマスで色別に集計されているか
+      expect(powers.black[Square(4, 4).index], 2);
+      expect(powers.white[Square(4, 4).index], 2);
+      expect(powers.black[Square(4, 2).index], 1);
+      expect(powers.white[Square(4, 2).index], 2);
+      expect(powers.black[Square(5, 5).index], 2);
+      expect(powers.white[Square(5, 5).index], 2);
+      expect(powers.black[Square(5, 8).index], 3);
+      expect(powers.white[Square(5, 8).index], 0);
+    });
+
     test('sfen', () {
       const String sfen =
           'l2R2s1+P/4gg1k1/p1+P2lPp1/4p1p+b1/1p3G3/3pP1nS1/PP3KSP1/R8/L4G2+b b NL4Ps2np 1';
