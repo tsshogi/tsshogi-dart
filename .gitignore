@@ -268,3 +268,6 @@ data/*
 build/
 pubspec.lock
 coverage/
+
+### Claude Code ###
+.claude/settings.local.json

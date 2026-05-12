@@ -1,0 +1,72 @@
+{
+  "name": "TSShogi Dart",
+  "dockerComposeFile": [
+    "compose.yaml"
+  ],
+  "service": "app",
+  "workspaceFolder": "/home/vscode/app",
+  "shutdownAction": "stopCompose",
+  "remoteUser": "vscode",
+  "remoteEnv": {
+    "WAKATIME_API_KEY": "${localEnv:WAKATIME_API_KEY}"
+  },
+  "containerEnv": {
+    "CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
+  },
+  "mounts": [
+    "source=${env:HOME}/.aws,target=/home/vscode/.aws,type=bind,consistency=cached,readonly",
+    "source=${env:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached",
+    "source=${env:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached,readonly",
+    "source=${env:HOME}/.config/gh,target=/home/vscode/.config/gh,type=bind,consistency=cached"
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "configureZshAsDefaultShell": true
+    },
+    "ghcr.io/devcontainers-extra/features/fzf:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/stu-bell/devcontainer-features/claude-code:0": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "moby": false
+    },
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": false,
+      "dockerDashComposeVersion": "v2"
+    },
+    "ghcr.io/dhoeric/features/act:1": {
+      "version": "0.2.84"
+    }
+  },
+  "postAttachCommand": "/bin/sh .devcontainer/postAttachCommand.sh",
+  "postCreateCommand": "/bin/sh .devcontainer/postCreateCommand.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Anthropic.claude-code",
+        "Dart-Code.dart-code",
+        "Dart-Code.flutter",
+        "EditorConfig.EditorConfig",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "Lokalise.i18n-ally",
+        "PKief.material-icon-theme",
+        "Prisma.prisma",
+        "WakaTime.vscode-wakatime",
+        "antfu.file-nesting",
+        "anthropic.claude-code",
+        "astro-build.astro-vscode",
+        "bierner.github-markdown-preview",
+        "bierner.markdown-mermaid",
+        "bierner.markdown-preview-github-styles",
+        "biomejs.biome",
+        "eamodio.gitlens",
+        "ms-vscode.vscode-typescript-next",
+        "pHofer94.vscode-taskviewexplorer",
+        "redhat.vscode-yaml",
+        "tamasfe.even-better-toml",
+        "vsls-contrib.gitdoc"
+      ],
+      "settings": {}
+    }
+  }
+}

@@ -168,6 +168,7 @@ position.createMove(MoveOrigin, Square)   // builds a Move with capture detectio
 position.createMoveByUSI(String)
 position.isPawnDropMate(Move)
 position.listAttackers(Square)
+position.powerMap()             // ({List<int> black, List<int> white}), len 81 each, indexed by Square.index — 利き数マップ
 ```
 
 Jishogi (持将棋) helpers: `countExistingPieces(p)`,

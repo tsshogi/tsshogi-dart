@@ -25,7 +25,8 @@ point for any LLM coding assistant.
 - [lib/tsshogi.dart](lib/tsshogi.dart): barrel of public exports.
 - [lib/src/position.dart](lib/src/position.dart): `Position` /
   `ImmutablePosition` — board, hands, SFEN, doMove, isValidMove,
-  legal-move helpers, jishogi scoring.
+  legal-move helpers, jishogi scoring, `powerMap` (per-square attack
+  counts for both colors, 利き数マップ).
 - [lib/src/record.dart](lib/src/record.dart): `Record` /
   `ImmutableRecord` — kifu tree, branches, USI / USEN serialization,
   metadata, events.
