@@ -68,6 +68,23 @@ String generateStrategyDart(List<ParsedTemplate> templates) {
     if (t.orderKey != null) {
       buf.writeln("    orderKey: '${t.orderKey}',");
     }
+    if (t.handEq != null) {
+      buf.writeln('    handEq: ${_handMapLiteral(t.handEq!)},');
+    }
+    if (t.opHandEq != null) {
+      buf.writeln('    opHandEq: ${_handMapLiteral(t.opHandEq!)},');
+    }
+    if (t.handNotIn.isNotEmpty) {
+      final String items =
+          t.handNotIn.map((String n) => 'PieceType.$n').join(', ');
+      buf.writeln('    handNotIn: <PieceType>[$items],');
+    }
+    if (t.noPawnInHand) {
+      buf.writeln('    noPawnInHand: true,');
+    }
+    if (t.onlyPawnsInHand) {
+      buf.writeln('    onlyPawnsInHand: true,');
+    }
     if (t.placements.isEmpty) {
       buf.writeln('    placements: <CastleRequirement>[],');
     } else {
@@ -81,6 +98,12 @@ String generateStrategyDart(List<ParsedTemplate> templates) {
   }
   buf.writeln('];');
   return buf.toString();
+}
+
+String _handMapLiteral(Map<String, int> m) {
+  final String entries =
+      m.entries.map((MapEntry<String, int> e) => 'PieceType.${e.key}: ${e.value}').join(', ');
+  return '<PieceType, int>{$entries}';
 }
 
 String _formatPlacement(PlacementCell p) {

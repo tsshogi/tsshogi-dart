@@ -8,7 +8,7 @@
 #
 # Source ASCII parsed by: tool/import_bioshogi.dart
 
-# Last regenerated: 2026-05-27T18:09:12.861041
+# Last regenerated: 2026-05-27T18:19:32.219421
 # Source: attack_info.rb (246 metadata rows)
 #  ∩  shape_info.rb (394 ASCII templates)
 
@@ -103,6 +103,7 @@ kill_count_lteq: 0
 
 === name: 四手角
 outbreak_skip: true
+only_pawns_in_hand: true
 visited: B 3 5
 visited: B 3 7
 visited: B 4 8
@@ -121,6 +122,7 @@ any: vR 8 2 7 2 6 2
 
 === name: 雀刺し
 outbreak_skip: true
+only_pawns_in_hand: true
 any: B 6 8 7 9
 
 . . . . . . . . .
@@ -169,6 +171,7 @@ kill_count_lteq: 0
 side: ibisha
 outbreak_skip: true
 kill_count_lteq: 0
+only_pawns_in_hand: true
 visited: R 2 8
 
 . . . . . . . . .
@@ -258,6 +261,7 @@ P . . . . . . . .
 === name: 屋敷流二枚銀
 aliases: 忍者銀, ニンニン戦法
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -272,6 +276,7 @@ outbreak_skip: true
 === name: 雁木戦法
 side: ibisha
 outbreak_skip: true
+only_pawns_in_hand: true
 any: R 4 8 2 8 2 9
 
 . . . . . . . . .
@@ -304,6 +309,7 @@ kill_count_lteq: 0
 parent: 相掛かり
 side: ibisha
 outbreak_skip: true
+hand_eq: P
 any: vR 8 2 8 4 8 5 8 6
 
 . . . . . . . . .
@@ -319,6 +325,7 @@ any: vR 8 2 8 4 8 5 8 6
 === name: 塚田スペシャル
 parent: 相掛かり
 outbreak_skip: true
+only_pawns_in_hand: true
 dropped: P 2 4
 
 . . _ . . . . . .
@@ -437,6 +444,7 @@ hand: B
 === name: 青野流
 parent: 横歩取り
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . s . .
 . . . . . . g . .
@@ -451,6 +459,7 @@ outbreak_skip: true
 === name: 勇気流
 parent: 横歩取り
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . s . .
 . . . . . . g . .
@@ -466,6 +475,7 @@ outbreak_skip: true
 parent: 横歩取り
 aliases: 竹部流
 ply: 19
+only_pawns_in_hand: true
 
 . . . . . . s . .
 . . . . . . . . .
@@ -659,6 +669,7 @@ outbreak_skip: true
 === name: 右四間飛車
 side: ibisha
 outbreak_skip: true
+only_pawns_in_hand: true
 visited: R 2 8
 
 . . . . . . . . .
@@ -690,6 +701,7 @@ L . . . . . . . .
 parent: 右四間飛車
 side: ibisha
 outbreak_skip: true
+only_pawns_in_hand: true
 any: B 7 7 8 8
 
 . . . . . . . . .
@@ -724,6 +736,7 @@ any: R 4 8 2 8
 side: ibisha
 outbreak_skip: true
 kill_only: true
+hand_eq: B
 visited: +B 8 8
 
 . . . . . . . . .
@@ -741,6 +754,7 @@ side: ibisha
 outbreak_skip: true
 kill_only: true
 order_key: second
+hand_eq: B
 visited: +B 8 8
 
 . . . . . . . . .
@@ -756,6 +770,7 @@ visited: +B 8 8
 === name: 角換わり腰掛け銀旧型
 side: ibisha
 outbreak_skip: true
+hand_eq: B
 
 . . . . . . . . .
 . . . . . . . . .
@@ -770,6 +785,7 @@ outbreak_skip: true
 === name: 角換わり腰掛け銀
 side: ibisha
 outbreak_skip: true
+hand_eq: B
 
 . . . . . . . . .
 . . . . . . . . .
@@ -784,6 +800,7 @@ outbreak_skip: true
 === name: 角換わり棒銀
 side: ibisha
 outbreak_skip: true
+hand_eq: B
 
 . . . . . . . . .
 . . . . . . . . .
@@ -798,6 +815,7 @@ outbreak_skip: true
 === name: 角換わり早繰り銀
 side: ibisha
 outbreak_skip: true
+hand_eq: B
 
 . . . . . . . . .
 . . . . . . g . .
@@ -811,6 +829,7 @@ outbreak_skip: true
 
 === name: 木村定跡
 outbreak_skip: true
+hand_eq: B
 
 . . . . . . . . .
 . r . . g . g k .
@@ -824,6 +843,8 @@ outbreak_skip: true
 
 === name: 新ポンポン桂
 outbreak_skip: true
+hand_eq: B
+op_hand_eq: B
 visited: N 3 7
 
 . . . . . . . . .
@@ -914,6 +935,7 @@ hand_empty: true
 
 === name: 筋違い角蟻地獄戦法
 outbreak_skip: true
+only_pawns_in_hand: true
 hand: P
 
 . . . . . . . . .
@@ -943,6 +965,7 @@ hand_empty: true
 
 === name: 引き角
 outbreak_skip: true
+only_pawns_in_hand: true
 visited: B 8 8
 
 . . . . . . . . .
@@ -990,6 +1013,7 @@ visited: S 7 9
 parent: 嬉野流
 ply: max 10
 outbreak_skip: true
+only_pawns_in_hand: true
 visited: S 6 8
 
 . . . . . . . . .
@@ -1022,6 +1046,7 @@ any: vR 5 2 4 2 3 2 2 2
 aliases: 飯島流相掛かり引き角戦法
 side: ibisha
 outbreak_skip: true
+only_pawns_in_hand: true
 visited: B 8 8
 any: vR 8 1 8 2 8 3 8 4 8 5 8 6
 
@@ -1082,6 +1107,7 @@ visited: S 2 7
 === name: 原始棒銀
 side: ibisha
 outbreak_skip: true
+no_pawn_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1115,6 +1141,7 @@ visited: S 2 7
 === name: 屋敷流二枚銀棒銀型
 side: ibisha
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1189,6 +1216,7 @@ visited: S 4 7
 
 === name: 鎖鎌銀
 outbreak_skip: true
+hand_not_in: B
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1202,6 +1230,7 @@ outbreak_skip: true
 
 === name: UFO銀
 outbreak_skip: true
+only_pawns_in_hand: true
 visited: S 2 7
 
 . . . . . . . . .
@@ -1302,6 +1331,7 @@ any: vR 5 1 5 2
 
 === name: カニカニ金
 outbreak_skip: true
+only_pawns_in_hand: true
 any: B 7 7 8 8
 
 . . . . . . . . .
@@ -1482,6 +1512,7 @@ any: vK 9 1 8 1 8 2 7 2 6 2
 === name: ショーダンオリジナル
 parent: 5筋位取り
 outbreak_skip: true
+only_pawns_in_hand: true
 visited: S 5 7
 any: vR 8 1 8 2
 
@@ -1606,6 +1637,7 @@ _ . _ . . . N . .
 
 === name: 一直線穴熊
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1634,6 +1666,7 @@ outbreak_skip: true
 === name: 丸山ワクチン
 ply: max 11
 outbreak_skip: true
+hand_eq: B
 
 . . . . k . . . .
 . . . . r . . s .
@@ -1663,6 +1696,7 @@ visited: S 3 7
 
 === name: 超急戦
 ply: max 19
+hand_eq: B N P*2
 visited: +R 2 4
 
 . . . . k . . +R .
@@ -1694,6 +1728,8 @@ hand_empty: true
 === name: 新村田システム
 ply: max 30
 outbreak_skip: true
+hand_eq: P
+only_pawns_in_hand: true
 visited: S 3 7
 any: R 2 6 2 8
 
@@ -1725,6 +1761,7 @@ any: S 6 7 5 7
 parent: 右玉
 side: ibisha
 outbreak_skip: true
+only_pawns_in_hand: true
 visited: K 5 9
 
 . . . . . . . . .
@@ -1773,6 +1810,7 @@ hand: B
 parent: 右玉
 side: ibisha
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1788,6 +1826,7 @@ outbreak_skip: true
 parent: 雁木右玉
 aliases: 金銀橋
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1802,6 +1841,7 @@ outbreak_skip: true
 === name: ツノ銀型右玉
 parent: 右玉
 outbreak_skip: true
+only_pawns_in_hand: true
 any: B 7 7 8 8
 
 . . . . . . . . .
@@ -1831,6 +1871,7 @@ outbreak_skip: true
 === name: 清野流岐阜戦法
 parent: 右玉
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1860,6 +1901,7 @@ any: G 2 6 5 7
 === name: 風車
 parent: 右玉
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1874,6 +1916,7 @@ outbreak_skip: true
 === name: 新風車
 parent: 風車
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1929,6 +1972,7 @@ visited: R 2 6
 === name: ひねり飛車
 aliases: 縦歩取り, 児玉屋組
 outbreak_skip: true
+only_pawns_in_hand: true
 visited: R 2 6
 
 . . . . . . . . .
@@ -2052,6 +2096,7 @@ outbreak_skip: true
 === name: 都成流△3一金
 ply: max 9
 outbreak_skip: true
+hand_eq: P
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2065,6 +2110,8 @@ outbreak_skip: true
 
 === name: 花村流名古屋戦法
 outbreak_skip: true
+hand_eq: P
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2107,6 +2154,7 @@ hand: P
 
 === name: 棒玉
 outbreak_skip: true
+only_pawns_in_hand: true
 visited: K 3 8
 
 . . . . . . . . .
@@ -2188,6 +2236,7 @@ ply: max 23
 outbreak_skip: true
 kill_count_lteq: 0
 order_key: second
+only_pawns_in_hand: true
 visited: S 5 7
 
 . . . . . . . . .
@@ -2357,6 +2406,7 @@ kill_count_lteq: 0
 parent: 原始中飛車
 outbreak_skip: true
 kill_count_lteq: 0
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2804,6 +2854,7 @@ kill_count_lteq: 0
 parent: 三間飛車
 side: furibisha
 outbreak_skip: true
+hand_eq: B
 visited: R 2 8
 
 . . . . . . . . .
@@ -3058,6 +3109,7 @@ side: furibisha
 ply: 9
 outbreak_skip: true
 order_key: first
+hand_eq: B
 
 . . . . . . . . .
 . . . . . . . . .
@@ -3104,6 +3156,7 @@ visited: S 7 7
 parent: 向かい飛車
 side: furibisha
 outbreak_skip: true
+hand_eq: B
 visited: R 2 8
 
 . . . . . . . . .
@@ -3153,6 +3206,7 @@ parent: 向かい飛車
 side: furibisha
 ply: 10
 outbreak_skip: true
+hand_eq: B
 visited: R 2 8
 
 . . . . . . . . .
@@ -3172,6 +3226,8 @@ ply: 8
 outbreak_skip: true
 kill_only: true
 order_key: second
+hand_eq: B
+op_hand_eq: B
 
 . . . . . . . . .
 . r . . . . . . .
@@ -3186,6 +3242,7 @@ order_key: second
 === name: 高田流左玉
 parent: 向かい飛車
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -3299,6 +3356,7 @@ any: vP 8 4 8 5
 parent: 向かい飛車
 ply: max 45
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -3312,6 +3370,7 @@ outbreak_skip: true
 
 === name: 英春流カメレオン
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -3328,6 +3387,7 @@ parent: 原始中飛車
 aliases: 女殺しドッカン飛車, 鬼六流ドッカン飛車
 ply: max 19
 outbreak_skip: true
+hand_eq: B P
 visited: R 5 8
 
 . . . . . . . . .
@@ -3343,6 +3403,7 @@ visited: R 5 8
 === name: 陽動振り飛車
 side: furibisha
 outbreak_skip: true
+only_pawns_in_hand: true
 visited: R 2 8
 any: K 3 7 5 9
 
@@ -3455,6 +3516,8 @@ visited: B 8 8
 === name: ネコ式タテ歩取り
 outbreak_skip: true
 kill_count_lteq: 2
+hand_eq: P
+only_pawns_in_hand: true
 visited: R 2 6
 
 . . . . . . . . .
@@ -3471,6 +3534,8 @@ visited: R 2 6
 side: ibisha
 outbreak_skip: true
 kill_count_lteq: 2
+hand_eq: P
+only_pawns_in_hand: true
 visited: S 2 7
 
 . . . . . . . . .
@@ -3487,6 +3552,7 @@ visited: S 2 7
 aliases: 対ひねり飛車たこ金戦法
 outbreak_skip: true
 kill_count_lteq: 4
+only_pawns_in_hand: true
 visited: G 7 7
 any: vR 3 4 2 4
 
@@ -3502,6 +3568,7 @@ any: vR 3 4 2 4
 
 === name: ゴリゴリ金
 outbreak_skip: true
+hand_eq: B
 
 . . . . . . . . .
 . . . . . . . . .
@@ -3545,6 +3612,7 @@ P . . P . . . . .
 
 === name: 一間飛車
 outbreak_skip: true
+only_pawns_in_hand: true
 visited: R 1 8
 
 . . . . . . . . .
@@ -3636,6 +3704,7 @@ kill_count_lteq: 0
 
 === name: 玉頭銀
 outbreak_skip: true
+only_pawns_in_hand: true
 visited: S 5 6
 
 . . . . . . . . .
@@ -3652,6 +3721,7 @@ visited: S 5 6
 side: furibisha
 outbreak_skip: true
 kill_only: true
+hand_eq: B
 any: R 9 8 8 8 7 8 6 8 5 8
 
 . . . . . . . . .

@@ -23,6 +23,11 @@ class ParsedTemplate {
     this.killCountLteq,
     this.killOnly = false,
     this.orderKey,
+    this.handEq,
+    this.opHandEq,
+    this.handNotIn = const <String>[],
+    this.noPawnInHand = false,
+    this.onlyPawnsInHand = false,
   });
 
   /// 必須: テンプレ名 (例: '金矢倉')
@@ -69,6 +74,21 @@ class ParsedTemplate {
 
   /// bioshogi `order_key` ('first'=先手 / 'second'=後手)。
   final String? orderKey;
+
+  /// bioshogi `hold_piece_eq` (自分の持駒が完全一致)。enum 名 → 枚数。
+  final Map<String, int>? handEq;
+
+  /// bioshogi `op_hold_piece_eq` (相手の持駒が完全一致)。
+  final Map<String, int>? opHandEq;
+
+  /// bioshogi `hold_piece_not_in` (自分の持駒に含まない駒の enum 名)。
+  final List<String> handNotIn;
+
+  /// bioshogi `has_pawn_then_skip` (持駒に歩があれば不成立)。
+  final bool noPawnInHand;
+
+  /// bioshogi `has_other_pawn_then_skip` (持駒に歩以外があれば不成立)。
+  final bool onlyPawnsInHand;
 }
 
 /// 要件 1 件分の中間表現。per-cell と position-wide のどちらも 1 つの型で
@@ -164,6 +184,11 @@ List<ParsedTemplate> parseTemplateFile(String content) {
   int? sectionKillCountLteq;
   bool sectionKillOnly = false;
   String? sectionOrderKey;
+  Map<String, int>? sectionHandEq;
+  Map<String, int>? sectionOpHandEq;
+  List<String> sectionHandNotIn = <String>[];
+  bool sectionNoPawnInHand = false;
+  bool sectionOnlyPawnsInHand = false;
   final List<PlacementCell> sectionExtras = <PlacementCell>[];
   final List<List<String>> gridRows = <List<String>>[];
 
@@ -219,6 +244,11 @@ List<ParsedTemplate> parseTemplateFile(String content) {
         killCountLteq: sectionKillCountLteq,
         killOnly: sectionKillOnly,
         orderKey: sectionOrderKey,
+        handEq: sectionHandEq,
+        opHandEq: sectionOpHandEq,
+        handNotIn: List<String>.unmodifiable(sectionHandNotIn),
+        noPawnInHand: sectionNoPawnInHand,
+        onlyPawnsInHand: sectionOnlyPawnsInHand,
       ),
     );
   }
@@ -236,6 +266,11 @@ List<ParsedTemplate> parseTemplateFile(String content) {
     sectionKillCountLteq = null;
     sectionKillOnly = false;
     sectionOrderKey = null;
+    sectionHandEq = null;
+    sectionOpHandEq = null;
+    sectionHandNotIn = <String>[];
+    sectionNoPawnInHand = false;
+    sectionOnlyPawnsInHand = false;
     sectionExtras.clear();
     gridRows.clear();
   }
@@ -423,6 +458,25 @@ List<ParsedTemplate> parseTemplateFile(String content) {
             );
           }
           sectionOrderKey = v;
+          break;
+        case 'hand_eq':
+          sectionHandEq = _parseHandCounts(header.value);
+          break;
+        case 'op_hand_eq':
+          sectionOpHandEq = _parseHandCounts(header.value);
+          break;
+        case 'hand_not_in':
+          sectionHandNotIn = _splitPieceTokens(header.value)
+              .map(sfenTokenToEnumName)
+              .toList();
+          break;
+        case 'no_pawn_in_hand':
+          sectionNoPawnInHand =
+              _parseBoolHeader(header.value, lineNo, 'no_pawn_in_hand');
+          break;
+        case 'only_pawns_in_hand':
+          sectionOnlyPawnsInHand =
+              _parseBoolHeader(header.value, lineNo, 'only_pawns_in_hand');
           break;
         case 'igyoku':
           // `igyoku: true` → KingIgyoku() を placements に追加し、
@@ -863,6 +917,51 @@ String? formatPlyHeader({int? plyEq, int? plyMax}) {
   if (plyEq != null) parts.add('$plyEq');
   if (plyMax != null) parts.add('max $plyMax');
   return 'ply: ${parts.join(', ')}';
+}
+
+/// `hand_eq: B*2 P` のような持駒 multiset 表記を enum 名 → 枚数の Map に
+/// パースする (`X*N` で N 枚、無印は 1 枚)。
+Map<String, int> _parseHandCounts(String value) {
+  final Map<String, int> out = <String, int>{};
+  for (final String token in _splitPieceTokens(value)) {
+    final int starIdx = token.indexOf('*');
+    final String pieceToken =
+        starIdx < 0 ? token : token.substring(0, starIdx);
+    final int count =
+        starIdx < 0 ? 1 : (int.tryParse(token.substring(starIdx + 1)) ?? 1);
+    final String name = sfenTokenToEnumName(pieceToken);
+    out[name] = (out[name] ?? 0) + count;
+  }
+  return out;
+}
+
+/// 持駒系フラグ (`hand_eq` / `op_hand_eq` / `hand_not_in` /
+/// `no_pawn_in_hand` / `only_pawns_in_hand`) のヘッダ行を 0 件以上返す。
+List<String> formatHandConstraintHeaders({
+  Map<String, int>? handEq,
+  Map<String, int>? opHandEq,
+  List<String> handNotIn = const <String>[],
+  bool noPawnInHand = false,
+  bool onlyPawnsInHand = false,
+}) {
+  String spec(Map<String, int> m) {
+    final List<String> toks = <String>[];
+    m.forEach((String name, int n) {
+      final String t = enumNameToSfenToken(name);
+      toks.add(n == 1 ? t : '$t*$n');
+    });
+    return toks.join(' ');
+  }
+
+  final List<String> out = <String>[];
+  if (handEq != null) out.add('hand_eq: ${spec(handEq)}');
+  if (opHandEq != null) out.add('op_hand_eq: ${spec(opHandEq)}');
+  if (handNotIn.isNotEmpty) {
+    out.add('hand_not_in: ${handNotIn.map(enumNameToSfenToken).join(' ')}');
+  }
+  if (noPawnInHand) out.add('no_pawn_in_hand: true');
+  if (onlyPawnsInHand) out.add('only_pawns_in_hand: true');
+  return out;
 }
 
 /// game-context フラグ (`outbreak_skip` / `kill_count_lteq` / `kill_only` /

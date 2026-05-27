@@ -3,6 +3,7 @@ import 'color.dart';
 import 'generated/strategies.g.dart' as gen;
 import 'move.dart';
 import 'move_history.dart';
+import 'piece.dart';
 import 'position.dart';
 import 'record.dart';
 
@@ -55,6 +56,11 @@ class StrategyTemplate {
     this.killCountLteq,
     this.killOnly = false,
     this.orderKey,
+    this.handEq,
+    this.opHandEq,
+    this.handNotIn = const <PieceType>[],
+    this.noPawnInHand = false,
+    this.onlyPawnsInHand = false,
   });
 
   /// 戦法名 (例: '四間飛車')
@@ -102,6 +108,21 @@ class StrategyTemplate {
   /// bioshogi `order_key`: 手番限定 ('first' = 先手のみ / 'second' = 後手のみ)。
   /// 平手前提で 'first'→black / 'second'→white に対応付ける。
   final String? orderKey;
+
+  /// bioshogi `hold_piece_eq`: 自分の持駒が完全一致のとき成立。
+  final Map<PieceType, int>? handEq;
+
+  /// bioshogi `op_hold_piece_eq`: 相手の持駒が完全一致のとき成立。
+  final Map<PieceType, int>? opHandEq;
+
+  /// bioshogi `hold_piece_not_in`: 自分の持駒にこれらを含まないとき成立。
+  final List<PieceType> handNotIn;
+
+  /// bioshogi `has_pawn_then_skip`: 自分の持駒に歩があれば不成立。
+  final bool noPawnInHand;
+
+  /// bioshogi `has_other_pawn_then_skip`: 自分の持駒に歩以外があれば不成立。
+  final bool onlyPawnsInHand;
 
   /// このテンプレートが棋譜走査ゲート (outbreak/kill/order) を持つかを返す。
   bool get hasRecordGate =>
@@ -234,7 +255,15 @@ bool _matchesStrategyTemplate(
   for (final CastleRequirement req in template.placements) {
     if (!req.isSatisfiedBy(position, side, history)) return false;
   }
-  return true;
+  return passesHandConstraints(
+    position,
+    side,
+    handEq: template.handEq,
+    opHandEq: template.opHandEq,
+    handNotIn: template.handNotIn,
+    noPawnInHand: template.noPawnInHand,
+    onlyPawnsInHand: template.onlyPawnsInHand,
+  );
 }
 
 /// 局面からの戦法検出ユーティリティ。プロパティ形式で

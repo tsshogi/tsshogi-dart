@@ -8,12 +8,13 @@
 #
 # Source ASCII parsed by: tool/import_bioshogi.dart
 
-# Last regenerated: 2026-05-27T18:09:12.854646
+# Last regenerated: 2026-05-27T18:19:32.213871
 # Source: defense_info.rb (133 metadata rows) 
 #  ∩  shape_info.rb (394 ASCII templates)
 
 === name: いちご囲い
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -27,6 +28,7 @@ outbreak_skip: true
 
 === name: カニ囲い
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -41,6 +43,7 @@ outbreak_skip: true
 === name: カタ囲い
 parent: カニ囲い
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -125,6 +128,7 @@ outbreak_skip: true
 === name: 富士見矢倉
 parent: 総矢倉
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -139,6 +143,7 @@ outbreak_skip: true
 === name: 高矢倉
 parent: 金矢倉
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -153,6 +158,7 @@ outbreak_skip: true
 === name: 四角矢倉
 parent: 銀矢倉
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -181,6 +187,7 @@ outbreak_skip: true
 === name: 豆腐矢倉
 parent: 金矢倉
 outbreak_skip: true
+only_pawns_in_hand: true
 any: vB 2 2 3 3 4 4
 
 . . . . . . . . .
@@ -210,6 +217,7 @@ S P N . . . . . .
 === name: 流れ矢倉
 parent: カニ囲い
 outbreak_skip: true
+only_pawns_in_hand: true
 visited: S 6 8
 
 . . . . . . . . .
@@ -253,6 +261,7 @@ outbreak_skip: true
 === name: 一文字矢倉
 parent: カニ囲い
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -297,6 +306,7 @@ any: B 7 7 8 8
 === name: 新型雁木
 parent: ツノ銀雁木
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -412,6 +422,7 @@ order_key: second
 
 === name: カニ缶囲い
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -425,6 +436,7 @@ outbreak_skip: true
 
 === name: オリジナル雁木
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -438,6 +450,7 @@ outbreak_skip: true
 
 === name: 舟囲い
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -452,6 +465,7 @@ outbreak_skip: true
 === name: 舟囲いDX
 parent: 舟囲い
 outbreak_skip: true
+only_pawns_in_hand: true
 visited: G 6 9
 
 . . . . . . . . .
@@ -525,6 +539,7 @@ outbreak_skip: true
 === name: 角道不突き左美濃
 parent: 舟囲い
 outbreak_skip: true
+only_pawns_in_hand: true
 visited: K 6 8
 
 . . . . . . . . .
@@ -555,6 +570,7 @@ P P B G . . . . .
 === name: 升田美濃
 parent: 舟囲い
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -626,6 +642,7 @@ outbreak_skip: true
 === name: 端玉銀冠
 parent: 天守閣美濃
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -640,6 +657,7 @@ L N . . . . . . .
 === name: かんぴょう囲い
 parent: 居飛車銀冠
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -654,6 +672,7 @@ _ N . . . . . . .
 === name: 四枚銀冠
 parent: 居飛車銀冠
 outbreak_skip: true
+only_pawns_in_hand: true
 any: K 9 8 8 8
 
 . . . . . . . . .
@@ -724,6 +743,7 @@ aliases: 振り穴
 === name: 松尾流穴熊
 parent: 居飛車穴熊
 outbreak_skip: true
+only_pawns_in_hand: true
 visited: S 6 8
 
 . . . . . . . . .
@@ -768,6 +788,7 @@ K N . . . . . . .
 === name: 居飛穴音無しの構え
 parent: 銀冠穴熊
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -937,6 +958,7 @@ outbreak_skip: true
 parent: 舟囲い
 aliases: カタツムリ, トラック囲い
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1005,6 +1027,7 @@ outbreak_skip: true
 
 === name: あずまや囲い
 outbreak_skip: true
+only_pawns_in_hand: true
 any: B 7 7 8 8
 
 . . . . . . . . .
@@ -1019,6 +1042,7 @@ any: B 7 7 8 8
 
 === name: 四段端玉
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1106,6 +1130,7 @@ outbreak_skip: true
 === name: 無敵囲い
 aliases: 初心者囲い
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1512,6 +1537,7 @@ outbreak_skip: true
 === name: 片ツノ銀囲い
 parent: 舟囲い
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1526,6 +1552,7 @@ outbreak_skip: true
 === name: ツノ銀囲い
 parent: 片ツノ銀囲い
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1554,6 +1581,7 @@ visited: S 6 8
 
 === name: モノレール囲い
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1567,6 +1595,7 @@ _ _ _ _ _ _ _ R _
 
 === name: 銀多伝
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1580,6 +1609,7 @@ outbreak_skip: true
 
 === name: 金多伝
 outbreak_skip: true
+only_pawns_in_hand: true
 
 . . . . . . . . .
 . . . . . . . . .

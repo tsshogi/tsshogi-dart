@@ -1,5 +1,6 @@
 import 'color.dart';
 import 'generated/castles.g.dart' as gen;
+import 'hand.dart';
 import 'move.dart';
 import 'move_history.dart';
 import 'piece.dart';
@@ -588,6 +589,11 @@ class CastleTemplate {
     this.killCountLteq,
     this.killOnly = false,
     this.orderKey,
+    this.handEq,
+    this.opHandEq,
+    this.handNotIn = const <PieceType>[],
+    this.noPawnInHand = false,
+    this.onlyPawnsInHand = false,
   });
 
   /// 囲い名 (例: '金矢倉')
@@ -647,6 +653,21 @@ class CastleTemplate {
 
   /// bioshogi `order_key`: 手番限定 ('first'=先手 / 'second'=後手)。
   final String? orderKey;
+
+  /// bioshogi `hold_piece_eq`: 自分の持駒がこの multiset と完全一致のとき成立。
+  final Map<PieceType, int>? handEq;
+
+  /// bioshogi `op_hold_piece_eq`: 相手の持駒が完全一致のとき成立。
+  final Map<PieceType, int>? opHandEq;
+
+  /// bioshogi `hold_piece_not_in`: 自分の持駒にこれらを含まないとき成立。
+  final List<PieceType> handNotIn;
+
+  /// bioshogi `has_pawn_then_skip`: 自分の持駒に歩があれば不成立。
+  final bool noPawnInHand;
+
+  /// bioshogi `has_other_pawn_then_skip`: 自分の持駒に歩以外があれば不成立。
+  final bool onlyPawnsInHand;
 
   /// このテンプレートが棋譜走査ゲート (outbreak/kill/order) を持つかを返す。
   bool get hasRecordGate =>
@@ -781,7 +802,60 @@ bool _matchesTemplate(
   for (final CastleRequirement req in template.placements) {
     if (!req.isSatisfiedBy(position, side, history)) return false;
   }
+  return passesHandConstraints(
+    position,
+    side,
+    handEq: template.handEq,
+    opHandEq: template.opHandEq,
+    handNotIn: template.handNotIn,
+    noPawnInHand: template.noPawnInHand,
+    onlyPawnsInHand: template.onlyPawnsInHand,
+  );
+}
+
+/// bioshogi の持駒系メタデータ (hold_piece_eq / op_hold_piece_eq /
+/// hold_piece_not_in / has_pawn_then_skip / has_other_pawn_then_skip) を
+/// 局面の持駒に対して検証する共通関数。[StrategyTemplate] / [CastleTemplate]
+/// の双方から呼ばれる。持駒は局面に含まれるため position / record 両モードで
+/// 評価できる。
+bool passesHandConstraints(
+  ImmutablePosition position,
+  Color side, {
+  Map<PieceType, int>? handEq,
+  Map<PieceType, int>? opHandEq,
+  List<PieceType> handNotIn = const <PieceType>[],
+  bool noPawnInHand = false,
+  bool onlyPawnsInHand = false,
+}) {
+  final ImmutableHand own = position.hand(side);
+  if (handEq != null && !_handEquals(own, handEq)) return false;
+  if (opHandEq != null &&
+      !_handEquals(position.hand(reverseColor(side)), opHandEq)) {
+    return false;
+  }
+  for (final PieceType p in handNotIn) {
+    if (own.count(p) > 0) return false;
+  }
+  if (noPawnInHand && own.count(PieceType.pawn) > 0) return false;
+  if (onlyPawnsInHand) {
+    bool onlyPawns = true;
+    own.forEach((PieceType t, int n) {
+      if (t != PieceType.pawn && n > 0) onlyPawns = false;
+    });
+    if (!onlyPawns) return false;
+  }
   return true;
+}
+
+bool _handEquals(ImmutableHand hand, Map<PieceType, int> spec) {
+  bool equal = true;
+  spec.forEach((PieceType t, int n) {
+    if (hand.count(t) != n) equal = false;
+  });
+  hand.forEach((PieceType t, int n) {
+    if (n != (spec[t] ?? 0)) equal = false;
+  });
+  return equal;
 }
 
 /// 局面からの囲い検出ユーティリティ。
