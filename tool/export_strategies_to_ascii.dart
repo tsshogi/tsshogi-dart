@@ -42,6 +42,14 @@ void main() {
     for (final String line in formatVisitedHeaders(cells)) {
       buf.writeln(line);
     }
+    for (final String line in formatAnyHeaders(cells)) {
+      buf.writeln(line);
+    }
+    for (final String line in formatDroppedHeaders(cells)) {
+      buf.writeln(line);
+    }
+    final String? handEmptyLine = formatHandEmptyHeader(cells);
+    if (handEmptyLine != null) buf.writeln(handEmptyLine);
     buf.writeln();
     final List<List<String>> grid = buildGrid(cells);
     for (final List<String> row in grid) {
@@ -89,12 +97,21 @@ List<PlacementCell> _toCells(List<CastleRequirement> placements) {
           rank: req.rank,
           kind: 'notOf',
           pieceTypes: req.excluded.map((PieceType p) => p.name).toList(),
+          opponent: req.color == Color.white,
         ));
       case AnyPiece():
         out.add(PlacementCell(
           file: req.file,
           rank: req.rank,
           kind: 'anyPiece',
+          anySide: req.anySide,
+        ));
+      case AnyPlacement():
+        out.add(PlacementCell(
+          kind: 'anyPlacement',
+          pieceTypes: <String>[req.pieceType.name],
+          opponent: req.color == Color.white,
+          squares: req.squares,
         ));
       case PieceAnywhere():
         out.add(PlacementCell(
@@ -106,6 +123,7 @@ List<PlacementCell> _toCells(List<CastleRequirement> placements) {
           kind: 'handPiece',
           pieceTypes: <String>[req.pieceType.name],
           minCount: req.minCount,
+          opponent: req.color == Color.white,
         ));
       case PieceUnmoved():
         out.add(PlacementCell(
@@ -120,6 +138,15 @@ List<PlacementCell> _toCells(List<CastleRequirement> placements) {
           rank: req.rank,
           pieceTypes: <String>[req.pieceType.name],
         ));
+      case PieceDropped():
+        out.add(PlacementCell(
+          kind: 'pieceDropped',
+          file: req.file,
+          rank: req.rank,
+          pieceTypes: <String>[req.pieceType.name],
+        ));
+      case HandEmpty():
+        out.add(PlacementCell(kind: 'handEmpty'));
       case KingIgyoku():
         out.add(PlacementCell(kind: 'kingIgyoku'));
     }

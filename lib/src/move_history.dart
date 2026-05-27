@@ -18,6 +18,13 @@ class MoveHistory {
   final Set<({Color color, Square square})> _sourceTouched =
       <({Color color, Square square})>{};
 
+  /// (color, square) — 現在そのマスに「打って置かれたまま動かしていない駒」が
+  /// あるか。bioshogi の `drop_only` (打ち手であること) 判定に使う。
+  /// 打ち手で到着したマスを登録し、そのマスから動いた / そのマスが取られた時に
+  /// 解除する。
+  final Set<({Color color, Square square})> _droppedInPlace =
+      <({Color color, Square square})>{};
+
   /// (color, pieceType) → そのチームのその種類の駒が居たことのある全マス。
   /// 初期局面の配置 + 各 `Move.to` を蓄積していく。
   final Map<({Color color, PieceType pieceType}), Set<Square>> _visited =
@@ -67,13 +74,20 @@ class MoveHistory {
   ///   のみ設定。
   void recordMove(Move move, int ply) {
     final MoveOrigin from = move.from;
+    // 到着マスに既に居た「打ち駒」は取られた / 上書きされたので解除する。
+    _droppedInPlace.removeWhere((e) => e.square == move.to);
     if (from is FromSquare) {
       _sourceTouched.add((color: move.color, square: from.square));
+      // そのマスの駒が動いたので、打ち駒フラグを解除する。
+      _droppedInPlace.removeWhere((e) => e.square == from.square);
       if (move.pieceType == PieceType.king) {
         if (_kingFirstMovedTurn[move.color] == null) {
           _kingFirstMovedTurn[move.color] = ply;
         }
       }
+    } else {
+      // 打ち手 (FromHand): 到着マスを「打って置かれたまま」として登録。
+      _droppedInPlace.add((color: move.color, square: move.to));
     }
     final ({Color color, PieceType pieceType}) key = (
       color: move.color,
@@ -107,6 +121,11 @@ class MoveHistory {
       pieceType: pieceType,
     );
     return _visited[key]?.contains(Square(file, rank)) ?? false;
+  }
+
+  /// [side] の駒が file,rank マスに「打って置かれたまま」か (= 自陣角等)。
+  bool isDroppedInPlace(Color side, int file, int rank) {
+    return _droppedInPlace.contains((color: side, square: Square(file, rank)));
   }
 
   /// [side] の玉が最初に動いた手数。まだ動いていなければ `null`。

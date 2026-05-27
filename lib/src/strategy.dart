@@ -93,7 +93,10 @@ class StrategyTemplate {
   /// (`detectStrategies(position)`) では常にスキップされる。
   bool get hasHistoryRequirement {
     for (final CastleRequirement req in placements) {
-      if (req is PieceUnmoved || req is PieceVisited || req is KingIgyoku) {
+      if (req is PieceUnmoved ||
+          req is PieceVisited ||
+          req is PieceDropped ||
+          req is KingIgyoku) {
         return true;
       }
     }
