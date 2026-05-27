@@ -176,7 +176,8 @@ class EmptySquare extends CastleRequirement {
 /// 先手の金/銀以外 (空または先手の他の駒、または後手の任意の駒) であること
 /// を要求する。
 class NotOfPieces extends CastleRequirement {
-  const NotOfPieces(this.file, this.rank, this.excluded);
+  const NotOfPieces(this.file, this.rank, this.excluded,
+      {this.color = Color.black});
 
   /// 1..9 — 先手視点
   final int file;
@@ -184,8 +185,13 @@ class NotOfPieces extends CastleRequirement {
   /// 1..9 — 先手視点
   final int rank;
 
-  /// このリストに含まれる side の駒種があると要件を満たさない
+  /// このリストに含まれる駒種があると要件を満たさない
   final List<PieceType> excluded;
+
+  /// テンプレ視点の絶対色 ([PiecePlacement] と同規約)。
+  /// - `Color.black` (デフォルト) = 自陣 (bioshogi の `~駒`)。
+  /// - `Color.white` = 相手陣 (bioshogi の `^駒` = 「△側でここに含まれない」)。
+  final Color color;
 
   @override
   bool isSatisfiedBy(ImmutablePosition position, Color side,
@@ -194,14 +200,17 @@ class NotOfPieces extends CastleRequirement {
     final int r = side == Color.black ? rank : 10 - rank;
     final Piece? piece = position.board.at(Square(f, r));
     if (piece == null) return true;
-    if (piece.color != side) return true;
+    final Color target = color == Color.black ? side : reverseColor(side);
+    if (piece.color != target) return true;
     return !excluded.contains(piece.type);
   }
 
   @override
   bool operator ==(Object other) {
     if (other is! NotOfPieces) return false;
-    if (other.file != file || other.rank != rank) return false;
+    if (other.file != file || other.rank != rank || other.color != color) {
+      return false;
+    }
     if (other.excluded.length != excluded.length) return false;
     for (int i = 0; i < excluded.length; i++) {
       if (other.excluded[i] != excluded[i]) return false;
@@ -211,21 +220,27 @@ class NotOfPieces extends CastleRequirement {
 
   @override
   int get hashCode =>
-      Object.hash('NotOfPieces', file, rank, Object.hashAll(excluded));
+      Object.hash('NotOfPieces', file, rank, color, Object.hashAll(excluded));
 }
 
-/// 指定マスに [side] の駒が (種類を問わず) あることを要求する要件。
+/// 指定マスに駒があることを要求する要件。
 ///
-/// 例: `AnyPiece(8, 8)` は 8八に先手の何らかの駒がいること。空マスや相手駒
-/// では満たされない。
+/// 例: `AnyPiece(8, 8)` は 8八に先手の何らかの駒がいること (bioshogi の
+/// `◇` = 「自分の歩以上がある」相当)。空マスや相手駒では満たされない。
+///
+/// [anySide] が `true` の場合は陣営を問わず「何かしらの駒があれば」満たされる
+/// (bioshogi の `●` = 「この座標に何かある」相当)。
 class AnyPiece extends CastleRequirement {
-  const AnyPiece(this.file, this.rank);
+  const AnyPiece(this.file, this.rank, {this.anySide = false});
 
   /// 1..9 — 先手視点
   final int file;
 
   /// 1..9 — 先手視点
   final int rank;
+
+  /// true なら陣営を問わず駒の存在のみを判定する (`●`)。
+  final bool anySide;
 
   @override
   bool isSatisfiedBy(ImmutablePosition position, Color side,
@@ -234,16 +249,71 @@ class AnyPiece extends CastleRequirement {
     final int r = side == Color.black ? rank : 10 - rank;
     final Piece? piece = position.board.at(Square(f, r));
     if (piece == null) return false;
-    return piece.color == side;
+    return anySide || piece.color == side;
   }
 
   @override
   bool operator ==(Object other) {
-    return other is AnyPiece && other.file == file && other.rank == rank;
+    return other is AnyPiece &&
+        other.file == file &&
+        other.rank == rank &&
+        other.anySide == anySide;
   }
 
   @override
-  int get hashCode => Object.hash('AnyPiece', file, rank);
+  int get hashCode => Object.hash('AnyPiece', file, rank, anySide);
+}
+
+/// 複数マスのうち **いずれか 1 つ** に指定駒があれば満たされる OR 要件。
+///
+/// bioshogi の `*駒` (「▲側でどれかのマスにこの駒がある」) と `?駒` (「△側で
+/// どれか」) に対応する。例えば雁木の自陣角は角が 7七 か 8八 のどちらかに
+/// あればよく、`AnyPlacement(PieceType.bishop, [(file: 7, rank: 7),
+/// (file: 8, rank: 8)])` と表す。
+///
+/// [color] は [PiecePlacement] と同規約: `Color.black` = 自陣 (`*`)、
+/// `Color.white` = 相手陣 (`?`)。各マスは後手判定時に 180° 回転される。
+class AnyPlacement extends CastleRequirement {
+  const AnyPlacement(this.pieceType, this.squares, {this.color = Color.black});
+
+  /// 探す駒種 (bioshogi では 1 つの `*`/`?` グループは単一駒種)。
+  final PieceType pieceType;
+
+  /// 候補マス (先手視点)。このいずれかに [pieceType] があれば成立。
+  final List<({int file, int rank})> squares;
+
+  /// テンプレ視点の絶対色。Color.black = 自陣、Color.white = 相手陣。
+  final Color color;
+
+  @override
+  bool isSatisfiedBy(ImmutablePosition position, Color side,
+      [MoveHistory? history]) {
+    final Color expected = color == Color.black ? side : reverseColor(side);
+    for (final ({int file, int rank}) sq in squares) {
+      final int f = side == Color.black ? sq.file : 10 - sq.file;
+      final int r = side == Color.black ? sq.rank : 10 - sq.rank;
+      final Piece? piece = position.board.at(Square(f, r));
+      if (piece != null && piece.color == expected && piece.type == pieceType) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! AnyPlacement) return false;
+    if (other.pieceType != pieceType || other.color != color) return false;
+    if (other.squares.length != squares.length) return false;
+    for (int i = 0; i < squares.length; i++) {
+      if (other.squares[i] != squares[i]) return false;
+    }
+    return true;
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash('AnyPlacement', pieceType, color, Object.hashAll(squares));
 }
 
 /// 盤上のいずれかのマスに [side] の指定駒が 1 枚以上あることを要求する要件。
@@ -278,12 +348,18 @@ class PieceAnywhere extends CastleRequirement {
   int get hashCode => Object.hash('PieceAnywhere', pieceType);
 }
 
-/// [side] の持駒に指定駒種が [minCount] 枚以上あることを要求する要件。
+/// 持駒に指定駒種が [minCount] 枚以上あることを要求する要件。
 ///
 /// 例: `HandPiece(PieceType.bishop)` は side の手駒に角が 1 枚以上。
 /// `HandPiece(PieceType.pawn, 3)` は side の手駒に歩が 3 枚以上。
+///
+/// [color] は [PiecePlacement] と同じくテンプレ視点の絶対色:
+/// - `Color.black` (デフォルト) = 自陣の持駒。side=black なら黒の手駒、
+///   side=white なら白の手駒を見る。
+/// - `Color.white` = 相手陣の持駒 (bioshogi の `v駒` 相当)。角交換振り飛車の
+///   ように「相手が角を持駒にしている」状況を表現したいときに使う。
 class HandPiece extends CastleRequirement {
-  const HandPiece(this.pieceType, [this.minCount = 1]);
+  const HandPiece(this.pieceType, [this.minCount = 1, this.color = Color.black]);
 
   /// 駒種
   final PieceType pieceType;
@@ -291,21 +367,26 @@ class HandPiece extends CastleRequirement {
   /// 必要枚数 (デフォルト 1)
   final int minCount;
 
+  /// テンプレ視点の絶対色。Color.black = 自陣、Color.white = 相手陣。
+  final Color color;
+
   @override
   bool isSatisfiedBy(ImmutablePosition position, Color side,
       [MoveHistory? history]) {
-    return position.hand(side).count(pieceType) >= minCount;
+    final Color handSide = color == Color.black ? side : reverseColor(side);
+    return position.hand(handSide).count(pieceType) >= minCount;
   }
 
   @override
   bool operator ==(Object other) {
     return other is HandPiece &&
         other.pieceType == pieceType &&
-        other.minCount == minCount;
+        other.minCount == minCount &&
+        other.color == color;
   }
 
   @override
-  int get hashCode => Object.hash('HandPiece', pieceType, minCount);
+  int get hashCode => Object.hash('HandPiece', pieceType, minCount, color);
 }
 
 /// [side] が指定マスから一度も `move.from` として動いていないことを要求する
@@ -424,6 +505,71 @@ class PieceVisited extends CastleRequirement {
   int get hashCode => Object.hash('PieceVisited', file, rank, pieceType);
 }
 
+/// 指定マスの駒が「持駒から打たれてそのまま動いていない」ことを要求する
+/// 履歴依存要件 (bioshogi の `drop_only` 相当)。
+///
+/// 例: はく式四間飛車は角交換後に持駒の角を 7七 へ打ち直した自陣角なので、
+/// `PieceDropped(7, 7, PieceType.bishop)` で「7七の角は打ち駒」と判定する。
+/// 角を盤上から動かして 7七 に上がったノーマル四間飛車とはこれで区別できる。
+/// 履歴が無い (position-only) 検出では常に `false`。
+class PieceDropped extends CastleRequirement {
+  const PieceDropped(this.file, this.rank, this.pieceType);
+
+  /// 1..9 — 先手視点
+  final int file;
+
+  /// 1..9 — 先手視点
+  final int rank;
+
+  /// 打ち駒として期待する駒種
+  final PieceType pieceType;
+
+  @override
+  bool isSatisfiedBy(ImmutablePosition position, Color side,
+      [MoveHistory? history]) {
+    if (history == null) return false;
+    final int f = side == Color.black ? file : 10 - file;
+    final int r = side == Color.black ? rank : 10 - rank;
+    final Piece? piece = position.board.at(Square(f, r));
+    if (piece == null || piece.color != side || piece.type != pieceType) {
+      return false;
+    }
+    return history.isDroppedInPlace(side, f, r);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is PieceDropped &&
+        other.file == file &&
+        other.rank == rank &&
+        other.pieceType == pieceType;
+  }
+
+  @override
+  int get hashCode => Object.hash('PieceDropped', file, rank, pieceType);
+}
+
+/// [side] の持駒が空であることを要求する要件 (bioshogi の `hold_piece_empty`)。
+class HandEmpty extends CastleRequirement {
+  const HandEmpty();
+
+  @override
+  bool isSatisfiedBy(ImmutablePosition position, Color side,
+      [MoveHistory? history]) {
+    bool empty = true;
+    position.hand(side).forEach((PieceType _, int n) {
+      if (n > 0) empty = false;
+    });
+    return empty;
+  }
+
+  @override
+  bool operator ==(Object other) => other is HandEmpty;
+
+  @override
+  int get hashCode => 'HandEmpty'.hashCode;
+}
+
 /// 囲い (king defensive formation) のテンプレート。
 ///
 /// 配置は常に先手 (black) 視点で記述する。後手の検出時には per-cell の
@@ -497,7 +643,10 @@ class CastleTemplate {
 /// 任意の placement 列が履歴依存要件を含むかを返す内部ヘルパ。
 bool _hasHistoryRequirement(List<CastleRequirement> placements) {
   for (final CastleRequirement req in placements) {
-    if (req is PieceUnmoved || req is PieceVisited || req is KingIgyoku) {
+    if (req is PieceUnmoved ||
+        req is PieceVisited ||
+        req is PieceDropped ||
+        req is KingIgyoku) {
       return true;
     }
   }

@@ -58,10 +58,18 @@ const Map<String, String> _kanjiToSfen = <String, String>{
 // ---------------------------------------------------------------------------
 
 class _ShapeRecord {
-  _ShapeRecord({required this.key, required this.cells, required this.hasKing});
+  _ShapeRecord({
+    required this.key,
+    required this.cells,
+    required this.hasKing,
+    this.primary,
+  });
   final String key;
   final List<PlacementCell> cells;
   final bool hasKing;
+
+  /// プライマリトリガー (`!<駒>`) のマスと駒種。drop_only 適用先として使う。
+  final ({int file, int rank, String pieceEnum})? primary;
 }
 
 /// shape_info.rb 全体を読み、`{ key: ..., body: <<~EOT ... EOT }` ブロックを
@@ -120,7 +128,14 @@ _ShapeRecord _parseAsciiBody(String key, List<String> bodyLines) {
   final List<({int file, int rank})> visitedSquares =
       <({int file, int rank})>[];
   String? primaryPieceEnum;
+  ({int file, int rank, String pieceEnum})? primary;
   bool hasKing = false;
+  // bioshogi の `*駒` (▲側 OR) / `?駒` (△側 OR) はテンプレ内の同駒種マスを 1 つの
+  // OR グループにまとめる (= AnyPlacement)。駒種ごとに候補マスを集める。
+  final Map<String, List<({int file, int rank})>> starGroups =
+      <String, List<({int file, int rank})>>{};
+  final Map<String, List<({int file, int rank})>> queryGroups =
+      <String, List<({int file, int rank})>>{};
   // 段ラベルがある行のみ採用。ラベルがない場合、テンプレ全体としては平手
   // 等の完全盤面 (9 行) のはず。
   final List<({int rank, String row})> rankedRows =
@@ -144,7 +159,20 @@ _ShapeRecord _parseAsciiBody(String key, List<String> bodyLines) {
   void handleToken(_CellTok t, int file, int rank) {
     if (t.body == '★' || t.body == '☆') {
       // 移動元マーカー → 後で `!<駒>` と組み合わせて PieceVisited に変換。
+      // (`☆` は実テンプレでは未使用。出現しても visited 同様に扱う。)
       visitedSquares.add((file: file, rank: rank));
+      return;
+    }
+    // `*駒` (▲OR) / `?駒` (△OR) → 駒種ごとに OR 候補マスを集約。
+    if (t.prefix == '*' || t.prefix == '?') {
+      final String? sfen = _kanjiToSfen[t.body];
+      if (sfen != null) {
+        final String enumName = sfenTokenToEnumName(sfen);
+        final Map<String, List<({int file, int rank})>> groups =
+            t.prefix == '*' ? starGroups : queryGroups;
+        (groups[enumName] ??= <({int file, int rank})>[])
+            .add((file: file, rank: rank));
+      }
       return;
     }
     final PlacementCell? cell = _toPlacement(t, file, rank);
@@ -155,11 +183,13 @@ _ShapeRecord _parseAsciiBody(String key, List<String> bodyLines) {
         cell.pieceTypes.single == 'king') {
       hasKing = true;
     }
-    // primary trigger (`!<駒>`) の駒種を記録 (★ への充当用)。
+    // primary trigger (`!<駒>`) の駒種 + マスを記録 (★/drop_only への充当用)。
     if (t.prefix == '!' &&
         cell.kind == 'exact' &&
         cell.pieceTypes.length == 1) {
       primaryPieceEnum ??= cell.pieceTypes.single;
+      primary ??=
+          (file: file, rank: rank, pieceEnum: cell.pieceTypes.single);
     }
   }
 
@@ -198,7 +228,27 @@ _ShapeRecord _parseAsciiBody(String key, List<String> bodyLines) {
     }
   }
 
-  return _ShapeRecord(key: key, cells: cells, hasKing: hasKing);
+  // `*駒` / `?駒` の OR グループを AnyPlacement に変換。
+  void emitAnyGroups(
+    Map<String, List<({int file, int rank})>> groups, {
+    required bool opponent,
+  }) {
+    final List<String> keys = groups.keys.toList()..sort();
+    for (final String enumName in keys) {
+      cells.add(PlacementCell(
+        kind: 'anyPlacement',
+        pieceTypes: <String>[enumName],
+        opponent: opponent,
+        squares: groups[enumName]!,
+      ));
+    }
+  }
+
+  emitAnyGroups(starGroups, opponent: false);
+  emitAnyGroups(queryGroups, opponent: true);
+
+  return _ShapeRecord(
+      key: key, cells: cells, hasKing: hasKing, primary: primary);
 }
 
 int? _kanjiRankToInt(String s) {
@@ -293,59 +343,84 @@ PlacementCell? _toPlacement(_CellTok t, int file, int rank) {
       pieceTypes: <String>[sfenTokenToEnumName(sfen)],
     );
   }
-  // `?駒` = 相手側の OR / `^駒` = 相手側に存在しない。今の所未対応で SKIP。
-  if (prefix == '?' || prefix == '^') return null;
-  // 移動元マーカー: ★ / ☆ → SKIP
-  if (body == '★' || body == '☆') return null;
-  // * prefix は「▲側のどれかの位置にこの駒が存在する」を意味するため、
-  // 単一マス要件ではなく position-wide な OR である。本リポジトリの単一
-  // 局面要件モデルでは厳密に表現できないので、!  (primary trigger) や @
-  // (含める) で十分シャープに区別された設計のテンプレが多いことから、
-  // ここでは * は SKIP として扱う。
-  if (prefix == '*') return null;
-  // 空マス (要件無し)
-  if (body == '・') return null;
-  // wildcard 系
-  if (body == '○') {
-    return PlacementCell(kind: 'empty', file: file, rank: rank);
-  }
-  if (body == '●') {
-    return PlacementCell(kind: 'anyPiece', file: file, rank: rank);
-  }
-  if (body == '◇') {
-    // ≥ 歩 (任意の自駒)
-    return PlacementCell(kind: 'anyPiece', file: file, rank: rank);
-  }
-  if (body == '◆') {
-    // ≥ 銀 (canonical: 銀/金/玉)
-    return PlacementCell(
-      kind: 'anyOf',
-      file: file,
-      rank: rank,
-      pieceTypes: const <String>['silver', 'gold', 'king'],
-    );
-  }
-  if (body == '■') {
-    return PlacementCell(
-      kind: 'anyOf',
-      file: file,
-      rank: rank,
-      pieceTypes: const <String>['gold', 'silver'],
-    );
-  }
-  if (body == '□') {
+  // `*駒` (▲OR) / `?駒` (△OR) は handleToken 側で AnyPlacement に集約済み。
+  // ここに来たら念のため SKIP。
+  if (prefix == '*' || prefix == '?') return null;
+  // `^駒` = 「△側でここに含まれない」→ 相手陣の NotOfPieces。
+  if (prefix == '^') {
+    final String? sfen = _kanjiToSfen[body];
+    if (sfen == null) return null;
     return PlacementCell(
       kind: 'notOf',
       file: file,
       rank: rank,
-      pieceTypes: const <String>['gold', 'silver'],
+      pieceTypes: <String>[sfenTokenToEnumName(sfen)],
+      opponent: true,
+    );
+  }
+  // 移動元マーカー: ★ / ☆ → SKIP (handleToken で処理済み)
+  if (body == '★' || body == '☆') return null;
+  // 空マス (要件無し)
+  if (body == '・') return null;
+  // wildcard 系
+  if (body == '○') {
+    // 「この座標に何もない」(両陣営とも空)。
+    return PlacementCell(kind: 'empty', file: file, rank: rank);
+  }
+  if (body == '●') {
+    // 「この座標に何かある」(陣営問わず)。
+    return PlacementCell(
+        kind: 'anyPiece', file: file, rank: rank, anySide: true);
+  }
+  if (body == '◇') {
+    // 「自分の歩以上がある」= 任意の自駒。
+    return PlacementCell(kind: 'anyPiece', file: file, rank: rank);
+  }
+  if (body == '◆') {
+    // 「自分の銀以上 (abs_weight >= 銀) がある」。歩/香/桂のみ除外、それ以外
+    // (成駒含む) は銀以上。
+    return PlacementCell(
+      kind: 'anyOf',
+      file: file,
+      rank: rank,
+      pieceTypes: const <String>[
+        'silver',
+        'gold',
+        'bishop',
+        'rook',
+        'king',
+        'promPawn',
+        'promLance',
+        'promKnight',
+        'promSilver',
+        'horse',
+        'dragon',
+      ],
+    );
+  }
+  if (body == '■') {
+    // 「自分の銀 or 金がある」。piece.key ベースなので成銀(全)も銀扱い。
+    return PlacementCell(
+      kind: 'anyOf',
+      file: file,
+      rank: rank,
+      pieceTypes: const <String>['silver', 'gold', 'promSilver'],
+    );
+  }
+  if (body == '□') {
+    // 「自分の銀 or 金がない」。
+    return PlacementCell(
+      kind: 'notOf',
+      file: file,
+      rank: rank,
+      pieceTypes: const <String>['silver', 'gold', 'promSilver'],
     );
   }
   // 駒記号
   final String? sfen = _kanjiToSfen[body];
   if (sfen == null) return null;
   final String enumName = sfenTokenToEnumName(sfen);
-  // prefix ~ → NotOfPieces ([駒])
+  // prefix ~ → 「▲側でここに含まれない」= 自陣の NotOfPieces。
   if (prefix == '~') {
     return PlacementCell(
       kind: 'notOf',
@@ -374,6 +449,8 @@ class _MetaRecord {
     this.aliases = const <String>[],
     this.turnEq,
     this.turnMax,
+    this.dropOnly = false,
+    this.holdPieceEmpty = false,
   });
   final String key;
   final String? parent;
@@ -384,6 +461,12 @@ class _MetaRecord {
 
   /// bioshogi の turn_max (= 当該テンプレが該当する手数の上限)。
   final int? turnMax;
+
+  /// bioshogi の drop_only (= トリガー駒が打ち駒であること)。
+  final bool dropOnly;
+
+  /// bioshogi の hold_piece_empty (= 持駒が空であること)。
+  final bool holdPieceEmpty;
 }
 
 // ignore: library_private_types_in_public_api
@@ -435,12 +518,19 @@ List<_MetaRecord> parseMetaInfo(String source) {
     if (tmm != null) {
       turnMax = int.tryParse(tmm.group(1)!);
     }
+    // drop_only / hold_piece_empty: `true` のみ採用 (nil/false は無視)。
+    final bool dropOnly =
+        RegExp(r'drop_only:\s*true').hasMatch(line);
+    final bool holdPieceEmpty =
+        RegExp(r'hold_piece_empty:\s*true').hasMatch(line);
     out.add(_MetaRecord(
       key: key,
       parent: parent,
       aliases: aliases,
       turnEq: turnEq,
       turnMax: turnMax,
+      dropOnly: dropOnly,
+      holdPieceEmpty: holdPieceEmpty,
     ));
   }
   return out;
@@ -461,6 +551,26 @@ const String _legalHeader = '''
 #
 # Source ASCII parsed by: tool/import_bioshogi.dart
 ''';
+
+/// shape の cells に metadata (drop_only / hold_piece_empty) 由来のセルを
+/// 足した配置リストを返す。
+/// - drop_only: プライマリ `!<駒>` のマスに `pieceDropped` を追加。
+/// - hold_piece_empty: `handEmpty` を追加。
+List<PlacementCell> _withMeta(_ShapeRecord sh, _MetaRecord m) {
+  final List<PlacementCell> cells = List<PlacementCell>.of(sh.cells);
+  if (m.dropOnly && sh.primary != null) {
+    cells.add(PlacementCell(
+      kind: 'pieceDropped',
+      file: sh.primary!.file,
+      rank: sh.primary!.rank,
+      pieceTypes: <String>[sh.primary!.pieceEnum],
+    ));
+  }
+  if (m.holdPieceEmpty) {
+    cells.add(PlacementCell(kind: 'handEmpty'));
+  }
+  return cells;
+}
 
 /// 1 件分のテンプレを ASCII 形式 (`=== name: ...` ヘッダ + 9x9 グリッド)
 /// に書き出す。空マスは `.`、Exact は SFEN 1 文字、AnyOf は `[...]`、
@@ -489,9 +599,17 @@ String _formatTemplate({
   for (final String line in formatVisitedHeaders(cells)) {
     buf.writeln(line);
   }
+  for (final String line in formatAnyHeaders(cells)) {
+    buf.writeln(line);
+  }
+  for (final String line in formatDroppedHeaders(cells)) {
+    buf.writeln(line);
+  }
+  final String? handEmptyLine = formatHandEmptyHeader(cells);
+  if (handEmptyLine != null) buf.writeln(handEmptyLine);
   buf.writeln();
 
-  // build grid (履歴依存セルは grid に出ない)
+  // build grid (履歴依存 / position-wide セルは grid に出ない)
   final List<List<String>> grid = List<List<String>>.generate(
     9,
     (_) => List<String>.filled(9, '.'),
@@ -501,7 +619,10 @@ String _formatTemplate({
         p.kind == 'handPiece' ||
         p.kind == 'pieceUnmoved' ||
         p.kind == 'pieceVisited' ||
-        p.kind == 'kingIgyoku') {
+        p.kind == 'pieceDropped' ||
+        p.kind == 'handEmpty' ||
+        p.kind == 'kingIgyoku' ||
+        p.kind == 'anyPlacement') {
       continue;
     }
     final int rowIdx = p.rank - 1;
@@ -526,11 +647,17 @@ String _cellToken(PlacementCell p) {
     case 'anyOf':
       return '[${p.pieceTypes.map(enumNameToSfenToken).join('')}]';
     case 'notOf':
-      return '[!${p.pieceTypes.map(enumNameToSfenToken).join('')}]';
+      // 相手陣の不在 (`^駒`) は小文字で `[!s]` と表す。
+      final String joined = p.pieceTypes
+          .map(enumNameToSfenToken)
+          .map((String t) => p.opponent ? t.toLowerCase() : t)
+          .join('');
+      return '[!$joined]';
     case 'empty':
       return '_';
     case 'anyPiece':
-      return '*';
+      // `*` = 自分の歩以上 (◇)、`?` = 陣営問わず存在 (●)。
+      return p.anySide ? '?' : '*';
     default:
       return '.';
   }
@@ -687,7 +814,7 @@ void main(List<String> args) {
       parent: m.parent,
       aliases: m.aliases,
       side: null,
-      cells: sh.cells,
+      cells: _withMeta(sh, m),
       plyEq: m.turnEq,
       plyMax: m.turnMax,
     ));
@@ -720,7 +847,7 @@ void main(List<String> args) {
       parent: m.parent,
       aliases: m.aliases,
       side: _guessSide(m.key),
-      cells: sh.cells,
+      cells: _withMeta(sh, m),
       plyEq: m.turnEq,
       plyMax: m.turnMax,
     ));

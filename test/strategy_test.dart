@@ -109,13 +109,38 @@ void _placeStrategy(Position position, StrategyTemplate template, Color side) {
           }
         }
         break;
-      case HandPiece(:final pieceType, :final minCount):
-        position.hand(side).set(pieceType, minCount);
+      case HandPiece(:final pieceType, :final minCount, :final color):
+        final Color handSide = color == Color.black
+            ? side
+            : (side == Color.black ? Color.white : Color.black);
+        position.hand(handSide).set(pieceType, minCount);
+        break;
+      case AnyPlacement(:final pieceType, :final squares, :final color):
+        // OR 候補のうち空いている先頭マスに駒を置けば成立する
+        // (先頭マスが他要件や白玉で埋まっている場合に備えて空きを探す)。
+        final Color expected = color == Color.black
+            ? side
+            : (side == Color.black ? Color.white : Color.black);
+        for (final ({int file, int rank}) sq in squares) {
+          final int f = side == Color.black ? sq.file : 10 - sq.file;
+          final int rr = side == Color.black ? sq.rank : 10 - sq.rank;
+          if (board.at(Square(f, rr)) == null) {
+            board.set(Square(f, rr), Piece(expected, pieceType));
+            mark(f, rr);
+            break;
+          }
+        }
         break;
       case PieceUnmoved():
         // 履歴依存要件は静的局面生成で再現できない。テストでは置換しない。
         break;
       case PieceVisited():
+        break;
+      case PieceDropped():
+        // 打ち駒履歴依存 — 静的局面では再現しない。
+        break;
+      case HandEmpty():
+        // 持駒は既定で空なので何もしない。
         break;
       case KingIgyoku():
         break;
@@ -480,8 +505,11 @@ void main() {
             AnyPiece(:final file, :final rank) => (file: file, rank: rank),
             PieceAnywhere() => null,
             HandPiece() => null,
+            AnyPlacement() => null,
             PieceUnmoved() => null,
             PieceVisited() => null,
+            PieceDropped() => null,
+            HandEmpty() => null,
             KingIgyoku() => null,
           };
           if (coord == null) continue;

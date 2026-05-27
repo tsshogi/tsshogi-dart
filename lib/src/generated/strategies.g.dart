@@ -137,6 +137,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PieceVisited(3, 7, PieceType.bishop),
       PieceVisited(4, 8, PieceType.bishop),
       PieceVisited(5, 9, PieceType.bishop),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 8, rank: 2), (file: 7, rank: 2), (file: 6, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -148,6 +149,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(3, 7, PieceType.knight),
       PiecePlacement(1, 7, PieceType.lance),
       PiecePlacement(1, 8, PieceType.rook),
+      AnyPlacement(PieceType.bishop, <({int file, int rank})>[(file: 6, rank: 8), (file: 7, rank: 9)]),
     ],
   ),
   StrategyTemplate(
@@ -305,14 +307,14 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '屋敷流二枚銀',
     aliases: <String>['忍者銀', 'ニンニン戦法'],
     placements: <CastleRequirement>[
-      AnyPiece(7, 6),
+      AnyPiece(7, 6, anySide: true),
       PiecePlacement(6, 6, PieceType.silver),
       PiecePlacement(4, 6, PieceType.silver),
       PiecePlacement(8, 7, PieceType.pawn),
       EmptySquare(7, 7),
-      AnyPiece(6, 7),
+      AnyPiece(6, 7, anySide: true),
       EmptySquare(5, 7),
-      AnyPiece(4, 7),
+      AnyPiece(4, 7, anySide: true),
       EmptySquare(3, 7),
       EmptySquare(2, 7),
       PiecePlacement(8, 8, PieceType.bishop),
@@ -331,6 +333,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(6, 6, PieceType.pawn),
       PiecePlacement(6, 7, PieceType.silver),
       PiecePlacement(8, 9, PieceType.knight),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 4, rank: 8), (file: 2, rank: 8), (file: 2, rank: 9)]),
     ],
   ),
   StrategyTemplate(
@@ -358,6 +361,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(7, 8, PieceType.gold),
       PiecePlacement(2, 8, PieceType.rook),
       PiecePlacement(2, 9, PieceType.knight),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 8, rank: 2), (file: 8, rank: 4), (file: 8, rank: 5), (file: 8, rank: 6)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -377,6 +381,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(2, 6, PieceType.rook),
       PiecePlacement(1, 6, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.gold),
+      PieceDropped(2, 4, PieceType.pawn),
     ],
   ),
   StrategyTemplate(
@@ -504,7 +509,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     plyEq: 19,
     placements: <CastleRequirement>[
       PiecePlacement(3, 1, PieceType.silver, color: Color.white),
-      AnyPiece(3, 3),
+      AnyPiece(3, 3, anySide: true),
       EmptySquare(3, 4),
       PiecePlacement(8, 6, PieceType.rook, color: Color.white),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -621,6 +626,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(3, 9, PieceType.silver),
       PiecePlacement(2, 9, PieceType.knight),
       PiecePlacement(1, 9, PieceType.king),
+      AnyPlacement(PieceType.king, <({int file, int rank})>[(file: 2, rank: 1), (file: 3, rank: 2), (file: 2, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -629,9 +635,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(8, 5, PieceType.pawn, color: Color.white),
-      AnyPiece(7, 7),
+      AnyPiece(7, 7, anySide: true),
       PiecePlacement(3, 7, PieceType.pawn),
-      AnyPiece(7, 8),
+      AnyPiece(7, 8, anySide: true),
       PiecePlacement(3, 8, PieceType.rook),
     ],
   ),
@@ -701,6 +707,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(4, 8, PieceType.rook),
       PiecePlacement(6, 9, PieceType.gold),
       EmptySquare(5, 9),
+      AnyPlacement(PieceType.bishop, <({int file, int rank})>[(file: 7, rank: 7), (file: 8, rank: 8)]),
     ],
   ),
   StrategyTemplate(
@@ -719,6 +726,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(6, 6),
       EmptySquare(7, 7),
       PiecePlacement(8, 8, PieceType.bishop),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 4, rank: 8), (file: 2, rank: 8)]),
     ],
   ),
   StrategyTemplate(
@@ -866,6 +874,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(3, 4, PieceType.pawn, color: Color.white),
       EmptySquare(6, 5),
       PiecePlacement(4, 5, PieceType.bishop),
+      PieceDropped(4, 5, PieceType.bishop),
+      HandEmpty(),
     ],
   ),
   StrategyTemplate(
@@ -893,6 +903,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(5, 7, PieceType.pawn),
       PiecePlacement(4, 7, PieceType.pawn),
       EmptySquare(3, 8),
+      AnyPlacement(PieceType.bishop, <({int file, int rank})>[(file: 6, rank: 5), (file: 7, rank: 6)], color: Color.white),
+      PieceDropped(4, 5, PieceType.bishop),
+      HandEmpty(),
     ],
   ),
   StrategyTemplate(
@@ -924,6 +937,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(4, 8),
       EmptySquare(3, 8),
       PiecePlacement(2, 8, PieceType.rook),
+      PieceDropped(4, 5, PieceType.bishop),
+      HandEmpty(),
     ],
   ),
   StrategyTemplate(
@@ -954,6 +969,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(6, 6, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.gold),
       PiecePlacement(2, 8, PieceType.rook),
+      HandEmpty(),
     ],
   ),
   StrategyTemplate(
@@ -974,6 +990,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(6, 8),
       PiecePlacement(2, 8, PieceType.rook),
       PiecePlacement(7, 9, PieceType.bishop),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 5, rank: 2), (file: 4, rank: 2), (file: 3, rank: 2), (file: 2, rank: 2), (file: 3, rank: 4)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -1010,6 +1027,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(2, 8, PieceType.rook),
       PiecePlacement(6, 9, PieceType.gold),
       PieceVisited(7, 9, PieceType.king),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 5, rank: 2), (file: 4, rank: 2), (file: 3, rank: 2), (file: 2, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -1029,6 +1047,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(7, 9, PieceType.bishop),
       EmptySquare(3, 9),
       PieceVisited(8, 8, PieceType.bishop),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 8, rank: 1), (file: 8, rank: 2), (file: 8, rank: 3), (file: 8, rank: 4), (file: 8, rank: 5), (file: 8, rank: 6)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -1105,14 +1124,14 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '屋敷流二枚銀棒銀型',
     side: StrategySide.ibisha,
     placements: <CastleRequirement>[
-      AnyPiece(7, 6),
+      AnyPiece(7, 6, anySide: true),
       PiecePlacement(6, 6, PieceType.silver),
       PiecePlacement(2, 6, PieceType.silver),
       PiecePlacement(8, 7, PieceType.pawn),
       EmptySquare(7, 7),
-      AnyPiece(6, 7),
+      AnyPiece(6, 7, anySide: true),
       EmptySquare(5, 7),
-      AnyPiece(4, 7),
+      AnyPiece(4, 7, anySide: true),
       EmptySquare(2, 7),
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(7, 8, PieceType.gold),
@@ -1250,6 +1269,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(6, 8, PieceType.silver),
       PiecePlacement(4, 8, PieceType.silver),
       PiecePlacement(6, 9, PieceType.gold),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 5, rank: 1), (file: 5, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -1266,6 +1286,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(6, 8, PieceType.silver),
       PiecePlacement(4, 8, PieceType.silver),
       PiecePlacement(6, 9, PieceType.king),
+      AnyPlacement(PieceType.bishop, <({int file, int rank})>[(file: 7, rank: 7), (file: 8, rank: 8)]),
     ],
   ),
   StrategyTemplate(
@@ -1283,6 +1304,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(4, 8),
       PiecePlacement(2, 8, PieceType.rook),
       PiecePlacement(7, 9, PieceType.silver),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 5, rank: 2), (file: 4, rank: 2), (file: 3, rank: 2), (file: 2, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -1299,6 +1321,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(7, 8, PieceType.king),
       PiecePlacement(4, 8, PieceType.silver),
       PiecePlacement(2, 8, PieceType.rook),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 5, rank: 2), (file: 4, rank: 2), (file: 3, rank: 2), (file: 2, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -1320,6 +1343,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(2, 8, PieceType.rook),
       PiecePlacement(7, 9, PieceType.gold),
       EmptySquare(6, 9),
+      AnyPlacement(PieceType.gold, <({int file, int rank})>[(file: 5, rank: 9), (file: 4, rank: 9)]),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 4, rank: 2), (file: 3, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -1372,12 +1397,14 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(7, 8, PieceType.king),
       PiecePlacement(2, 8, PieceType.rook),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 5, rank: 2), (file: 4, rank: 2), (file: 3, rank: 2), (file: 2, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
     name: '左美濃急戦',
     aliases: <String>['居角左美濃急戦'],
     placements: <CastleRequirement>[
+      NotOfPieces(3, 3, <PieceType>[PieceType.silver], color: Color.white),
       PiecePlacement(4, 4, PieceType.pawn, color: Color.white),
       EmptySquare(5, 5),
       PiecePlacement(2, 5, PieceType.pawn),
@@ -1414,6 +1441,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(4, 8, PieceType.silver),
       PiecePlacement(2, 8, PieceType.rook),
       PiecePlacement(7, 9, PieceType.silver),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 5, rank: 2), (file: 4, rank: 2), (file: 3, rank: 2), (file: 2, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -1424,6 +1452,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(7, 4),
       PiecePlacement(7, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.silver),
+      AnyPlacement(PieceType.king, <({int file, int rank})>[(file: 9, rank: 1), (file: 8, rank: 1), (file: 8, rank: 2), (file: 7, rank: 2), (file: 6, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -1434,6 +1463,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(6, 4),
       PiecePlacement(6, 5, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.silver),
+      AnyPlacement(PieceType.king, <({int file, int rank})>[(file: 9, rank: 1), (file: 8, rank: 1), (file: 8, rank: 2), (file: 7, rank: 2), (file: 6, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -1444,6 +1474,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(5, 4),
       PiecePlacement(5, 5, PieceType.pawn),
       PiecePlacement(5, 6, PieceType.silver),
+      AnyPlacement(PieceType.king, <({int file, int rank})>[(file: 9, rank: 1), (file: 8, rank: 1), (file: 8, rank: 2), (file: 7, rank: 2), (file: 6, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -1462,6 +1493,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(8, 9, PieceType.knight),
       PiecePlacement(6, 9, PieceType.king),
       PieceVisited(5, 7, PieceType.silver),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 8, rank: 1), (file: 8, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -1481,6 +1513,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(2, 8, PieceType.rook),
       EmptySquare(7, 9),
       PieceVisited(5, 7, PieceType.silver),
+      AnyPlacement(PieceType.king, <({int file, int rank})>[(file: 9, rank: 1), (file: 8, rank: 1), (file: 8, rank: 2), (file: 7, rank: 2), (file: 6, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -1502,6 +1535,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(2, 8, PieceType.rook),
       PieceVisited(3, 7, PieceType.knight),
+      AnyPlacement(PieceType.silver, <({int file, int rank})>[(file: 4, rank: 8), (file: 3, rank: 8)]),
     ],
   ),
   StrategyTemplate(
@@ -1513,6 +1547,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(6, 8, PieceType.gold),
       PiecePlacement(5, 8, PieceType.gold),
       PiecePlacement(7, 9, PieceType.silver),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 2, rank: 6), (file: 2, rank: 8)]),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 5, rank: 2), (file: 4, rank: 2), (file: 3, rank: 2), (file: 2, rank: 2), (file: 1, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -1547,6 +1583,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(5, 9, PieceType.king),
       PiecePlacement(4, 9, PieceType.gold),
       PiecePlacement(3, 9, PieceType.silver),
+      PieceDropped(6, 5, PieceType.bishop),
     ],
   ),
   StrategyTemplate(
@@ -1554,6 +1591,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.bishop),
       PiecePlacement(7, 8, PieceType.king),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 5, rank: 2), (file: 4, rank: 2), (file: 3, rank: 2), (file: 2, rank: 2), (file: 1, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -1666,6 +1704,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(2, 8, PieceType.rook),
       PiecePlacement(5, 9, PieceType.king),
       PiecePlacement(4, 9, PieceType.gold),
+      HandEmpty(),
     ],
   ),
   StrategyTemplate(
@@ -1682,6 +1721,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(7, 8, PieceType.gold),
       PiecePlacement(4, 9, PieceType.gold),
       PieceVisited(3, 7, PieceType.silver),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 2, rank: 6), (file: 2, rank: 8)]),
     ],
   ),
   StrategyTemplate(
@@ -1692,6 +1732,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(4, 8, PieceType.king),
       PiecePlacement(3, 8, PieceType.gold),
       PiecePlacement(2, 9, PieceType.rook),
+      AnyPlacement(PieceType.silver, <({int file, int rank})>[(file: 6, rank: 7), (file: 5, rank: 7)]),
     ],
   ),
   StrategyTemplate(
@@ -1720,6 +1761,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(4, 8, PieceType.king),
       PiecePlacement(3, 8, PieceType.gold),
       PiecePlacement(2, 9, PieceType.rook),
+      AnyPlacement(PieceType.silver, <({int file, int rank})>[(file: 7, rank: 7), (file: 8, rank: 8)]),
     ],
   ),
   StrategyTemplate(
@@ -1766,13 +1808,13 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(4, 6, PieceType.pawn),
       PiecePlacement(3, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.pawn),
-      AnyPiece(7, 7),
-      AnyOfPieces(6, 7, <PieceType>[PieceType.gold, PieceType.silver]),
-      AnyOfPieces(5, 7, <PieceType>[PieceType.gold, PieceType.silver]),
-      AnyOfPieces(4, 7, <PieceType>[PieceType.gold, PieceType.silver]),
+      AnyPiece(7, 7, anySide: true),
+      AnyOfPieces(6, 7, <PieceType>[PieceType.silver, PieceType.gold, PieceType.promSilver]),
+      AnyOfPieces(5, 7, <PieceType>[PieceType.silver, PieceType.gold, PieceType.promSilver]),
+      AnyOfPieces(4, 7, <PieceType>[PieceType.silver, PieceType.gold, PieceType.promSilver]),
       PiecePlacement(3, 7, PieceType.knight),
       PiecePlacement(2, 7, PieceType.pawn),
-      AnyOfPieces(7, 8, <PieceType>[PieceType.gold, PieceType.silver]),
+      AnyOfPieces(7, 8, <PieceType>[PieceType.silver, PieceType.gold, PieceType.promSilver]),
       PiecePlacement(3, 8, PieceType.king),
       EmptySquare(2, 8),
     ],
@@ -1788,6 +1830,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(5, 8, PieceType.gold),
       PiecePlacement(4, 8, PieceType.king),
       PiecePlacement(2, 9, PieceType.rook),
+      AnyPlacement(PieceType.bishop, <({int file, int rank})>[(file: 7, rank: 7), (file: 8, rank: 8)]),
     ],
   ),
   StrategyTemplate(
@@ -1832,6 +1875,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(3, 6, PieceType.pawn),
       PiecePlacement(4, 7, PieceType.king),
       PiecePlacement(3, 7, PieceType.knight),
+      AnyPlacement(PieceType.gold, <({int file, int rank})>[(file: 2, rank: 6), (file: 5, rank: 7)]),
     ],
   ),
   StrategyTemplate(
@@ -1850,8 +1894,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(3, 7, PieceType.knight),
       PiecePlacement(7, 8, PieceType.gold),
       PiecePlacement(6, 8, PieceType.bishop),
-      AnyPiece(4, 8),
-      AnyPiece(3, 8),
+      AnyPiece(4, 8, anySide: true),
+      AnyPiece(3, 8, anySide: true),
       PiecePlacement(5, 9, PieceType.rook),
     ],
   ),
@@ -1923,6 +1967,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(8, 7, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.silver),
       PiecePlacement(6, 9, PieceType.gold),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 8, rank: 2), (file: 8, rank: 4)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -2093,10 +2138,10 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.furibisha,
     plyMax: 3,
     placements: <CastleRequirement>[
-      AnyPiece(7, 7),
+      AnyPiece(7, 7, anySide: true),
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(5, 8, PieceType.rook),
-      AnyPiece(7, 9),
+      AnyPiece(7, 9, anySide: true),
     ],
   ),
   StrategyTemplate(
@@ -2106,6 +2151,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(3, 7, PieceType.knight),
       PiecePlacement(2, 9, PieceType.king),
       PieceVisited(3, 8, PieceType.king),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 5, rank: 8), (file: 5, rank: 9)]),
     ],
   ),
   StrategyTemplate(
@@ -2121,6 +2167,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(1, 6, PieceType.pawn),
       EmptySquare(5, 7),
       PiecePlacement(5, 8, PieceType.rook),
+      AnyPlacement(PieceType.bishop, <({int file, int rank})>[(file: 7, rank: 7), (file: 8, rank: 8)]),
     ],
   ),
   StrategyTemplate(
@@ -2199,6 +2246,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(2, 7, PieceType.pawn),
       PiecePlacement(9, 8, PieceType.lance),
       PiecePlacement(9, 9, PieceType.king),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 5, rank: 6), (file: 5, rank: 7), (file: 5, rank: 8), (file: 5, rank: 9)]),
     ],
   ),
   StrategyTemplate(
@@ -2224,6 +2272,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(8, 8, PieceType.silver),
       PiecePlacement(5, 8, PieceType.rook),
       PiecePlacement(2, 8, PieceType.silver),
+      HandEmpty(),
     ],
   ),
   StrategyTemplate(
@@ -2239,6 +2288,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(6, 6),
       EmptySquare(5, 7),
       PiecePlacement(5, 8, PieceType.rook),
+      AnyPlacement(PieceType.bishop, <({int file, int rank})>[(file: 7, rank: 7), (file: 8, rank: 8)]),
     ],
   ),
   StrategyTemplate(
@@ -2361,6 +2411,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.bishop),
       PiecePlacement(6, 8, PieceType.rook),
+      PieceDropped(7, 7, PieceType.bishop),
+      HandEmpty(),
     ],
   ),
   StrategyTemplate(
@@ -2372,6 +2424,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(4, 8, PieceType.gold),
       PiecePlacement(3, 8, PieceType.king),
       PiecePlacement(3, 9, PieceType.silver),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 8, rank: 2), (file: 7, rank: 2), (file: 6, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -2387,6 +2440,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(5, 9, PieceType.king),
       PiecePlacement(4, 9, PieceType.gold),
       EmptySquare(3, 9),
+      AnyPlacement(PieceType.king, <({int file, int rank})>[(file: 1, rank: 1), (file: 3, rank: 2), (file: 2, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -2400,6 +2454,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(5, 9, PieceType.king),
       PiecePlacement(3, 9, PieceType.silver),
       PieceVisited(4, 9, PieceType.gold),
+      AnyPlacement(PieceType.king, <({int file, int rank})>[(file: 1, rank: 1), (file: 3, rank: 2), (file: 2, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -2420,6 +2475,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(7, 8, PieceType.gold),
       PiecePlacement(6, 8, PieceType.rook),
       PiecePlacement(7, 9, PieceType.silver),
+      AnyPlacement(PieceType.bishop, <({int file, int rank})>[(file: 2, rank: 2), (file: 3, rank: 3)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -2471,6 +2527,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(6, 8, PieceType.rook),
       PiecePlacement(3, 8, PieceType.king),
       PiecePlacement(2, 8, PieceType.bishop),
+      PieceDropped(2, 8, PieceType.bishop),
     ],
   ),
   StrategyTemplate(
@@ -2634,6 +2691,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(3, 7, PieceType.knight),
       PiecePlacement(7, 8, PieceType.rook),
       PiecePlacement(3, 8, PieceType.silver),
+      AnyPlacement(PieceType.king, <({int file, int rank})>[(file: 4, rank: 8), (file: 3, rank: 9)]),
+      AnyPlacement(PieceType.bishop, <({int file, int rank})>[(file: 5, rank: 1), (file: 4, rank: 2), (file: 3, rank: 3)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -2728,6 +2787,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(6, 9, PieceType.gold),
       PiecePlacement(5, 9, PieceType.king),
       PiecePlacement(4, 9, PieceType.gold),
+      AnyPlacement(PieceType.king, <({int file, int rank})>[(file: 1, rank: 1), (file: 3, rank: 2), (file: 2, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -2744,6 +2804,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(3, 7, PieceType.pawn),
       EmptySquare(2, 8),
       NotOfPieces(5, 9, <PieceType>[PieceType.king]),
+      AnyPlacement(PieceType.silver, <({int file, int rank})>[(file: 4, rank: 5), (file: 5, rank: 6), (file: 4, rank: 6)]),
+      AnyPlacement(PieceType.king, <({int file, int rank})>[(file: 1, rank: 1), (file: 2, rank: 2)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -2854,6 +2916,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(7, 4, PieceType.rook),
       PiecePlacement(6, 5, PieceType.bishop, color: Color.white),
       PiecePlacement(5, 6, PieceType.bishop),
+      PieceDropped(5, 6, PieceType.bishop),
     ],
   ),
   StrategyTemplate(
@@ -3068,6 +3131,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(6, 6, PieceType.bishop),
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(8, 8, PieceType.rook),
+      AnyPlacement(PieceType.pawn, <({int file, int rank})>[(file: 8, rank: 4), (file: 8, rank: 5)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -3076,7 +3140,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     plyMax: 45,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
-      AnyPiece(6, 6),
+      AnyPiece(6, 6, anySide: true),
       PiecePlacement(5, 6, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.knight),
       PiecePlacement(6, 7, PieceType.silver),
@@ -3136,6 +3200,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(5, 8, PieceType.rook),
       PiecePlacement(9, 9, PieceType.lance),
       PieceVisited(2, 8, PieceType.rook),
+      AnyPlacement(PieceType.king, <({int file, int rank})>[(file: 3, rank: 7), (file: 5, rank: 9)]),
     ],
   ),
   StrategyTemplate(
@@ -3146,14 +3211,15 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PieceVisited(7, 8, PieceType.rook),
       PieceVisited(6, 8, PieceType.rook),
       PieceVisited(5, 8, PieceType.rook),
+      AnyPlacement(PieceType.king, <({int file, int rank})>[(file: 3, rank: 1), (file: 2, rank: 1), (file: 1, rank: 1), (file: 3, rank: 2), (file: 2, rank: 2), (file: 1, rank: 2), (file: 2, rank: 3)], color: Color.white),
     ],
   ),
   StrategyTemplate(
     name: '穴角戦法',
     placements: <CastleRequirement>[
-      AnyPiece(9, 8),
+      AnyPiece(9, 8, anySide: true),
       PiecePlacement(9, 9, PieceType.bishop),
-      AnyPiece(8, 9),
+      AnyPiece(8, 9, anySide: true),
     ],
   ),
   StrategyTemplate(
@@ -3161,10 +3227,10 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '穴角戦法',
     side: StrategySide.furibisha,
     placements: <CastleRequirement>[
-      AnyPiece(9, 8),
+      AnyPiece(9, 8, anySide: true),
       PiecePlacement(8, 8, PieceType.rook),
       PiecePlacement(9, 9, PieceType.bishop),
-      AnyPiece(8, 9),
+      AnyPiece(8, 9, anySide: true),
     ],
   ),
   StrategyTemplate(
@@ -3231,6 +3297,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(6, 6, PieceType.gold),
       PiecePlacement(8, 8, PieceType.bishop),
       PieceVisited(7, 7, PieceType.gold),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 3, rank: 4), (file: 2, rank: 4)], color: Color.white),
     ],
   ),
   StrategyTemplate(
@@ -3299,6 +3366,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(8, 7, PieceType.pawn),
       PieceVisited(9, 7, PieceType.silver),
       PieceVisited(7, 7, PieceType.silver),
+      AnyPlacement(PieceType.pawn, <({int file, int rank})>[(file: 9, rank: 5), (file: 9, rank: 6)]),
     ],
   ),
   StrategyTemplate(
@@ -3365,6 +3433,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.furibisha,
     placements: <CastleRequirement>[
       PiecePlacement(2, 2, PieceType.horse),
+      AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 9, rank: 8), (file: 8, rank: 8), (file: 7, rank: 8), (file: 6, rank: 8), (file: 5, rank: 8)]),
     ],
   ),
   StrategyTemplate(
@@ -3373,6 +3442,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(3, 7),
       PiecePlacement(3, 8, PieceType.gold),
       PiecePlacement(2, 8, PieceType.bishop),
+      PieceDropped(2, 8, PieceType.bishop),
+      HandEmpty(),
     ],
   ),
   StrategyTemplate(

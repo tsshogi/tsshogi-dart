@@ -87,15 +87,29 @@ String _formatPlacement(PlacementCell p) {
     case 'empty':
       return 'EmptySquare(${p.file}, ${p.rank})';
     case 'anyPiece':
+      if (p.anySide) {
+        return 'AnyPiece(${p.file}, ${p.rank}, anySide: true)';
+      }
       return 'AnyPiece(${p.file}, ${p.rank})';
+    case 'anyPlacement':
+      final String coords = p.squares
+          .map((({int file, int rank}) s) => '(file: ${s.file}, rank: ${s.rank})')
+          .join(', ');
+      final String color = p.opponent ? ', color: Color.white' : '';
+      return 'AnyPlacement(PieceType.${p.pieceTypes.single}, '
+          '<({int file, int rank})>[$coords]$color)';
     case 'notOf':
       final String opts =
           p.pieceTypes.map((String n) => 'PieceType.$n').join(', ');
-      return 'NotOfPieces(${p.file}, ${p.rank}, <PieceType>[$opts])';
+      final String color = p.opponent ? ', color: Color.white' : '';
+      return 'NotOfPieces(${p.file}, ${p.rank}, <PieceType>[$opts]$color)';
     case 'pieceAnywhere':
       return 'PieceAnywhere(PieceType.${p.pieceTypes.single})';
     case 'handPiece':
       final String name = p.pieceTypes.single;
+      if (p.opponent) {
+        return 'HandPiece(PieceType.$name, ${p.minCount}, Color.white)';
+      }
       if (p.minCount == 1) {
         return 'HandPiece(PieceType.$name)';
       }
@@ -105,6 +119,11 @@ String _formatPlacement(PlacementCell p) {
     case 'pieceVisited':
       final String name = p.pieceTypes.single;
       return 'PieceVisited(${p.file}, ${p.rank}, PieceType.$name)';
+    case 'pieceDropped':
+      final String name = p.pieceTypes.single;
+      return 'PieceDropped(${p.file}, ${p.rank}, PieceType.$name)';
+    case 'handEmpty':
+      return 'HandEmpty()';
     case 'kingIgyoku':
       return 'KingIgyoku()';
     default:

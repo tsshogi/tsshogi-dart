@@ -64,6 +64,9 @@ class PlacementCell {
     this.rank = 0,
     this.pieceTypes = const <String>[],
     this.minCount = 1,
+    this.opponent = false,
+    this.anySide = false,
+    this.squares = const <({int file, int rank})>[],
   });
 
   /// 要件種別。
@@ -87,6 +90,18 @@ class PlacementCell {
 
   /// `'handPiece'` 専用: 最低必要枚数 (デフォルト 1)。他 kind では未使用。
   final int minCount;
+
+  /// `'handPiece'` / `'notOf'` 用: 相手陣を見る場合 true。
+  /// - handPiece: `hand: vB` のように `v` 接頭辞で相手持駒 (bioshogi `v駒`)。
+  /// - notOf: 相手陣の不在 (bioshogi の `^駒` = 「△側でここに含まれない」)。
+  final bool opponent;
+
+  /// `'anyPiece'` 用: 陣営を問わず駒の存在のみ判定する場合 true
+  /// (bioshogi の `●` = 「この座標に何かある」)。
+  final bool anySide;
+
+  /// `'anyPlacement'` 専用: OR 候補マス (先手視点)。bioshogi の `*駒`/`?駒`。
+  final List<({int file, int rank})> squares;
 }
 
 const Map<String, String> _sfenToEnum = <String, String>{
@@ -161,6 +176,8 @@ List<ParsedTemplate> parseTemplateFile(String content) {
             rank: rank,
             kind: parsed.kind,
             pieceTypes: parsed.pieceTypes,
+            opponent: parsed.opponent,
+            anySide: parsed.anySide,
           ),
         );
       }
@@ -260,7 +277,10 @@ List<ParsedTemplate> parseTemplateFile(String content) {
           break;
         case 'hand':
           // `hand: B*2 R` → 各トークンを HandPiece セルに展開。`X*N` で N 枚指定。
-          for (final String token in _splitPieceTokens(header.value)) {
+          // `v` 接頭辞 (`vB`) で相手陣の持駒を表す (角交換振り飛車等)。
+          for (String token in _splitPieceTokens(header.value)) {
+            final bool opponent = token.startsWith('v');
+            if (opponent) token = token.substring(1);
             final int starIdx = token.indexOf('*');
             final String pieceToken;
             final int minCount;
@@ -282,9 +302,15 @@ List<ParsedTemplate> parseTemplateFile(String content) {
                 kind: 'handPiece',
                 pieceTypes: <String>[sfenTokenToEnumName(pieceToken)],
                 minCount: minCount,
+                opponent: opponent,
               ),
             );
           }
+          break;
+        case 'any':
+          // `any: B 7 7 8 8` → AnyPlacement(bishop, [(7,7),(8,8)]) (▲ `*駒`)。
+          // `any: vS 3 3`     → 相手陣の OR (△ `?駒`)。
+          sectionExtras.add(_parseAnyHeader(header.value, lineNo));
           break;
         case 'description':
           // Intentionally ignored (human comment).
@@ -323,6 +349,25 @@ List<ParsedTemplate> parseTemplateFile(String content) {
               pieceTypes: <String>[v.piece],
             ),
           );
+          break;
+        case 'dropped':
+          // `dropped: B 7 7` → PieceDropped(7, 7, bishop) (bioshogi drop_only)。
+          final ({String piece, int file, int rank}) d =
+              _parseVisitedHeader(header.value, lineNo);
+          sectionExtras.add(
+            PlacementCell(
+              kind: 'pieceDropped',
+              file: d.file,
+              rank: d.rank,
+              pieceTypes: <String>[d.piece],
+            ),
+          );
+          break;
+        case 'hand_empty':
+          // `hand_empty: true` → HandEmpty() (bioshogi hold_piece_empty)。
+          if (_parseBoolHeader(header.value, lineNo, 'hand_empty')) {
+            sectionExtras.add(PlacementCell(kind: 'handEmpty'));
+          }
           break;
         case 'igyoku':
           // `igyoku: true` → KingIgyoku() を placements に追加し、
@@ -462,6 +507,46 @@ bool _parseBoolHeader(String value, int lineNo, String headerKey) {
   return (piece: enumName, file: file, rank: rank);
 }
 
+/// `any: B 7 7 8 8` / `any: vS 3 3` の値部分をパースして AnyPlacement 用の
+/// PlacementCell を返す。先頭トークンが駒種 (`v` 接頭辞で相手陣)、以降は
+/// (file, rank) のペアを 1 つ以上並べる。
+PlacementCell _parseAnyHeader(String value, int lineNo) {
+  final List<String> tokens =
+      value.split(RegExp(r'\s+')).where((String s) => s.isNotEmpty).toList();
+  if (tokens.length < 3 || tokens.length.isEven) {
+    throw FormatException(
+      'line $lineNo: expected "any: [v]<piece> <f> <r> [<f> <r>...]", '
+      'got "$value"',
+    );
+  }
+  String pieceToken = tokens.first;
+  final bool opponent = pieceToken.startsWith('v');
+  if (opponent) pieceToken = pieceToken.substring(1);
+  final String enumName = sfenTokenToEnumName(pieceToken);
+  final List<({int file, int rank})> squares = <({int file, int rank})>[];
+  for (int i = 1; i + 1 < tokens.length; i += 2) {
+    final int? file = int.tryParse(tokens[i]);
+    final int? rank = int.tryParse(tokens[i + 1]);
+    if (file == null ||
+        rank == null ||
+        file < 1 ||
+        file > 9 ||
+        rank < 1 ||
+        rank > 9) {
+      throw FormatException(
+        'line $lineNo: invalid coordinates in "any: $value"',
+      );
+    }
+    squares.add((file: file, rank: rank));
+  }
+  return PlacementCell(
+    kind: 'anyPlacement',
+    pieceTypes: <String>[enumName],
+    opponent: opponent,
+    squares: squares,
+  );
+}
+
 /// `ply:` ヘッダ値をパースする。
 ///
 /// 受け入れる形式:
@@ -511,16 +596,25 @@ String _stripComments(String line) {
 }
 
 class _Cell {
-  const _Cell(this.kind, this.pieceTypes);
+  const _Cell(this.kind, this.pieceTypes,
+      {this.opponent = false, this.anySide = false});
   final String kind;
   final List<String> pieceTypes;
+
+  /// `notOf` が相手陣を見る場合 true (`[!<小文字>]` = bioshogi `^駒`)。
+  final bool opponent;
+
+  /// `anyPiece` が陣営を問わない場合 true (`?` = bioshogi `●`)。
+  final bool anySide;
 }
 
 _Cell _parseCellToken(String token, String section, int row) {
   // Empty marker.
   if (token == '_') return const _Cell('empty', <String>[]);
-  // Wildcard: any piece of the side.
+  // Wildcard: any piece of the side (bioshogi `◇`).
   if (token == '*') return const _Cell('anyPiece', <String>[]);
+  // Either-side occupancy (bioshogi `●`: この座標に何かある).
+  if (token == '?') return const _Cell('anyPiece', <String>[], anySide: true);
 
   if (token.startsWith('[')) {
     if (!token.endsWith(']')) {
@@ -535,6 +629,7 @@ _Cell _parseCellToken(String token, String section, int row) {
       );
     }
     // `[!GS]` → NotOfPieces with excluded gold/silver.
+    // `[!s]` (小文字) → 相手陣の不在 (bioshogi `^駒`)。
     final bool negated = inner.startsWith('!');
     if (negated) {
       inner = inner.substring(1);
@@ -544,14 +639,17 @@ _Cell _parseCellToken(String token, String section, int row) {
         );
       }
     }
-    final List<String> pieces =
-        _tokenizeAlternation(inner).map(sfenTokenToEnumName).toList();
+    final bool opponent = negated && _isLowercasePieceToken(inner);
+    final List<String> pieces = _tokenizeAlternation(inner)
+        .map((String t) => sfenTokenToEnumName(
+            opponent ? t.toUpperCase() : t))
+        .toList();
     if (pieces.isEmpty) {
       throw FormatException(
         'section "$section" row $row: empty alternation in "$token"',
       );
     }
-    return _Cell(negated ? 'notOf' : 'anyOf', pieces);
+    return _Cell(negated ? 'notOf' : 'anyOf', pieces, opponent: opponent);
   }
   // Lowercase token = opponent piece (`k r b g s n l p` + `+p` 等)。
   // bioshogi の `v駒` 相当。
@@ -639,7 +737,10 @@ List<List<String>> buildGrid(List<PlacementCell> placements) {
         p.kind == 'handPiece' ||
         p.kind == 'pieceUnmoved' ||
         p.kind == 'pieceVisited' ||
-        p.kind == 'kingIgyoku') {
+        p.kind == 'pieceDropped' ||
+        p.kind == 'handEmpty' ||
+        p.kind == 'kingIgyoku' ||
+        p.kind == 'anyPlacement') {
       continue;
     }
     // `opponent` kind is per-cell, falls through to _cellToToken below.
@@ -670,12 +771,17 @@ String _cellToToken(PlacementCell p) {
       final String joined = p.pieceTypes.map(enumNameToSfenToken).join('');
       return '[$joined]';
     case 'notOf':
-      final String joined = p.pieceTypes.map(enumNameToSfenToken).join('');
+      // 相手陣の不在 (`^駒`) は小文字で `[!s]` と表す。
+      final String joined = p.pieceTypes
+          .map(enumNameToSfenToken)
+          .map((String t) => p.opponent ? t.toLowerCase() : t)
+          .join('');
       return '[!$joined]';
     case 'empty':
       return '_';
     case 'anyPiece':
-      return '*';
+      // `*` = 自分の歩以上 (◇)、`?` = 陣営問わず存在 (●)。
+      return p.anySide ? '?' : '*';
     default:
       throw ArgumentError('unsupported per-cell kind: ${p.kind}');
   }
@@ -747,15 +853,54 @@ String? formatIgyokuHeader(List<PlacementCell> placements) {
   return null;
 }
 
+/// `dropped: <piece> <file> <rank>` 形式の行を 0 件以上返す
+/// (`pieceDropped` セル = bioshogi の `drop_only`)。
+List<String> formatDroppedHeaders(List<PlacementCell> placements) {
+  final List<String> out = <String>[];
+  for (final PlacementCell p in placements) {
+    if (p.kind != 'pieceDropped') continue;
+    final String piece = enumNameToSfenToken(p.pieceTypes.single);
+    out.add('dropped: $piece ${p.file} ${p.rank}');
+  }
+  return out;
+}
+
+/// `hand_empty: true` 形式の 1 行を返す。`handEmpty` セルが無ければ `null`
+/// (bioshogi の `hold_piece_empty`)。
+String? formatHandEmptyHeader(List<PlacementCell> placements) {
+  for (final PlacementCell p in placements) {
+    if (p.kind == 'handEmpty') return 'hand_empty: true';
+  }
+  return null;
+}
+
 /// `hand: B*2 R` 形式の 1 行を返す。position-wide な `handPiece` セルが
 /// 1 つも無ければ `null`。`minCount == 1` は `*N` を省略。
 String? formatHandHeader(List<PlacementCell> placements) {
   final List<String> tokens = <String>[];
   for (final PlacementCell p in placements) {
     if (p.kind != 'handPiece') continue;
-    final String piece = enumNameToSfenToken(p.pieceTypes.single);
+    // 相手陣の持駒 (角交換等) は `v` 接頭辞を付ける。
+    final String piece =
+        (p.opponent ? 'v' : '') + enumNameToSfenToken(p.pieceTypes.single);
     tokens.add(p.minCount == 1 ? piece : '$piece*${p.minCount}');
   }
   if (tokens.isEmpty) return null;
   return 'hand: ${tokens.join(' ')}';
+}
+
+/// `any: B 7 7 8 8` / `any: vS 3 3` 形式の行を 0 件以上返す
+/// (`anyPlacement` セル = bioshogi の `*駒`/`?駒`)。
+List<String> formatAnyHeaders(List<PlacementCell> placements) {
+  final List<String> out = <String>[];
+  for (final PlacementCell p in placements) {
+    if (p.kind != 'anyPlacement') continue;
+    final String piece =
+        (p.opponent ? 'v' : '') + enumNameToSfenToken(p.pieceTypes.single);
+    final String coords = p.squares
+        .map((({int file, int rank}) s) => '${s.file} ${s.rank}')
+        .join(' ');
+    out.add('any: $piece $coords');
+  }
+  return out;
 }

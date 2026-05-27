@@ -163,6 +163,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(8, 8, PieceType.king),
       PiecePlacement(7, 8, PieceType.gold),
+      AnyPlacement(PieceType.bishop, <({int file, int rank})>[(file: 2, rank: 2), (file: 3, rank: 3), (file: 4, rank: 4)], color: Color.white),
     ],
   ),
   CastleTemplate(
@@ -249,6 +250,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(7, 8, PieceType.gold),
       PiecePlacement(5, 8, PieceType.gold),
       PiecePlacement(6, 9, PieceType.king),
+      AnyPlacement(PieceType.bishop, <({int file, int rank})>[(file: 7, rank: 7), (file: 8, rank: 8)]),
     ],
   ),
   CastleTemplate(
@@ -385,15 +387,15 @@ const List<CastleTemplate> castles = <CastleTemplate>[
     placements: <CastleRequirement>[
       EmptySquare(2, 4),
       EmptySquare(3, 5),
-      AnyPiece(2, 5),
+      AnyPiece(2, 5, anySide: true),
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(5, 6, PieceType.pawn),
       EmptySquare(4, 6),
-      AnyPiece(3, 6),
+      AnyPiece(3, 6, anySide: true),
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(6, 7, PieceType.pawn),
       EmptySquare(5, 7),
-      AnyPiece(4, 7),
+      AnyPiece(4, 7, anySide: true),
       PiecePlacement(7, 8, PieceType.king),
       EmptySquare(6, 8),
       PiecePlacement(5, 8, PieceType.gold),
@@ -541,6 +543,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(6, 7, PieceType.gold),
       PiecePlacement(7, 8, PieceType.silver),
       PiecePlacement(6, 9, PieceType.gold),
+      AnyPlacement(PieceType.king, <({int file, int rank})>[(file: 8, rank: 7), (file: 8, rank: 8)]),
     ],
   ),
   CastleTemplate(
@@ -594,6 +597,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(6, 7, PieceType.gold),
       PiecePlacement(7, 8, PieceType.gold),
+      AnyPlacement(PieceType.king, <({int file, int rank})>[(file: 9, rank: 8), (file: 8, rank: 8)]),
     ],
   ),
   CastleTemplate(
@@ -747,8 +751,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(7, 6, PieceType.silver),
       PiecePlacement(6, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.pawn),
-      AnyOfPieces(
-          6, 7, <PieceType>[PieceType.silver, PieceType.gold, PieceType.king]),
+      AnyOfPieces(6, 7, <PieceType>[PieceType.silver, PieceType.gold, PieceType.bishop, PieceType.rook, PieceType.king, PieceType.promPawn, PieceType.promLance, PieceType.promKnight, PieceType.promSilver, PieceType.horse, PieceType.dragon]),
       PiecePlacement(8, 8, PieceType.king),
       PiecePlacement(7, 8, PieceType.gold),
       PieceVisited(7, 7, PieceType.silver),
@@ -922,6 +925,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(6, 9, PieceType.gold),
       PiecePlacement(5, 9, PieceType.king),
       PiecePlacement(4, 9, PieceType.gold),
+      AnyPlacement(PieceType.bishop, <({int file, int rank})>[(file: 7, rank: 7), (file: 8, rank: 8)]),
     ],
   ),
   CastleTemplate(
@@ -931,10 +935,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       AnyPiece(8, 5),
       AnyPiece(7, 5),
       PiecePlacement(9, 6, PieceType.king),
-      AnyOfPieces(
-          8, 6, <PieceType>[PieceType.silver, PieceType.gold, PieceType.king]),
-      AnyOfPieces(
-          7, 6, <PieceType>[PieceType.silver, PieceType.gold, PieceType.king]),
+      AnyOfPieces(8, 6, <PieceType>[PieceType.silver, PieceType.gold, PieceType.bishop, PieceType.rook, PieceType.king, PieceType.promPawn, PieceType.promLance, PieceType.promKnight, PieceType.promSilver, PieceType.horse, PieceType.dragon]),
+      AnyOfPieces(7, 6, <PieceType>[PieceType.silver, PieceType.gold, PieceType.bishop, PieceType.rook, PieceType.king, PieceType.promPawn, PieceType.promLance, PieceType.promKnight, PieceType.promSilver, PieceType.horse, PieceType.dragon]),
     ],
   ),
   CastleTemplate(
@@ -945,6 +947,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(4, 8, PieceType.silver),
       PiecePlacement(6, 9, PieceType.king),
       PiecePlacement(5, 9, PieceType.gold),
+      AnyPlacement(PieceType.silver, <({int file, int rank})>[(file: 8, rank: 8), (file: 7, rank: 9)]),
     ],
   ),
   CastleTemplate(
@@ -969,6 +972,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(4, 8, PieceType.silver),
       EmptySquare(6, 9),
       PiecePlacement(5, 9, PieceType.gold),
+      AnyPlacement(PieceType.silver, <({int file, int rank})>[(file: 8, rank: 8), (file: 7, rank: 9)]),
     ],
   ),
   CastleTemplate(
@@ -1090,7 +1094,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(4, 7, PieceType.pawn),
       PiecePlacement(3, 7, PieceType.pawn),
       PiecePlacement(2, 7, PieceType.pawn),
-      NotOfPieces(5, 8, <PieceType>[PieceType.gold, PieceType.silver]),
+      NotOfPieces(5, 8, <PieceType>[PieceType.silver, PieceType.gold, PieceType.promSilver]),
       EmptySquare(4, 8),
       PiecePlacement(3, 8, PieceType.silver),
       PiecePlacement(2, 8, PieceType.king),
@@ -1250,9 +1254,9 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       EmptySquare(4, 8),
       PiecePlacement(3, 8, PieceType.silver),
       PiecePlacement(2, 8, PieceType.silver),
-      AnyPiece(1, 8),
+      AnyPiece(1, 8, anySide: true),
       PiecePlacement(4, 9, PieceType.gold),
-      AnyPiece(2, 9),
+      AnyPiece(2, 9, anySide: true),
       PiecePlacement(1, 9, PieceType.king),
       PieceVisited(3, 9, PieceType.silver),
     ],

@@ -107,6 +107,21 @@ void _placeTemplate(Position position, CastleTemplate template, Color side) {
       case HandPiece(:final pieceType, :final minCount):
         position.hand(side).set(pieceType, minCount);
         break;
+      case AnyPlacement(:final pieceType, :final squares, :final color):
+        // OR 候補のうち空いている先頭マスに駒を置けば成立する。
+        final Color expected = color == Color.black
+            ? side
+            : (side == Color.black ? Color.white : Color.black);
+        for (final ({int file, int rank}) sq in squares) {
+          final int f = side == Color.black ? sq.file : 10 - sq.file;
+          final int rr = side == Color.black ? sq.rank : 10 - sq.rank;
+          if (board.at(Square(f, rr)) == null) {
+            board.set(Square(f, rr), Piece(expected, pieceType));
+            occupied.add(f * 10 + rr);
+            break;
+          }
+        }
+        break;
       case PieceUnmoved():
         // 履歴依存要件は静的局面生成では再現できない (動かしてない / 動かし
         // て戻したを盤上だけからは判別不可能)。テスト用の board factory は
@@ -114,6 +129,12 @@ void _placeTemplate(Position position, CastleTemplate template, Color side) {
         break;
       case PieceVisited():
         // 同上。
+        break;
+      case PieceDropped():
+        // 打ち駒履歴依存 — 静的局面では再現しない。
+        break;
+      case HandEmpty():
+        // 持駒は既定で空なので何もしない。
         break;
       case KingIgyoku():
         // 居玉も同上 — 履歴依存。
@@ -870,8 +891,11 @@ void main() {
               (file: file, rank: rank),
             PieceAnywhere() ||
             HandPiece() ||
+            AnyPlacement() ||
             PieceUnmoved() ||
             PieceVisited() ||
+            PieceDropped() ||
+            HandEmpty() ||
             KingIgyoku() =>
               null,
           };
@@ -922,8 +946,11 @@ void main() {
               (file: file, rank: rank),
             PieceAnywhere() ||
             HandPiece() ||
+            AnyPlacement() ||
             PieceUnmoved() ||
             PieceVisited() ||
+            PieceDropped() ||
+            HandEmpty() ||
             KingIgyoku() =>
               null,
           };
@@ -972,8 +999,11 @@ void main() {
               (file: file, rank: rank),
             PieceAnywhere() ||
             HandPiece() ||
+            AnyPlacement() ||
             PieceUnmoved() ||
             PieceVisited() ||
+            PieceDropped() ||
+            HandEmpty() ||
             KingIgyoku() =>
               null,
           };
