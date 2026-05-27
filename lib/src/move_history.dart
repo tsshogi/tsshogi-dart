@@ -47,6 +47,12 @@ class MoveHistory {
   /// 「歩・角の生駒のみ除外」する素朴な式なので本実装でもそれに合わせる。
   int? _outbreakTurn;
 
+  /// これまでに駒を取った手の総数 (bioshogi の `container.kill_count` 相当)。
+  int _captureCount = 0;
+
+  /// 直前に `recordMove` した手が駒を取ったか (bioshogi の `kill_only` 用)。
+  bool _lastMoveCaptured = false;
+
   /// 初期局面の駒配置で履歴を初期化する。
   ///
   /// 各駒の初期マスを `_visited` に登録する。`_sourceTouched` は空のまま
@@ -96,6 +102,8 @@ class MoveHistory {
     (_visited[key] ??= <Square>{}).add(move.to);
 
     final PieceType? captured = move.capturedPieceType;
+    _lastMoveCaptured = captured != null;
+    if (captured != null) _captureCount++;
     if (captured != null && _outbreakTurn == null) {
       // bioshogi の `piece.key` は基底駒種を返す (馬→角、竜→飛、と→歩 等)。
       // 取られた成駒も基底に戻してから「歩・角以外」を判定する。
@@ -133,4 +141,10 @@ class MoveHistory {
 
   /// 歩・角以外の駒が初めて取られた手数。まだ起きていなければ `null`。
   int? get outbreakTurn => _outbreakTurn;
+
+  /// これまでに駒を取った手の総数 (bioshogi の `kill_count`)。
+  int get captureCount => _captureCount;
+
+  /// 直前の手が駒を取ったか (bioshogi の `kill_only` 判定用)。
+  bool get lastMoveCaptured => _lastMoveCaptured;
 }

@@ -452,6 +452,10 @@ class _MetaRecord {
     this.dropOnly = false,
     this.holdPieceEmpty = false,
     this.holdPieceIn = const <({String pieceEnum, int count})>[],
+    this.outbreakSkip = false,
+    this.killCountLteq,
+    this.killOnly = false,
+    this.orderKey,
   });
   final String key;
   final String? parent;
@@ -471,6 +475,18 @@ class _MetaRecord {
 
   /// bioshogi の hold_piece_in (= 持駒に指定駒を含むこと)。レグスペの角交換等。
   final List<({String pieceEnum, int count})> holdPieceIn;
+
+  /// bioshogi の outbreak_skip (= 開戦後は判定しない)。
+  final bool outbreakSkip;
+
+  /// bioshogi の kill_count_lteq (= 総取り駒数の上限)。
+  final int? killCountLteq;
+
+  /// bioshogi の kill_only (= 直前手が駒取りのときのみ)。
+  final bool killOnly;
+
+  /// bioshogi の order_key (= 'first'/'second')。`:order_first` 等から抽出。
+  final String? orderKey;
 }
 
 /// bioshogi の持駒表記 (例: `"角"`, `"角桂歩2"`) を (駒, 枚数) 列にパースする。
@@ -562,6 +578,16 @@ List<_MetaRecord> parseMetaInfo(String source) {
     if (hpi != null && hpi.group(1)!.isNotEmpty) {
       holdPieceIn = _parseHandSpec(hpi.group(1)!);
     }
+    final bool outbreakSkip = RegExp(r'outbreak_skip:\s*true').hasMatch(line);
+    final bool killOnly = RegExp(r'kill_only:\s*true').hasMatch(line);
+    int? killCountLteq;
+    final RegExpMatch? kcm =
+        RegExp(r'kill_count_lteq:\s*(\d+)').firstMatch(line);
+    if (kcm != null) killCountLteq = int.tryParse(kcm.group(1)!);
+    String? orderKey;
+    final RegExpMatch? okm =
+        RegExp(r'order_key:\s*:order_(first|second)').firstMatch(line);
+    if (okm != null) orderKey = okm.group(1);
     out.add(_MetaRecord(
       key: key,
       parent: parent,
@@ -571,6 +597,10 @@ List<_MetaRecord> parseMetaInfo(String source) {
       dropOnly: dropOnly,
       holdPieceEmpty: holdPieceEmpty,
       holdPieceIn: holdPieceIn,
+      outbreakSkip: outbreakSkip,
+      killCountLteq: killCountLteq,
+      killOnly: killOnly,
+      orderKey: orderKey,
     ));
   }
   return out;
@@ -630,6 +660,10 @@ String _formatTemplate({
   required List<PlacementCell> cells,
   int? plyEq,
   int? plyMax,
+  bool outbreakSkip = false,
+  int? killCountLteq,
+  bool killOnly = false,
+  String? orderKey,
 }) {
   final StringBuffer buf = StringBuffer();
   buf.writeln('=== name: $name');
@@ -638,6 +672,14 @@ String _formatTemplate({
   if (side != null) buf.writeln('side: $side');
   final String? plyLine = formatPlyHeader(plyEq: plyEq, plyMax: plyMax);
   if (plyLine != null) buf.writeln(plyLine);
+  for (final String line in formatGameContextHeaders(
+    outbreakSkip: outbreakSkip,
+    killCountLteq: killCountLteq,
+    killOnly: killOnly,
+    orderKey: orderKey,
+  )) {
+    buf.writeln(line);
+  }
   final String? igyokuLine = formatIgyokuHeader(cells);
   if (igyokuLine != null) buf.writeln(igyokuLine);
   for (final String line in formatUnmovedHeaders(cells)) {
@@ -748,11 +790,14 @@ String? _guessSide(String name) {
     '居飛車',
     '右四間飛車', // 居飛車の右四間
   ];
-  for (final String kw in furibishaKeywords) {
-    if (name.contains(kw)) return 'furibisha';
-  }
+  // 居飛車キーワードを先に判定する。「右四間飛車」は居飛車戦法だが部分文字列
+  // に「四間飛車」(振り飛車キーワード) を含むため、先に振り飛車判定すると
+  // 誤って furibisha になる。より具体的な居飛車名を優先する。
   for (final String kw in ibishaKeywords) {
     if (name.contains(kw)) return 'ibisha';
+  }
+  for (final String kw in furibishaKeywords) {
+    if (name.contains(kw)) return 'furibisha';
   }
   return null;
 }
@@ -866,6 +911,10 @@ void main(List<String> args) {
       cells: _withMeta(sh, m),
       plyEq: m.turnEq,
       plyMax: m.turnMax,
+      outbreakSkip: m.outbreakSkip,
+      killCountLteq: m.killCountLteq,
+      killOnly: m.killOnly,
+      orderKey: m.orderKey,
     ));
     castleCount++;
     for (final PlacementCell p in sh.cells) {
@@ -899,6 +948,10 @@ void main(List<String> args) {
       cells: _withMeta(sh, m),
       plyEq: m.turnEq,
       plyMax: m.turnMax,
+      outbreakSkip: m.outbreakSkip,
+      killCountLteq: m.killCountLteq,
+      killOnly: m.killOnly,
+      orderKey: m.orderKey,
     ));
     strategyCount++;
     for (final PlacementCell p in sh.cells) {

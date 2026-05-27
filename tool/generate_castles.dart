@@ -54,6 +54,18 @@ String generateCastleDart(List<ParsedTemplate> templates) {
     if (t.evaluateAtGameEnd) {
       buf.writeln('    evaluateAtGameEnd: true,');
     }
+    if (t.outbreakSkip) {
+      buf.writeln('    outbreakSkip: true,');
+    }
+    if (t.killCountLteq != null) {
+      buf.writeln('    killCountLteq: ${t.killCountLteq},');
+    }
+    if (t.killOnly) {
+      buf.writeln('    killOnly: true,');
+    }
+    if (t.orderKey != null) {
+      buf.writeln("    orderKey: '${t.orderKey}',");
+    }
     if (t.placements.isEmpty) {
       buf.writeln('    placements: <CastleRequirement>[],');
     } else {

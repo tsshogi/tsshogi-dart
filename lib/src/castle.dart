@@ -584,6 +584,10 @@ class CastleTemplate {
     this.plyEq,
     this.plyMax,
     this.evaluateAtGameEnd = false,
+    this.outbreakSkip = false,
+    this.killCountLteq,
+    this.killOnly = false,
+    this.orderKey,
   });
 
   /// 囲い名 (例: '金矢倉')
@@ -631,6 +635,36 @@ class CastleTemplate {
   /// / `record.strategies` の per-ply 評価では本フラグが立っているテンプレ
   /// ートはスキップし、走査終了後に 1 度だけ評価して emit する。
   final bool evaluateAtGameEnd;
+
+  /// bioshogi `outbreak_skip`: 開戦 (歩・角以外が取られた) 後は判定しない。
+  final bool outbreakSkip;
+
+  /// bioshogi `kill_count_lteq`: 総取り駒数がこの値以下のときのみ成立。
+  final int? killCountLteq;
+
+  /// bioshogi `kill_only`: 直前の手で駒を取っているときのみ成立。
+  final bool killOnly;
+
+  /// bioshogi `order_key`: 手番限定 ('first'=先手 / 'second'=後手)。
+  final String? orderKey;
+
+  /// このテンプレートが棋譜走査ゲート (outbreak/kill/order) を持つかを返す。
+  bool get hasRecordGate =>
+      outbreakSkip || killCountLteq != null || killOnly || orderKey != null;
+
+  /// 棋譜走査ゲート (game-context 制約) を満たすか (`record.castles` 専用)。
+  bool passesRecordGate(Color side, MoveHistory history) {
+    if (outbreakSkip && history.outbreakTurn != null) return false;
+    if (killCountLteq != null && history.captureCount > killCountLteq!) {
+      return false;
+    }
+    if (killOnly && !history.lastMoveCaptured) return false;
+    if (orderKey != null) {
+      final Color want = orderKey == 'first' ? Color.black : Color.white;
+      if (side != want) return false;
+    }
+    return true;
+  }
 
   /// 与えられた手数 [ply] でこのテンプレートが満たすべき ply 制約を満たすか。
   bool satisfiesPlyConstraint(int ply) {
@@ -828,6 +862,7 @@ extension ImmutableRecordCastles on ImmutableRecord {
       // 1. ply 制約も履歴依存要件も無いテンプレートは detectCastles(pos)
       //    で一括判定 (高速路)。
       for (final DetectedCastle d in detectCastles(pos)) {
+        if (!d.template.passesRecordGate(d.side, history)) continue;
         final String key = '${d.template.name}|${d.side.value}';
         if (seen.add(key)) {
           results.add(DetectedCastleAt(
@@ -852,6 +887,7 @@ extension ImmutableRecordCastles on ImmutableRecord {
           if (!_matchesTemplate(pos, template, side, history: history)) {
             continue;
           }
+          if (!template.passesRecordGate(side, history)) continue;
           final String key = '${template.name}|${side.value}';
           if (seen.add(key)) {
             results.add(DetectedCastleAt(

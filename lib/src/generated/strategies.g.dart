@@ -12,6 +12,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '矢倉',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.pawn),
@@ -23,6 +24,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '矢倉▲3七銀戦法',
     side: StrategySide.ibisha,
     plyMax: 25,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(4, 1, PieceType.king, color: Color.white),
       PiecePlacement(3, 1, PieceType.bishop, color: Color.white),
@@ -49,6 +52,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '矢倉棒銀',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(2, 6, PieceType.silver),
       PiecePlacement(7, 7, PieceType.silver),
@@ -63,6 +68,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '脇システム',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       EmptySquare(5, 1),
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
@@ -81,6 +87,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '森下システム',
     plyMax: 29,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 1, PieceType.bishop, color: Color.white),
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
@@ -106,6 +114,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '同型矢倉',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(4, 2, PieceType.bishop, color: Color.white),
@@ -130,6 +140,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '四手角',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(2, 5, PieceType.pawn),
       PiecePlacement(2, 6, PieceType.bishop),
@@ -142,6 +153,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '雀刺し',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       EmptySquare(3, 5),
       EmptySquare(4, 6),
@@ -156,6 +168,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '矢倉旧24手組',
     side: StrategySide.ibisha,
     plyEq: 24,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(4, 1, PieceType.king, color: Color.white),
       PiecePlacement(3, 1, PieceType.bishop, color: Color.white),
@@ -185,6 +199,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '矢倉新24手組',
     side: StrategySide.ibisha,
     plyEq: 24,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(4, 1, PieceType.king, color: Color.white),
       PiecePlacement(3, 1, PieceType.bishop, color: Color.white),
@@ -212,7 +228,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '矢倉中飛車',
-    side: StrategySide.furibisha,
+    side: StrategySide.ibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       EmptySquare(5, 5),
       EmptySquare(6, 6),
@@ -233,6 +251,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '英春流かまいたち戦法',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       EmptySquare(6, 6),
@@ -254,6 +274,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '中原流急戦矢倉',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(6, 7, PieceType.pawn),
       PiecePlacement(4, 7, PieceType.gold),
@@ -265,6 +287,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '阿久津流急戦矢倉',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(5, 5, PieceType.bishop),
       PiecePlacement(7, 8, PieceType.gold),
@@ -275,6 +298,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '米長流急戦矢倉',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(6, 6, PieceType.silver),
       PiecePlacement(4, 6, PieceType.pawn),
@@ -306,6 +331,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '屋敷流二枚銀',
     aliases: <String>['忍者銀', 'ニンニン戦法'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       AnyPiece(7, 6, anySide: true),
       PiecePlacement(6, 6, PieceType.silver),
@@ -328,6 +354,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '雁木戦法',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
@@ -340,6 +367,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '相掛かり',
     side: StrategySide.ibisha,
     plyMax: 6,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
       PiecePlacement(8, 5, PieceType.pawn, color: Color.white),
@@ -351,6 +380,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '相掛かり棒銀',
     parent: '相掛かり',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
       PiecePlacement(2, 3, PieceType.pawn, color: Color.white),
@@ -367,6 +397,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '塚田スペシャル',
     parent: '相掛かり',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       EmptySquare(7, 1),
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
@@ -388,6 +419,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '中原流相掛かり',
     parent: '相掛かり',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 1, PieceType.silver, color: Color.white),
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
@@ -403,6 +435,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '5手爆弾',
     plyEq: 5,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(2, 4, PieceType.pawn),
       PiecePlacement(8, 5, PieceType.pawn, color: Color.white),
@@ -411,6 +444,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '7手爆弾',
     plyEq: 7,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 4, PieceType.pawn, color: Color.white),
       PiecePlacement(2, 4, PieceType.pawn),
@@ -423,6 +457,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '5手爆弾',
     aliases: <String>['原内流'],
     plyEq: 7,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(2, 4, PieceType.pawn, color: Color.white),
       PiecePlacement(8, 5, PieceType.pawn, color: Color.white),
@@ -432,6 +467,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'ノーガード戦法',
     plyMax: 21,
+    killOnly: true,
     placements: <CastleRequirement>[
       PiecePlacement(5, 1, PieceType.king, color: Color.white),
       PiecePlacement(3, 1, PieceType.silver, color: Color.white),
@@ -445,6 +481,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '横歩取り',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 1, PieceType.silver, color: Color.white),
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
@@ -461,6 +498,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '相横歩取り',
     parent: '横歩取り',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
       EmptySquare(3, 3),
@@ -474,6 +512,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '青野流',
     parent: '横歩取り',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 1, PieceType.silver, color: Color.white),
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
@@ -490,6 +529,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '勇気流',
     parent: '横歩取り',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 1, PieceType.silver, color: Color.white),
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
@@ -522,6 +562,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '△3三角型空中戦法',
+    outbreakSkip: true,
+    orderKey: 'second',
     placements: <CastleRequirement>[
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
       PiecePlacement(2, 2, PieceType.bishop, color: Color.white),
@@ -541,6 +583,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '△3三角型空中戦法',
     aliases: <String>['△8五飛車戦法', '横歩取り△8五飛'],
     plyEq: 20,
+    outbreakSkip: true,
+    orderKey: 'second',
     placements: <CastleRequirement>[
       PiecePlacement(3, 1, PieceType.silver, color: Color.white),
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
@@ -556,6 +600,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '△3三桂戦法',
+    outbreakSkip: true,
+    orderKey: 'second',
     placements: <CastleRequirement>[
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
       PiecePlacement(2, 2, PieceType.bishop, color: Color.white),
@@ -572,6 +618,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '中原飛車',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       EmptySquare(7, 6),
       PiecePlacement(5, 6, PieceType.rook),
@@ -584,6 +631,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '袖飛車',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       EmptySquare(3, 7),
       PiecePlacement(3, 8, PieceType.rook),
@@ -593,6 +642,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '△7二飛亜急戦',
     parent: '袖飛車',
+    outbreakSkip: true,
+    killCountLteq: 0,
+    orderKey: 'second',
     placements: <CastleRequirement>[
       PiecePlacement(3, 2, PieceType.rook, color: Color.white),
       PiecePlacement(4, 3, PieceType.silver, color: Color.white),
@@ -612,6 +664,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '森安流袖飛車穴熊',
     plyMax: 25,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 4, PieceType.pawn, color: Color.white),
       PiecePlacement(3, 6, PieceType.pawn),
@@ -633,6 +687,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '羽生式袖飛車',
     plyMax: 5,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(8, 5, PieceType.pawn, color: Color.white),
@@ -645,6 +701,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '加藤流袖飛車',
     parent: '袖飛車',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(5, 2, PieceType.rook, color: Color.white),
       PiecePlacement(5, 7, PieceType.silver),
@@ -658,6 +716,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '棒玉袖飛車',
     parent: '袖飛車',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 7, PieceType.king),
       PiecePlacement(3, 8, PieceType.rook),
@@ -667,6 +727,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '初手▲3六歩戦法',
     plyEq: 1,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 6, PieceType.pawn),
     ],
@@ -674,13 +735,15 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '2手目△7四歩戦法',
     plyEq: 2,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 6, PieceType.pawn),
     ],
   ),
   StrategyTemplate(
     name: '右四間飛車',
-    side: StrategySide.furibisha,
+    side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 8, PieceType.rook),
       PieceVisited(2, 8, PieceType.rook),
@@ -689,7 +752,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '右四間飛車急戦',
     parent: '右四間飛車',
-    side: StrategySide.furibisha,
+    side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 2, PieceType.rook, color: Color.white),
       PiecePlacement(5, 6, PieceType.silver),
@@ -700,7 +764,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '右四間飛車左美濃',
     parent: '右四間飛車',
-    side: StrategySide.furibisha,
+    side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 7, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.silver),
@@ -714,8 +779,10 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '右四間飛車超急戦',
     parent: '右四間飛車',
-    side: StrategySide.furibisha,
+    side: StrategySide.ibisha,
     plyMax: 9,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       EmptySquare(3, 1),
       PiecePlacement(3, 2, PieceType.silver, color: Color.white),
@@ -733,6 +800,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '角換わり',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
+    killOnly: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(3, 3, PieceType.horse),
@@ -743,6 +812,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '一手損角換わり',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
+    killOnly: true,
+    orderKey: 'second',
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(2, 2, PieceType.horse),
@@ -753,6 +825,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '角換わり腰掛け銀旧型',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(5, 6, PieceType.silver),
       PiecePlacement(5, 7, PieceType.pawn),
@@ -764,6 +837,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '角換わり腰掛け銀',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(5, 6, PieceType.silver),
       PiecePlacement(5, 7, PieceType.pawn),
@@ -775,6 +849,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '角換わり棒銀',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(2, 6, PieceType.silver),
       PiecePlacement(2, 7, PieceType.silver),
@@ -784,6 +859,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '角換わり早繰り銀',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
       PiecePlacement(5, 3, PieceType.pawn, color: Color.white),
@@ -800,6 +876,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '木村定跡',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(5, 2, PieceType.gold, color: Color.white),
@@ -822,6 +899,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '新ポンポン桂',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
@@ -842,6 +920,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '3手目▲7七角戦法',
     plyEq: 3,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 4, PieceType.pawn, color: Color.white),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -851,6 +930,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '4手目△3三角戦法',
     plyEq: 4,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 4, PieceType.pawn, color: Color.white),
       PiecePlacement(3, 4, PieceType.pawn, color: Color.white),
@@ -860,6 +940,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '筋違い角',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       EmptySquare(7, 2),
       EmptySquare(6, 2),
@@ -881,6 +962,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '相筋違い角',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       EmptySquare(7, 2),
       EmptySquare(6, 2),
@@ -913,6 +995,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '筋違い角阪田流',
     side: StrategySide.furibisha,
     plyMax: 11,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       EmptySquare(7, 2),
@@ -944,6 +1027,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '筋違い角蟻地獄戦法',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
       PiecePlacement(3, 3, PieceType.silver, color: Color.white),
@@ -963,6 +1047,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'ゴリ違い角',
     plyMax: 13,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(2, 4, PieceType.pawn, color: Color.white),
       PiecePlacement(6, 5, PieceType.bishop, color: Color.white),
@@ -976,6 +1061,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '引き角',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 9, PieceType.bishop),
       PieceVisited(8, 8, PieceType.bishop),
@@ -983,6 +1069,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '鳥刺し',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(5, 6, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.pawn),
@@ -998,6 +1086,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '嬉野流',
     plyMax: 2,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(6, 8, PieceType.silver),
       PieceVisited(7, 9, PieceType.silver),
@@ -1007,6 +1097,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '新嬉野流',
     parent: '嬉野流',
     plyMax: 10,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.pawn),
       PiecePlacement(5, 7, PieceType.silver),
@@ -1020,6 +1111,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '飯島流引き角戦法',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(8, 7, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.pawn),
@@ -1036,6 +1129,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '飯島流相掛かり引き角',
     aliases: <String>['飯島流相掛かり引き角戦法'],
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(5, 6, PieceType.pawn),
       EmptySquare(2, 6),
@@ -1054,6 +1148,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'ドラゴンスペシャル',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       EmptySquare(2, 4),
       EmptySquare(3, 5),
@@ -1071,6 +1167,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'クルクル角',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       EmptySquare(8, 6),
       EmptySquare(9, 7),
@@ -1085,6 +1182,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '棒銀',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(2, 6, PieceType.silver),
       PiecePlacement(3, 7, PieceType.pawn),
@@ -1095,6 +1193,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '原始棒銀',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(2, 5, PieceType.pawn),
       PiecePlacement(3, 7, PieceType.pawn),
@@ -1109,6 +1208,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     aliases: <String>['対矢倉急戦棒銀'],
     side: StrategySide.ibisha,
     plyMax: 12,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 3, PieceType.silver, color: Color.white),
       PiecePlacement(3, 4, PieceType.pawn, color: Color.white),
@@ -1125,6 +1226,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '屋敷流二枚銀棒銀型',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       AnyPiece(7, 6, anySide: true),
       PiecePlacement(6, 6, PieceType.silver),
@@ -1145,6 +1247,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '早繰り銀',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 6, PieceType.silver),
       PiecePlacement(3, 6, PieceType.pawn),
@@ -1158,6 +1261,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '極限早繰り銀',
     parent: '早繰り銀',
     plyMax: 16,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 4, PieceType.pawn, color: Color.white),
       PiecePlacement(3, 5, PieceType.pawn),
@@ -1171,6 +1276,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '△3三金型早繰り銀',
     parent: '角換わり早繰り銀',
+    outbreakSkip: true,
+    orderKey: 'second',
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(8, 5, PieceType.pawn, color: Color.white),
@@ -1187,6 +1294,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '腰掛け銀',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(5, 6, PieceType.silver),
       PiecePlacement(4, 6, PieceType.pawn),
@@ -1196,6 +1304,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '鎖鎌銀',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       EmptySquare(5, 6),
       PiecePlacement(4, 6, PieceType.pawn),
@@ -1207,6 +1316,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'UFO銀',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 6, PieceType.silver),
       PiecePlacement(3, 7, PieceType.pawn),
@@ -1216,6 +1326,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '棒金',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(2, 6, PieceType.gold),
       PiecePlacement(3, 7, PieceType.pawn),
@@ -1225,6 +1336,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'きｍきｍ金',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 2, PieceType.rook, color: Color.white),
       PiecePlacement(2, 2, PieceType.bishop, color: Color.white),
@@ -1237,6 +1350,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '早繰り金',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 6, PieceType.gold),
       PiecePlacement(3, 6, PieceType.pawn),
@@ -1247,6 +1361,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'ゴリラの右手',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 6, PieceType.gold),
       PiecePlacement(3, 7, PieceType.knight),
@@ -1256,6 +1371,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'UFO金',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 6, PieceType.gold),
       PiecePlacement(3, 7, PieceType.pawn),
@@ -1266,6 +1382,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '▲5七金戦法',
     aliases: <String>['▲4六金戦法', '金立ち戦法'],
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(5, 7, PieceType.gold),
       PiecePlacement(7, 8, PieceType.king),
@@ -1277,6 +1395,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'カニカニ金',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       EmptySquare(5, 5),
@@ -1294,6 +1413,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '▲4六銀右急戦',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 3, PieceType.bishop, color: Color.white),
       PiecePlacement(3, 4, PieceType.pawn, color: Color.white),
@@ -1312,6 +1433,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '▲4六銀左急戦',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 3, PieceType.bishop, color: Color.white),
       PiecePlacement(3, 4, PieceType.pawn, color: Color.white),
@@ -1329,6 +1452,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'エルモ急戦',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 3, PieceType.bishop, color: Color.white),
       PiecePlacement(4, 4, PieceType.pawn, color: Color.white),
@@ -1353,6 +1478,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '山田定跡',
     aliases: <String>['美崎定跡'],
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(4, 2, PieceType.rook, color: Color.white),
       PiecePlacement(3, 2, PieceType.silver, color: Color.white),
@@ -1374,6 +1501,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '鷺宮定跡',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(4, 2, PieceType.rook, color: Color.white),
       PiecePlacement(3, 2, PieceType.silver, color: Color.white),
@@ -1389,6 +1518,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '▲4五歩早仕掛け',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 3, PieceType.bishop, color: Color.white),
       PiecePlacement(4, 4, PieceType.pawn, color: Color.white),
@@ -1406,6 +1537,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '左美濃急戦',
     aliases: <String>['居角左美濃急戦'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       NotOfPieces(3, 3, <PieceType>[PieceType.silver], color: Color.white),
       PiecePlacement(4, 4, PieceType.pawn, color: Color.white),
@@ -1427,6 +1559,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'へなちょこ急戦',
     aliases: <String>['へな急'],
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 3, PieceType.bishop, color: Color.white),
       PiecePlacement(4, 4, PieceType.pawn, color: Color.white),
@@ -1450,6 +1584,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '玉頭位取り',
     plyMax: 41,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 3, PieceType.pawn, color: Color.white),
       EmptySquare(7, 4),
@@ -1461,6 +1596,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '6筋位取り',
     plyMax: 41,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 3, PieceType.pawn, color: Color.white),
       EmptySquare(6, 4),
@@ -1472,6 +1608,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '5筋位取り',
     plyMax: 41,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(5, 3, PieceType.pawn, color: Color.white),
       EmptySquare(5, 4),
@@ -1483,6 +1620,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'ショーダンオリジナル',
     parent: '5筋位取り',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(5, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -1502,6 +1640,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '銀雲雀',
     parent: '5筋位取り',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(5, 3, PieceType.pawn, color: Color.white),
       EmptySquare(5, 4),
@@ -1522,6 +1662,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'ポンポン桂',
     aliases: <String>['富沢キック'],
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(2, 1, PieceType.knight, color: Color.white),
       PiecePlacement(4, 2, PieceType.rook, color: Color.white),
@@ -1543,6 +1685,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '金無双急戦',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(5, 7, PieceType.silver),
       PiecePlacement(8, 8, PieceType.bishop),
@@ -1556,6 +1700,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '△2三歩戦法',
+    outbreakSkip: true,
+    orderKey: 'second',
     placements: <CastleRequirement>[
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
       PiecePlacement(2, 2, PieceType.bishop, color: Color.white),
@@ -1574,6 +1720,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '△4五角戦法',
+    outbreakSkip: true,
+    orderKey: 'second',
     placements: <CastleRequirement>[
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
       PiecePlacement(2, 2, PieceType.silver, color: Color.white),
@@ -1591,6 +1739,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '対振り持久戦',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.bishop),
       PiecePlacement(7, 8, PieceType.king),
@@ -1599,6 +1749,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'へなちょこ持久戦',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(2, 2, PieceType.rook, color: Color.white),
       PiecePlacement(3, 3, PieceType.bishop, color: Color.white),
@@ -1618,6 +1770,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '一直線穴熊',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.bishop),
       PiecePlacement(6, 7, PieceType.gold),
@@ -1633,6 +1786,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '2手目△6二銀戦法',
     plyEq: 2,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 8, PieceType.silver),
     ],
@@ -1640,6 +1794,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '丸山ワクチン',
     plyMax: 11,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(5, 1, PieceType.king, color: Color.white),
       PiecePlacement(5, 2, PieceType.rook, color: Color.white),
@@ -1658,6 +1813,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '超速▲3七銀',
     aliases: <String>['超速'],
     plyMax: 17,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       EmptySquare(5, 1),
       PiecePlacement(5, 2, PieceType.rook, color: Color.white),
@@ -1694,6 +1850,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '村田システム',
     plyMax: 15,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(5, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.pawn),
@@ -1713,6 +1871,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '新村田システム',
     plyMax: 30,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 6, PieceType.silver),
       PiecePlacement(8, 7, PieceType.pawn),
@@ -1729,6 +1888,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '右玉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 7, PieceType.silver),
       PiecePlacement(3, 7, PieceType.knight),
@@ -1742,6 +1902,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '矢倉右玉',
     parent: '右玉',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(4, 6, PieceType.pawn),
@@ -1758,6 +1919,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '羽生流右玉',
     parent: '右玉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 7, PieceType.silver),
       PiecePlacement(3, 7, PieceType.knight),
@@ -1772,6 +1934,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '角換わり右玉',
     parent: '右玉',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(4, 7, PieceType.silver),
@@ -1788,6 +1951,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '雁木右玉',
     parent: '右玉',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 6, PieceType.pawn),
       PiecePlacement(5, 6, PieceType.pawn),
@@ -1806,6 +1970,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'リッチブリッジ',
     parent: '雁木右玉',
     aliases: <String>['金銀橋'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
@@ -1827,6 +1992,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'ツノ銀型右玉',
     parent: '右玉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 7, PieceType.silver),
       PiecePlacement(4, 7, PieceType.silver),
@@ -1841,6 +2007,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '三段右玉',
     parent: '右玉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 6, PieceType.pawn),
       PiecePlacement(3, 6, PieceType.pawn),
@@ -1854,6 +2021,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '清野流岐阜戦法',
     parent: '右玉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 5, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.silver),
@@ -1872,6 +2040,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '間宮久夢流',
     parent: '右玉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 5, PieceType.pawn),
       PiecePlacement(2, 5, PieceType.pawn),
@@ -1886,6 +2055,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '風車',
     parent: '右玉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
@@ -1907,6 +2077,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '新風車',
     parent: '風車',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
@@ -1925,6 +2096,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'アヒル戦法',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 8, PieceType.silver),
       PiecePlacement(5, 8, PieceType.king),
@@ -1935,6 +2107,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '裏アヒル戦法',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.silver),
       PiecePlacement(5, 8, PieceType.king),
@@ -1945,6 +2118,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'つくつくぼうし戦法',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(7, 5, PieceType.pawn),
       PiecePlacement(2, 5, PieceType.pawn),
@@ -1955,6 +2130,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'ひねり飛車',
     aliases: <String>['縦歩取り', '児玉屋組'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       EmptySquare(3, 3),
@@ -1966,6 +2142,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '耀龍ひねり飛車',
     parent: 'ひねり飛車',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 4, PieceType.pawn, color: Color.white),
       PiecePlacement(3, 6, PieceType.rook),
@@ -1979,6 +2157,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'xaby角戦法',
     parent: '一手損角換わり',
     plyMax: 8,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       EmptySquare(7, 2),
@@ -1998,6 +2177,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '一手損角換わり',
     aliases: <String>['新xaby角戦法'],
     plyMax: 10,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       EmptySquare(8, 2),
       EmptySquare(7, 2),
@@ -2026,6 +2206,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '目くらまし戦法',
     aliases: <String>['浮き浮き飛車戦法'],
     plyMax: 8,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 3, PieceType.bishop, color: Color.white),
       PiecePlacement(3, 4, PieceType.pawn, color: Color.white),
@@ -2037,6 +2219,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '地下鉄飛車',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(9, 9, PieceType.rook),
       PieceVisited(3, 9, PieceType.rook),
@@ -2047,6 +2230,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'ウソ矢倉',
     side: StrategySide.ibisha,
     plyMax: 8,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(8, 5, PieceType.pawn, color: Color.white),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -2061,6 +2246,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'きんとうん戦法',
     plyEq: 9,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 1, PieceType.silver, color: Color.white),
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
@@ -2075,6 +2261,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '都成流△3一金',
     plyMax: 9,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 3, PieceType.pawn, color: Color.white),
       PiecePlacement(8, 6, PieceType.rook, color: Color.white),
@@ -2087,6 +2274,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '花村流名古屋戦法',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 3, PieceType.bishop, color: Color.white),
       PiecePlacement(7, 5, PieceType.pawn),
@@ -2107,6 +2295,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '腰掛け金',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(5, 6, PieceType.gold),
       PiecePlacement(4, 6, PieceType.pawn),
@@ -2116,6 +2305,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '暴銀',
+    outbreakSkip: true,
+    killOnly: true,
     placements: <CastleRequirement>[
       PiecePlacement(1, 1, PieceType.lance, color: Color.white),
       EmptySquare(1, 2),
@@ -2126,6 +2317,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '棒玉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(2, 7, PieceType.king),
       PiecePlacement(2, 8, PieceType.rook),
@@ -2135,6 +2327,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '中飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(5, 8, PieceType.rook),
     ],
@@ -2143,6 +2336,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '原始中飛車',
     side: StrategySide.furibisha,
     plyMax: 3,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       AnyPiece(7, 7, anySide: true),
       PiecePlacement(8, 8, PieceType.bishop),
@@ -2153,6 +2348,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '中飛車ミレニアム',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 7, PieceType.knight),
       PiecePlacement(2, 9, PieceType.king),
@@ -2163,6 +2359,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '先手中飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
+    orderKey: 'first',
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(2, 2, PieceType.bishop, color: Color.white),
@@ -2178,8 +2377,11 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '矢倉流中飛車',
-    side: StrategySide.furibisha,
+    side: StrategySide.ibisha,
     plyMax: 23,
+    outbreakSkip: true,
+    killCountLteq: 0,
+    orderKey: 'second',
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(2, 2, PieceType.king, color: Color.white),
@@ -2196,6 +2398,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '飛騨の中飛車合掌造り',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(5, 5, PieceType.pawn),
       PiecePlacement(9, 6, PieceType.pawn),
@@ -2220,6 +2423,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'ツノ銀中飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.bishop),
       PiecePlacement(6, 7, PieceType.silver),
@@ -2239,6 +2444,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '英ちゃん流中飛車',
     side: StrategySide.furibisha,
     plyMax: 13,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(5, 7, PieceType.pawn),
       PiecePlacement(5, 8, PieceType.rook),
@@ -2248,6 +2455,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '中飛車左穴熊',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(2, 7, PieceType.pawn),
       PiecePlacement(9, 8, PieceType.lance),
@@ -2260,6 +2468,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '原始中飛車',
     side: StrategySide.furibisha,
     plyMax: 8,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(8, 5, PieceType.pawn, color: Color.white),
       PiecePlacement(9, 6, PieceType.pawn),
@@ -2270,6 +2480,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'タランチュラ戦法',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 3, PieceType.knight, color: Color.white),
       PiecePlacement(2, 4, PieceType.horse, color: Color.white),
@@ -2285,6 +2496,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'ゴキゲン中飛車',
     side: StrategySide.furibisha,
     plyMax: 8,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(2, 2, PieceType.bishop, color: Color.white),
@@ -2300,6 +2513,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '遠山流',
     parent: 'ゴキゲン中飛車',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       EmptySquare(5, 7),
@@ -2316,6 +2530,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '5筋位取り中飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       EmptySquare(5, 4),
       PiecePlacement(5, 5, PieceType.pawn),
@@ -2327,6 +2543,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'ヒラメ戦法',
     aliases: <String>['平目'],
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(6, 8, PieceType.silver),
       PiecePlacement(5, 8, PieceType.rook),
@@ -2339,6 +2557,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'カニカニ銀',
     parent: '原始中飛車',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(6, 6, PieceType.silver),
       PiecePlacement(4, 6, PieceType.silver),
@@ -2355,6 +2575,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '四間飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(6, 8, PieceType.rook),
       PieceVisited(2, 8, PieceType.rook),
@@ -2364,6 +2586,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'ノーマル四間飛車',
     parent: '四間飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
@@ -2387,6 +2611,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '四間飛車ミレニアム',
     parent: '四間飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 7, PieceType.knight),
       PiecePlacement(6, 8, PieceType.rook),
@@ -2399,6 +2624,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '四間飛車',
     side: StrategySide.furibisha,
     plyMax: 4,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(2, 2, PieceType.bishop, color: Color.white),
       EmptySquare(3, 3),
@@ -2415,6 +2642,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'はく式四間飛車',
     parent: '四間飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.bishop),
       PiecePlacement(6, 8, PieceType.rook),
@@ -2426,6 +2654,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '耀龍四間飛車',
     parent: '四間飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(6, 8, PieceType.rook),
       PiecePlacement(4, 8, PieceType.gold),
@@ -2438,6 +2668,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '藤井システム',
     parent: '四間飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 7, PieceType.knight),
       EmptySquare(1, 7),
@@ -2453,6 +2685,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '室岡システム',
     parent: '四間飛車',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       EmptySquare(1, 7),
       PiecePlacement(6, 8, PieceType.rook),
@@ -2468,6 +2702,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '立石流四間飛車',
     parent: '四間飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       EmptySquare(7, 4),
@@ -2489,6 +2725,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'レグスペ',
     parent: '四間飛車',
     aliases: <String>['白色レグホンスペシャル'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 8, PieceType.gold),
       PiecePlacement(2, 8, PieceType.silver),
@@ -2502,6 +2739,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'やばボーズ流',
     parent: '四間飛車',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -2520,6 +2758,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '錆刀戦法',
     parent: '四間飛車',
     aliases: <String>['宗歩四間飛車', '錆刀四間飛車'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       EmptySquare(7, 3),
@@ -2543,6 +2782,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '幻想四間飛車',
     parent: '四間飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(8, 5, PieceType.pawn, color: Color.white),
@@ -2559,6 +2800,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '魔界四間飛車',
     parent: '四間飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.gold),
       PiecePlacement(6, 8, PieceType.rook),
@@ -2567,6 +2810,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '三間飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.rook),
     ],
@@ -2576,6 +2821,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '三間飛車',
     aliases: <String>['猫だまし戦法'],
     plyEq: 1,
+    outbreakSkip: true,
+    orderKey: 'first',
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.rook),
       PieceVisited(2, 8, PieceType.rook),
@@ -2585,6 +2832,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '2手目△3二飛戦法',
     parent: '三間飛車',
     plyEq: 2,
+    outbreakSkip: true,
+    killCountLteq: 0,
+    orderKey: 'second',
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.rook),
     ],
@@ -2594,6 +2844,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '三間飛車',
     aliases: <String>['クラシック三間飛車'],
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
@@ -2617,6 +2869,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '3→4→3戦法',
     parent: '三間飛車',
     plyEq: 12,
+    outbreakSkip: true,
+    killCountLteq: 0,
+    orderKey: 'second',
     placements: <CastleRequirement>[
       PiecePlacement(2, 2, PieceType.bishop, color: Color.white),
       EmptySquare(3, 3),
@@ -2635,6 +2890,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '戸辺流4→3戦法',
     parent: '3→4→3戦法',
     plyEq: 10,
+    outbreakSkip: true,
+    killCountLteq: 0,
+    orderKey: 'second',
     placements: <CastleRequirement>[
       PiecePlacement(2, 2, PieceType.bishop, color: Color.white),
       EmptySquare(3, 3),
@@ -2652,6 +2910,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '真部流',
     parent: '三間飛車',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 6, PieceType.silver),
       PiecePlacement(7, 7, PieceType.bishop),
@@ -2666,6 +2925,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '三間飛車ミレニアム',
     parent: '三間飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 7, PieceType.knight),
       PiecePlacement(7, 8, PieceType.rook),
@@ -2676,6 +2936,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '△3三飛戦法',
     parent: '三間飛車',
+    outbreakSkip: true,
+    killOnly: true,
+    orderKey: 'second',
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.rook),
       PiecePlacement(6, 7, PieceType.pawn),
@@ -2694,6 +2957,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '三間飛車',
     aliases: <String>['コーヤン流', '中田功XP'],
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(1, 1, PieceType.king, color: Color.white),
       PiecePlacement(7, 7, PieceType.bishop),
@@ -2709,6 +2974,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '下町流三間飛車',
     parent: '三間飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(1, 1, PieceType.king, color: Color.white),
       PiecePlacement(8, 4, PieceType.rook, color: Color.white),
@@ -2733,6 +3000,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '神吉流三間飛車',
     parent: '三間飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 2, PieceType.king, color: Color.white),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -2758,6 +3027,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '菅井流三間飛車',
     parent: '三間飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.gold),
@@ -2771,6 +3041,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '三間飛車',
     side: StrategySide.furibisha,
     plyMax: 6,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 4, PieceType.pawn, color: Color.white),
       PiecePlacement(8, 5, PieceType.pawn, color: Color.white),
@@ -2785,6 +3057,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '三間飛車藤井システム',
     parent: '三間飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(1, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -2804,6 +3078,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'トマホーク',
     parent: '三間飛車',
     aliases: <String>['トマホーク三間飛車'],
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 3, PieceType.bishop, color: Color.white),
       PiecePlacement(1, 3, PieceType.pawn, color: Color.white),
@@ -2822,6 +3098,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'うま式三間飛車',
     parent: '三間飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(7, 5, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.pawn),
@@ -2836,6 +3114,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '石田流',
     parent: '三間飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.rook),
@@ -2848,6 +3127,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '石田流本組み',
     parent: '石田流',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.rook),
       PiecePlacement(7, 7, PieceType.knight),
@@ -2856,6 +3136,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '早石田',
     parent: '三間飛車',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(8, 3, PieceType.pawn, color: Color.white),
       PiecePlacement(7, 5, PieceType.pawn),
@@ -2866,6 +3148,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'ムリヤリ早石田',
     parent: '三間飛車',
     plyMax: 6,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(8, 5, PieceType.pawn, color: Color.white),
@@ -2882,6 +3166,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '早石田',
     side: StrategySide.furibisha,
     plyMax: 8,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       EmptySquare(3, 3),
       EmptySquare(4, 4),
@@ -2896,6 +3182,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '楠本式石田流',
     parent: '石田流本組み',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.rook),
       PiecePlacement(5, 6, PieceType.silver),
@@ -2911,6 +3199,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '三間飛車',
     side: StrategySide.furibisha,
     plyEq: 7,
+    outbreakSkip: true,
+    killCountLteq: 0,
+    orderKey: 'first',
     placements: <CastleRequirement>[
       PiecePlacement(7, 4, PieceType.pawn),
       PiecePlacement(3, 4, PieceType.pawn, color: Color.white),
@@ -2922,6 +3213,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '鈴木流早石田',
     parent: '三間飛車',
     plyEq: 13,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 4, PieceType.rook),
       PiecePlacement(6, 5, PieceType.bishop, color: Color.white),
@@ -2933,6 +3225,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '久保流早石田',
     parent: '三間飛車',
     plyEq: 11,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(7, 2, PieceType.gold, color: Color.white),
       PiecePlacement(6, 2, PieceType.silver, color: Color.white),
@@ -2949,6 +3243,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '三間飛車',
     side: StrategySide.furibisha,
     plyEq: 3,
+    outbreakSkip: true,
+    killCountLteq: 0,
+    orderKey: 'first',
     placements: <CastleRequirement>[
       PiecePlacement(3, 4, PieceType.pawn, color: Color.white),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -2960,6 +3257,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '三間飛車',
     side: StrategySide.furibisha,
     plyEq: 9,
+    outbreakSkip: true,
+    orderKey: 'first',
     placements: <CastleRequirement>[
       PiecePlacement(3, 4, PieceType.pawn, color: Color.white),
       PiecePlacement(8, 5, PieceType.pawn, color: Color.white),
@@ -2971,6 +3270,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '向かい飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(8, 8, PieceType.rook),
     ],
@@ -2979,6 +3280,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '逆棒銀',
     parent: '向かい飛車',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       EmptySquare(8, 3),
@@ -2994,6 +3296,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'ダイレクト向かい飛車',
     parent: '向かい飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(7, 7, PieceType.silver),
@@ -3005,6 +3308,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'モノレール向かい飛車',
     parent: '向かい飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(8, 5, PieceType.pawn),
@@ -3023,6 +3327,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'メリケン向かい飛車',
     parent: '向かい飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(2, 2, PieceType.bishop, color: Color.white),
@@ -3042,6 +3348,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '向かい飛車',
     side: StrategySide.furibisha,
     plyEq: 10,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       EmptySquare(4, 4),
@@ -3060,6 +3367,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '向かい飛車',
     side: StrategySide.furibisha,
     plyEq: 8,
+    outbreakSkip: true,
+    killOnly: true,
+    orderKey: 'second',
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(8, 5, PieceType.pawn, color: Color.white),
@@ -3071,6 +3381,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '高田流左玉',
     parent: '向かい飛車',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.knight),
       PiecePlacement(7, 8, PieceType.king),
@@ -3080,6 +3391,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '角頭歩戦法',
     plyMax: 4,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 4, PieceType.pawn, color: Color.white),
       PiecePlacement(8, 6, PieceType.pawn),
@@ -3089,6 +3402,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '金沢流',
     plyMax: 4,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(2, 2, PieceType.bishop, color: Color.white),
       EmptySquare(3, 3),
@@ -3098,6 +3412,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '菜々河流△4四角',
     plyMax: 8,
+    outbreakSkip: true,
+    killCountLteq: 0,
+    orderKey: 'second',
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(8, 5, PieceType.pawn, color: Color.white),
@@ -3108,6 +3425,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '菜々河流向かい飛車',
     parent: '向かい飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
+    orderKey: 'second',
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(2, 2, PieceType.bishop, color: Color.white),
@@ -3121,6 +3441,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '天彦流▲6六角',
     plyMax: 3,
+    outbreakSkip: true,
+    killCountLteq: 0,
+    orderKey: 'first',
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(8, 4, PieceType.pawn, color: Color.white),
@@ -3132,6 +3455,9 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '向かい飛車',
     side: StrategySide.furibisha,
     plyMax: 9,
+    outbreakSkip: true,
+    killCountLteq: 0,
+    orderKey: 'first',
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       PiecePlacement(2, 2, PieceType.bishop, color: Color.white),
@@ -3148,6 +3474,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'ショーダンシステム',
     parent: '向かい飛車',
     plyMax: 45,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       AnyPiece(6, 6, anySide: true),
@@ -3172,6 +3499,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '英春流カメレオン',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(2, 5, PieceType.pawn),
       PiecePlacement(3, 6, PieceType.pawn),
@@ -3189,6 +3517,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '原始中飛車',
     aliases: <String>['女殺しドッカン飛車', '鬼六流ドッカン飛車'],
     plyMax: 19,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 6, PieceType.rook, color: Color.white),
       PiecePlacement(8, 8, PieceType.rook),
@@ -3201,6 +3530,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '陽動振り飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
       EmptySquare(2, 7),
@@ -3215,6 +3545,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'Uターン飛車',
+    outbreakSkip: true,
+    killCountLteq: 2,
     placements: <CastleRequirement>[
       PiecePlacement(2, 8, PieceType.rook),
       PieceVisited(8, 8, PieceType.rook),
@@ -3226,6 +3558,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '穴角戦法',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       AnyPiece(9, 8, anySide: true),
       PiecePlacement(9, 9, PieceType.bishop),
@@ -3236,6 +3570,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '穴角向かい飛車',
     parent: '穴角戦法',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       AnyPiece(9, 8, anySide: true),
       PiecePlacement(8, 8, PieceType.rook),
@@ -3246,6 +3582,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '初手▲7八銀戦法',
     plyEq: 1,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.silver),
     ],
@@ -3253,6 +3591,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '2手目△3二銀システム',
     plyEq: 2,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.silver),
     ],
@@ -3261,6 +3601,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: 'メイドシステム',
     parent: '初手▲7八銀戦法',
     plyMax: 4,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.silver),
@@ -3270,6 +3612,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'ネコ式タテ歩取り',
+    outbreakSkip: true,
+    killCountLteq: 2,
     placements: <CastleRequirement>[
       PiecePlacement(2, 2, PieceType.bishop, color: Color.white),
       PiecePlacement(3, 3, PieceType.pawn, color: Color.white),
@@ -3287,6 +3631,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '桐山流タテ歩棒銀',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
+    killCountLteq: 2,
     placements: <CastleRequirement>[
       PiecePlacement(2, 2, PieceType.bishop, color: Color.white),
       PiecePlacement(3, 3, PieceType.gold, color: Color.white),
@@ -3303,6 +3649,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'たこ金戦法',
     aliases: <String>['対ひねり飛車たこ金戦法'],
+    outbreakSkip: true,
+    killCountLteq: 4,
     placements: <CastleRequirement>[
       PiecePlacement(6, 6, PieceType.gold),
       PiecePlacement(8, 8, PieceType.bishop),
@@ -3312,6 +3660,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'ゴリゴリ金',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 6, PieceType.gold),
       PiecePlacement(7, 7, PieceType.knight),
@@ -3323,6 +3672,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: 'パックマン戦法',
     plyEq: 2,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(3, 4, PieceType.pawn, color: Color.white),
       PiecePlacement(6, 6, PieceType.pawn),
@@ -3331,6 +3682,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '山崎流パックマン',
     plyMax: 6,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       EmptySquare(7, 2),
       EmptySquare(6, 2),
@@ -3345,6 +3698,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '一間飛車',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(1, 5, PieceType.pawn),
       PiecePlacement(1, 6, PieceType.rook),
@@ -3357,6 +3711,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '一間飛車右穴熊',
     parent: '一間飛車',
     aliases: <String>['一間飛車穴熊'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(1, 5, PieceType.pawn),
       PiecePlacement(1, 6, PieceType.rook),
@@ -3371,6 +3726,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '端棒銀',
     side: StrategySide.ibisha,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(8, 6, PieceType.silver),
       PiecePlacement(8, 7, PieceType.pawn),
@@ -3381,6 +3738,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '九間飛車',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(9, 6, PieceType.pawn),
       PiecePlacement(9, 7, PieceType.lance),
@@ -3392,6 +3751,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '九間飛車左穴熊',
     parent: '九間飛車',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(9, 6, PieceType.pawn),
       PiecePlacement(9, 7, PieceType.lance),
@@ -3403,6 +3764,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'カメレオン戦法',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(2, 2, PieceType.bishop, color: Color.white),
       EmptySquare(3, 3),
@@ -3423,6 +3786,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: '玉頭銀',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 2, PieceType.king, color: Color.white),
       PiecePlacement(2, 2, PieceType.bishop, color: Color.white),
@@ -3441,6 +3805,8 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '角交換振り飛車',
     side: StrategySide.furibisha,
+    outbreakSkip: true,
+    killOnly: true,
     placements: <CastleRequirement>[
       PiecePlacement(2, 2, PieceType.horse),
       AnyPlacement(PieceType.rook, <({int file, int rank})>[(file: 9, rank: 8), (file: 8, rank: 8), (file: 7, rank: 8), (file: 6, rank: 8), (file: 5, rank: 8)]),
@@ -3448,6 +3814,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   ),
   StrategyTemplate(
     name: 'GAVA角',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       EmptySquare(3, 7),
       PiecePlacement(3, 8, PieceType.gold),
@@ -3460,6 +3827,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     name: '阪田流2手目△9四歩',
     side: StrategySide.furibisha,
     plyEq: 2,
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 4, PieceType.pawn, color: Color.white),
       PiecePlacement(1, 6, PieceType.pawn),
@@ -3468,12 +3836,15 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '新米長玉',
     plyMax: 2,
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       PiecePlacement(4, 8, PieceType.king),
     ],
   ),
   StrategyTemplate(
     name: '稲庭戦法',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(9, 8, PieceType.gold),
       PiecePlacement(7, 8, PieceType.king),

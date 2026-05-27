@@ -51,6 +51,10 @@ class StrategyTemplate {
     this.plyEq,
     this.plyMax,
     this.evaluateAtGameEnd = false,
+    this.outbreakSkip = false,
+    this.killCountLteq,
+    this.killOnly = false,
+    this.orderKey,
   });
 
   /// 戦法名 (例: '四間飛車')
@@ -84,6 +88,39 @@ class StrategyTemplate {
   /// ベース検出では現在 ply が <= plyMax のときのみマッチする。`plyEq` と
   /// 併用可。位置ベース検出では非 null のテンプレートはスキップされる。
   final int? plyMax;
+
+  /// bioshogi `outbreak_skip`: 開戦 (歩・角以外が取られた) 後は判定しない。
+  final bool outbreakSkip;
+
+  /// bioshogi `kill_count_lteq`: これまでの総取り駒数がこの値以下のときのみ
+  /// 成立 (例: 0 = 駒交換が一度も起きていない序盤のみ)。
+  final int? killCountLteq;
+
+  /// bioshogi `kill_only`: 直前の手で駒を取っているときのみ成立。
+  final bool killOnly;
+
+  /// bioshogi `order_key`: 手番限定 ('first' = 先手のみ / 'second' = 後手のみ)。
+  /// 平手前提で 'first'→black / 'second'→white に対応付ける。
+  final String? orderKey;
+
+  /// このテンプレートが棋譜走査ゲート (outbreak/kill/order) を持つかを返す。
+  bool get hasRecordGate =>
+      outbreakSkip || killCountLteq != null || killOnly || orderKey != null;
+
+  /// 棋譜走査ゲート (game-context 制約) を満たすか。局面単体検出では履歴が
+  /// 無いため評価できず、本判定は `record.strategies` からのみ呼ばれる。
+  bool passesRecordGate(Color side, MoveHistory history) {
+    if (outbreakSkip && history.outbreakTurn != null) return false;
+    if (killCountLteq != null && history.captureCount > killCountLteq!) {
+      return false;
+    }
+    if (killOnly && !history.lastMoveCaptured) return false;
+    if (orderKey != null) {
+      final Color want = orderKey == 'first' ? Color.black : Color.white;
+      if (side != want) return false;
+    }
+    return true;
+  }
 
   /// このテンプレートが ply 制約 (`plyEq` または `plyMax`) を持つかを返す。
   bool get hasPlyConstraint => plyEq != null || plyMax != null;
@@ -274,6 +311,8 @@ extension ImmutableRecordStrategies on ImmutableRecord {
       // 1. ply 制約も履歴依存要件も無いテンプレートは detectStrategies(pos)
       //    で一括判定 (高速路)。
       for (final DetectedStrategy d in detectStrategies(pos)) {
+        // game-context ゲート (開戦/取り駒数/手番) を棋譜履歴で検証。
+        if (!d.template.passesRecordGate(d.side, history)) continue;
         final String key = '${d.template.name}|${d.side.value}';
         if (seen.add(key)) {
           results.add(DetectedStrategyAt(
@@ -299,6 +338,7 @@ extension ImmutableRecordStrategies on ImmutableRecord {
               history: history)) {
             continue;
           }
+          if (!template.passesRecordGate(side, history)) continue;
           final String key = '${template.name}|${side.value}';
           if (seen.add(key)) {
             results.add(DetectedStrategyAt(

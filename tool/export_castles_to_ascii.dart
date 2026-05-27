@@ -31,6 +31,14 @@ void main() {
     if (t.aliases.isNotEmpty) buf.writeln('aliases: ${t.aliases.join(', ')}');
     final String? plyLine = formatPlyHeader(plyEq: t.plyEq, plyMax: t.plyMax);
     if (plyLine != null) buf.writeln(plyLine);
+    for (final String line in formatGameContextHeaders(
+      outbreakSkip: t.outbreakSkip,
+      killCountLteq: t.killCountLteq,
+      killOnly: t.killOnly,
+      orderKey: t.orderKey,
+    )) {
+      buf.writeln(line);
+    }
     final List<PlacementCell> cells = _toCells(t.placements);
     final String? boardLine = formatBoardHeader(cells);
     if (boardLine != null) buf.writeln(boardLine);

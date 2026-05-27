@@ -19,6 +19,10 @@ class ParsedTemplate {
     this.plyEq,
     this.plyMax,
     this.evaluateAtGameEnd = false,
+    this.outbreakSkip = false,
+    this.killCountLteq,
+    this.killOnly = false,
+    this.orderKey,
   });
 
   /// 必須: テンプレ名 (例: '金矢倉')
@@ -53,6 +57,18 @@ class ParsedTemplate {
   ///
   /// `igyoku: true` ヘッダが指定された場合、本フラグも自動的に true になる。
   final bool evaluateAtGameEnd;
+
+  /// bioshogi `outbreak_skip` (開戦後は判定しない)。
+  final bool outbreakSkip;
+
+  /// bioshogi `kill_count_lteq` (総取り駒数の上限)。
+  final int? killCountLteq;
+
+  /// bioshogi `kill_only` (直前手が駒取りのときのみ)。
+  final bool killOnly;
+
+  /// bioshogi `order_key` ('first'=先手 / 'second'=後手)。
+  final String? orderKey;
 }
 
 /// 要件 1 件分の中間表現。per-cell と position-wide のどちらも 1 つの型で
@@ -144,6 +160,10 @@ List<ParsedTemplate> parseTemplateFile(String content) {
   int? sectionPlyEq;
   int? sectionPlyMax;
   bool sectionEvaluateAtGameEnd = false;
+  bool sectionOutbreakSkip = false;
+  int? sectionKillCountLteq;
+  bool sectionKillOnly = false;
+  String? sectionOrderKey;
   final List<PlacementCell> sectionExtras = <PlacementCell>[];
   final List<List<String>> gridRows = <List<String>>[];
 
@@ -195,6 +215,10 @@ List<ParsedTemplate> parseTemplateFile(String content) {
         plyEq: sectionPlyEq,
         plyMax: sectionPlyMax,
         evaluateAtGameEnd: sectionEvaluateAtGameEnd,
+        outbreakSkip: sectionOutbreakSkip,
+        killCountLteq: sectionKillCountLteq,
+        killOnly: sectionKillOnly,
+        orderKey: sectionOrderKey,
       ),
     );
   }
@@ -208,6 +232,10 @@ List<ParsedTemplate> parseTemplateFile(String content) {
     sectionPlyEq = null;
     sectionPlyMax = null;
     sectionEvaluateAtGameEnd = false;
+    sectionOutbreakSkip = false;
+    sectionKillCountLteq = null;
+    sectionKillOnly = false;
+    sectionOrderKey = null;
     sectionExtras.clear();
     gridRows.clear();
   }
@@ -368,6 +396,33 @@ List<ParsedTemplate> parseTemplateFile(String content) {
           if (_parseBoolHeader(header.value, lineNo, 'hand_empty')) {
             sectionExtras.add(PlacementCell(kind: 'handEmpty'));
           }
+          break;
+        case 'outbreak_skip':
+          sectionOutbreakSkip =
+              _parseBoolHeader(header.value, lineNo, 'outbreak_skip');
+          break;
+        case 'kill_count_lteq':
+          final int? n = int.tryParse(header.value.trim());
+          if (n == null || n < 0) {
+            throw FormatException(
+              'line $lineNo: kill_count_lteq must be a non-negative int, '
+              'got "${header.value}"',
+            );
+          }
+          sectionKillCountLteq = n;
+          break;
+        case 'kill_only':
+          sectionKillOnly =
+              _parseBoolHeader(header.value, lineNo, 'kill_only');
+          break;
+        case 'order_key':
+          final String v = header.value.trim();
+          if (v != 'first' && v != 'second') {
+            throw FormatException(
+              'line $lineNo: order_key must be first|second, got "$v"',
+            );
+          }
+          sectionOrderKey = v;
           break;
         case 'igyoku':
           // `igyoku: true` → KingIgyoku() を placements に追加し、
@@ -808,6 +863,22 @@ String? formatPlyHeader({int? plyEq, int? plyMax}) {
   if (plyEq != null) parts.add('$plyEq');
   if (plyMax != null) parts.add('max $plyMax');
   return 'ply: ${parts.join(', ')}';
+}
+
+/// game-context フラグ (`outbreak_skip` / `kill_count_lteq` / `kill_only` /
+/// `order_key`) のヘッダ行を 0 件以上返す。
+List<String> formatGameContextHeaders({
+  bool outbreakSkip = false,
+  int? killCountLteq,
+  bool killOnly = false,
+  String? orderKey,
+}) {
+  final List<String> out = <String>[];
+  if (outbreakSkip) out.add('outbreak_skip: true');
+  if (killCountLteq != null) out.add('kill_count_lteq: $killCountLteq');
+  if (killOnly) out.add('kill_only: true');
+  if (orderKey != null) out.add('order_key: $orderKey');
+  return out;
 }
 
 /// `unmoved: <piece> <file> <rank>` 形式の行を 0 件以上返す。
