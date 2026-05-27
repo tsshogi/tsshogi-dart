@@ -451,6 +451,7 @@ class _MetaRecord {
     this.turnMax,
     this.dropOnly = false,
     this.holdPieceEmpty = false,
+    this.holdPieceIn = const <({String pieceEnum, int count})>[],
   });
   final String key;
   final String? parent;
@@ -467,6 +468,36 @@ class _MetaRecord {
 
   /// bioshogi の hold_piece_empty (= 持駒が空であること)。
   final bool holdPieceEmpty;
+
+  /// bioshogi の hold_piece_in (= 持駒に指定駒を含むこと)。レグスペの角交換等。
+  final List<({String pieceEnum, int count})> holdPieceIn;
+}
+
+/// bioshogi の持駒表記 (例: `"角"`, `"角桂歩2"`) を (駒, 枚数) 列にパースする。
+/// 駒は漢字、枚数は駒の直後の算用数字 (無ければ 1)。
+List<({String pieceEnum, int count})> _parseHandSpec(String spec) {
+  final List<({String pieceEnum, int count})> out =
+      <({String pieceEnum, int count})>[];
+  int i = 0;
+  while (i < spec.length) {
+    final String ch = spec[i];
+    final String? sfen = _kanjiToSfen[ch];
+    if (sfen == null) {
+      i++;
+      continue;
+    }
+    int count = 1;
+    int j = i + 1;
+    final StringBuffer digits = StringBuffer();
+    while (j < spec.length && RegExp(r'[0-9]').hasMatch(spec[j])) {
+      digits.write(spec[j]);
+      j++;
+    }
+    if (digits.isNotEmpty) count = int.parse(digits.toString());
+    out.add((pieceEnum: sfenTokenToEnumName(sfen), count: count));
+    i = j;
+  }
+  return out;
 }
 
 // ignore: library_private_types_in_public_api
@@ -523,6 +554,14 @@ List<_MetaRecord> parseMetaInfo(String source) {
         RegExp(r'drop_only:\s*true').hasMatch(line);
     final bool holdPieceEmpty =
         RegExp(r'hold_piece_empty:\s*true').hasMatch(line);
+    // hold_piece_in: "角" 等 → 持駒に含む駒。
+    List<({String pieceEnum, int count})> holdPieceIn =
+        const <({String pieceEnum, int count})>[];
+    final RegExpMatch? hpi =
+        RegExp(r'hold_piece_in:\s*"([^"]*)"').firstMatch(line);
+    if (hpi != null && hpi.group(1)!.isNotEmpty) {
+      holdPieceIn = _parseHandSpec(hpi.group(1)!);
+    }
     out.add(_MetaRecord(
       key: key,
       parent: parent,
@@ -531,6 +570,7 @@ List<_MetaRecord> parseMetaInfo(String source) {
       turnMax: turnMax,
       dropOnly: dropOnly,
       holdPieceEmpty: holdPieceEmpty,
+      holdPieceIn: holdPieceIn,
     ));
   }
   return out;
@@ -569,6 +609,13 @@ List<PlacementCell> _withMeta(_ShapeRecord sh, _MetaRecord m) {
   if (m.holdPieceEmpty) {
     cells.add(PlacementCell(kind: 'handEmpty'));
   }
+  for (final ({String pieceEnum, int count}) h in m.holdPieceIn) {
+    cells.add(PlacementCell(
+      kind: 'handPiece',
+      pieceTypes: <String>[h.pieceEnum],
+      minCount: h.count,
+    ));
+  }
   return cells;
 }
 
@@ -602,6 +649,8 @@ String _formatTemplate({
   for (final String line in formatAnyHeaders(cells)) {
     buf.writeln(line);
   }
+  final String? handLine = formatHandHeader(cells);
+  if (handLine != null) buf.writeln(handLine);
   for (final String line in formatDroppedHeaders(cells)) {
     buf.writeln(line);
   }

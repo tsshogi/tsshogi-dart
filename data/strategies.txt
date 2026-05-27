@@ -8,7 +8,7 @@
 #
 # Source ASCII parsed by: tool/import_bioshogi.dart
 
-# Last regenerated: 2026-05-27T15:19:40.882760
+# Last regenerated: 2026-05-27T17:26:48.434537
 # Source: attack_info.rb (246 metadata rows)
 #  ∩  shape_info.rb (394 ASCII templates)
 
@@ -384,6 +384,7 @@ side: ibisha
 === name: 相横歩取り
 parent: 横歩取り
 side: ibisha
+hand: B
 
 . . . . . . . . .
 . . . . . . g . .
@@ -829,6 +830,7 @@ hand_empty: true
 . . . . . . . . .
 
 === name: 筋違い角蟻地獄戦法
+hand: P
 
 . . . . . . . . .
 . . . . . . g . .
@@ -1051,6 +1053,7 @@ ply: max 16
 
 === name: △3三金型早繰り銀
 parent: 角換わり早繰り銀
+hand: B
 
 . . . . . . . . .
 . r . . . . . . .
@@ -1576,6 +1579,7 @@ visited: K 5 9
 === name: 羽生流右玉
 parent: 右玉
 any: S 7 7 8 8
+hand: B
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1590,6 +1594,7 @@ any: S 7 7 8 8
 === name: 角換わり右玉
 parent: 右玉
 side: ibisha
+hand: B
 
 . . . . . . . . .
 . . . . . . . . .
@@ -1897,6 +1902,7 @@ visited: G 4 7
 . . . . . . . . .
 
 === name: 暴銀
+hand: P
 
 . . . . . . . . l
 . . . . . . . . _
@@ -2091,6 +2097,7 @@ any: B 7 7 8 8
 
 === name: 遠山流
 parent: ゴキゲン中飛車
+hand: B
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2278,6 +2285,7 @@ any: vB 2 2 3 3
 === name: レグスペ
 parent: 四間飛車
 aliases: 白色レグホンスペシャル
+hand: B
 
 . . . . . . . . .
 . . . . . . . . .
@@ -2292,6 +2300,7 @@ aliases: 白色レグホンスペシャル
 === name: やばボーズ流
 parent: 四間飛車
 visited: K 4 8
+hand: B
 
 . . . . . . . . .
 . r . . . . . . .
@@ -2465,6 +2474,7 @@ visited: K 3 8
 
 === name: △3三飛戦法
 parent: 三間飛車
+hand: B
 
 . . . . . . . . .
 . . . . . . . . .

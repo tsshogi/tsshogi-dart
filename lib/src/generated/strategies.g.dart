@@ -468,6 +468,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(7, 6, PieceType.rook, color: Color.white),
       EmptySquare(7, 7),
       PiecePlacement(7, 8, PieceType.gold),
+      HandPiece(PieceType.bishop),
     ],
   ),
   StrategyTemplate(
@@ -956,6 +957,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(4, 7, PieceType.silver),
       PiecePlacement(7, 8, PieceType.bishop),
       PiecePlacement(2, 8, PieceType.rook),
+      HandPiece(PieceType.pawn),
     ],
   ),
   StrategyTemplate(
@@ -1179,6 +1181,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(3, 7),
       EmptySquare(2, 7),
       PiecePlacement(2, 8, PieceType.rook),
+      HandPiece(PieceType.bishop),
     ],
   ),
   StrategyTemplate(
@@ -1762,6 +1765,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(3, 8, PieceType.gold),
       PiecePlacement(2, 9, PieceType.rook),
       AnyPlacement(PieceType.silver, <({int file, int rank})>[(file: 7, rank: 7), (file: 8, rank: 8)]),
+      HandPiece(PieceType.bishop),
     ],
   ),
   StrategyTemplate(
@@ -1777,6 +1781,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(4, 8, PieceType.king),
       EmptySquare(3, 8),
       PiecePlacement(2, 9, PieceType.rook),
+      HandPiece(PieceType.bishop),
     ],
   ),
   StrategyTemplate(
@@ -2116,6 +2121,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(1, 2),
       EmptySquare(1, 3),
       PiecePlacement(1, 4, PieceType.silver),
+      HandPiece(PieceType.pawn),
     ],
   ),
   StrategyTemplate(
@@ -2304,6 +2310,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(2, 8),
       PiecePlacement(5, 9, PieceType.king),
       PiecePlacement(3, 9, PieceType.silver),
+      HandPiece(PieceType.bishop),
     ],
   ),
   StrategyTemplate(
@@ -2489,6 +2496,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(3, 9, PieceType.gold),
       PiecePlacement(2, 9, PieceType.knight),
       PiecePlacement(1, 9, PieceType.king),
+      HandPiece(PieceType.bishop),
     ],
   ),
   StrategyTemplate(
@@ -2505,6 +2513,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       PiecePlacement(6, 8, PieceType.rook),
       PiecePlacement(3, 8, PieceType.king),
       PieceVisited(4, 8, PieceType.king),
+      HandPiece(PieceType.bishop),
     ],
   ),
   StrategyTemplate(
@@ -2677,6 +2686,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
       EmptySquare(3, 8),
       EmptySquare(2, 8),
       EmptySquare(1, 8),
+      HandPiece(PieceType.bishop),
     ],
   ),
   StrategyTemplate(
