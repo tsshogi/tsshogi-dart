@@ -447,8 +447,7 @@ List<ParsedTemplate> parseTemplateFile(String content) {
           sectionKillCountLteq = n;
           break;
         case 'kill_only':
-          sectionKillOnly =
-              _parseBoolHeader(header.value, lineNo, 'kill_only');
+          sectionKillOnly = _parseBoolHeader(header.value, lineNo, 'kill_only');
           break;
         case 'order_key':
           final String v = header.value.trim();
@@ -466,9 +465,8 @@ List<ParsedTemplate> parseTemplateFile(String content) {
           sectionOpHandEq = _parseHandCounts(header.value);
           break;
         case 'hand_not_in':
-          sectionHandNotIn = _splitPieceTokens(header.value)
-              .map(sfenTokenToEnumName)
-              .toList();
+          sectionHandNotIn =
+              _splitPieceTokens(header.value).map(sfenTokenToEnumName).toList();
           break;
         case 'no_pawn_in_hand':
           sectionNoPawnInHand =
@@ -750,8 +748,7 @@ _Cell _parseCellToken(String token, String section, int row) {
     }
     final bool opponent = negated && _isLowercasePieceToken(inner);
     final List<String> pieces = _tokenizeAlternation(inner)
-        .map((String t) => sfenTokenToEnumName(
-            opponent ? t.toUpperCase() : t))
+        .map((String t) => sfenTokenToEnumName(opponent ? t.toUpperCase() : t))
         .toList();
     if (pieces.isEmpty) {
       throw FormatException(
@@ -925,8 +922,7 @@ Map<String, int> _parseHandCounts(String value) {
   final Map<String, int> out = <String, int>{};
   for (final String token in _splitPieceTokens(value)) {
     final int starIdx = token.indexOf('*');
-    final String pieceToken =
-        starIdx < 0 ? token : token.substring(0, starIdx);
+    final String pieceToken = starIdx < 0 ? token : token.substring(0, starIdx);
     final int count =
         starIdx < 0 ? 1 : (int.tryParse(token.substring(starIdx + 1)) ?? 1);
     final String name = sfenTokenToEnumName(pieceToken);

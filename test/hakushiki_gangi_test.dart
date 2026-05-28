@@ -27,8 +27,8 @@ bool _hasCastle(Position p, String name, {Color side = Color.black}) {
 bool _recordHasStrategy(String usi, String name, {Color side = Color.black}) {
   final Record? r = Record.newByUSI(usi);
   expect(r, isNotNull, reason: 'USI parse failed: $usi');
-  return r!.strategies.any(
-      (DetectedStrategyAt d) => d.template.name == name && d.side == side);
+  return r!.strategies
+      .any((DetectedStrategyAt d) => d.template.name == name && d.side == side);
 }
 
 void main() {
@@ -117,8 +117,7 @@ void main() {
       // 1手目に桂を取って開戦 (歩・角以外の駒を取る) させてから、飛車を
       // 2八へ戻し→4八へ振る。開戦済みなので outbreak_skip で判定されない。
       // (テストハーネスは非合法手も受理するため飛車で直接桂を取って開戦させる)
-      const String usi =
-          'position startpos moves 2h2a 3c3d 2a2h 8c8d 2h4h';
+      const String usi = 'position startpos moves 2h2a 3c3d 2a2h 8c8d 2h4h';
       expect(_recordHasStrategy(usi, '右四間飛車'), isFalse,
           reason: '開戦後に飛車4八へ来たのに右四間飛車と誤検出している');
     });
