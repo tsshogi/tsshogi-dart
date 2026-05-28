@@ -754,63 +754,57 @@ Iterable<Piece> _invadingPieces(ImmutableBoard board, Color color) sync* {
   }
 }
 
+/// 持将棋の駒点。大駒 (角・飛、成り含む) は 5 点、その他の駒は 1 点。
+/// [unpromotedType] は `piece.unpromoted().type` を渡す。
+int _jishogiPiecePoint(PieceType unpromotedType) =>
+    (unpromotedType == PieceType.bishop || unpromotedType == PieceType.rook)
+        ? 5
+        : 1;
+
+/// 持駒 + (後手のみ) 盤上にも持駒にも無い駒に対する持将棋点を計算します。
+/// 大駒は 5 点、その他は 1 点。先手は盤外の駒を相手が保持しているとみなして
+/// 加算しません ([countJishogiPoint] / [countJishogiDeclarationPoint] 共通)。
+int _handAndMissingPieceJishogiPoint(ImmutablePosition position, Color color) {
+  final ImmutableHand hand = position.hand(color);
+  int point = hand.count(PieceType.pawn) +
+      hand.count(PieceType.lance) +
+      hand.count(PieceType.knight) +
+      hand.count(PieceType.silver) +
+      hand.count(PieceType.gold) +
+      hand.count(PieceType.bishop) * 5 +
+      hand.count(PieceType.rook) * 5;
+  if (color == Color.white) {
+    final Map<PieceType, int> notExisting = countNotExistingPieces(position);
+    point += notExisting[PieceType.pawn]! +
+        notExisting[PieceType.lance]! +
+        notExisting[PieceType.knight]! +
+        notExisting[PieceType.silver]! +
+        notExisting[PieceType.gold]! +
+        notExisting[PieceType.bishop]! * 5 +
+        notExisting[PieceType.rook]! * 5;
+  }
+  return point;
+}
+
 /// 持将棋指し直し判定の点数を計算します。
 int countJishogiPoint(ImmutablePosition position, Color color) {
   int point = 0;
   for (final Square square in Square.all) {
     final Piece? piece = position.board.at(square);
     if (piece != null && piece.color == color && piece.type != PieceType.king) {
-      final PieceType type = piece.unpromoted().type;
-      point += (type == PieceType.bishop || type == PieceType.rook) ? 5 : 1;
+      point += _jishogiPiecePoint(piece.unpromoted().type);
     }
   }
-  final ImmutableHand hand = position.hand(color);
-  point += hand.count(PieceType.pawn) +
-      hand.count(PieceType.lance) +
-      hand.count(PieceType.knight) +
-      hand.count(PieceType.silver) +
-      hand.count(PieceType.gold) +
-      hand.count(PieceType.bishop) * 5 +
-      hand.count(PieceType.rook) * 5;
-  if (color == Color.white) {
-    final Map<PieceType, int> notExisting = countNotExistingPieces(position);
-    point += (notExisting[PieceType.pawn]!) +
-        (notExisting[PieceType.lance]!) +
-        (notExisting[PieceType.knight]!) +
-        (notExisting[PieceType.silver]!) +
-        (notExisting[PieceType.gold]!) +
-        (notExisting[PieceType.bishop]!) * 5 +
-        (notExisting[PieceType.rook]!) * 5;
-  }
-  return point;
+  return point + _handAndMissingPieceJishogiPoint(position, color);
 }
 
 /// 入玉宣言法に基づいて宣言する際の点数を計算します。
 int countJishogiDeclarationPoint(ImmutablePosition position, Color color) {
   int point = 0;
   for (final Piece piece in _invadingPieces(position.board, color)) {
-    final PieceType type = piece.unpromoted().type;
-    point += (type == PieceType.bishop || type == PieceType.rook) ? 5 : 1;
+    point += _jishogiPiecePoint(piece.unpromoted().type);
   }
-  final ImmutableHand hand = position.hand(color);
-  point += hand.count(PieceType.pawn) +
-      hand.count(PieceType.lance) +
-      hand.count(PieceType.knight) +
-      hand.count(PieceType.silver) +
-      hand.count(PieceType.gold) +
-      hand.count(PieceType.bishop) * 5 +
-      hand.count(PieceType.rook) * 5;
-  if (color == Color.white) {
-    final Map<PieceType, int> notExisting = countNotExistingPieces(position);
-    point += (notExisting[PieceType.pawn]!) +
-        (notExisting[PieceType.lance]!) +
-        (notExisting[PieceType.knight]!) +
-        (notExisting[PieceType.silver]!) +
-        (notExisting[PieceType.gold]!) +
-        (notExisting[PieceType.bishop]!) * 5 +
-        (notExisting[PieceType.rook]!) * 5;
-  }
-  return point;
+  return point + _handAndMissingPieceJishogiPoint(position, color);
 }
 
 /// 入玉宣言法に基づいて宣言した場合の結果を判定します。

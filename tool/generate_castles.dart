@@ -127,7 +127,8 @@ String _formatPlacement(PlacementCell p) {
       return 'AnyPiece(${p.file}, ${p.rank})';
     case 'anyPlacement':
       final String coords = p.squares
-          .map((({int file, int rank}) s) => '(file: ${s.file}, rank: ${s.rank})')
+          .map((({int file, int rank}) s) =>
+              '(file: ${s.file}, rank: ${s.rank})')
           .join(', ');
       final String color = p.opponent ? ', color: Color.white' : '';
       return 'AnyPlacement(PieceType.${p.pieceTypes.single}, '

@@ -101,8 +101,9 @@ String generateStrategyDart(List<ParsedTemplate> templates) {
 }
 
 String _handMapLiteral(Map<String, int> m) {
-  final String entries =
-      m.entries.map((MapEntry<String, int> e) => 'PieceType.${e.key}: ${e.value}').join(', ');
+  final String entries = m.entries
+      .map((MapEntry<String, int> e) => 'PieceType.${e.key}: ${e.value}')
+      .join(', ');
   return '<PieceType, int>{$entries}';
 }
 
@@ -128,7 +129,8 @@ String _formatPlacement(PlacementCell p) {
       return 'AnyPiece(${p.file}, ${p.rank})';
     case 'anyPlacement':
       final String coords = p.squares
-          .map((({int file, int rank}) s) => '(file: ${s.file}, rank: ${s.rank})')
+          .map((({int file, int rank}) s) =>
+              '(file: ${s.file}, rank: ${s.rank})')
           .join(', ');
       final String color = p.opponent ? ', color: Color.white' : '';
       return 'AnyPlacement(PieceType.${p.pieceTypes.single}, '

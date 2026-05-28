@@ -188,8 +188,7 @@ _ShapeRecord _parseAsciiBody(String key, List<String> bodyLines) {
         cell.kind == 'exact' &&
         cell.pieceTypes.length == 1) {
       primaryPieceEnum ??= cell.pieceTypes.single;
-      primary ??=
-          (file: file, rank: rank, pieceEnum: cell.pieceTypes.single);
+      primary ??= (file: file, rank: rank, pieceEnum: cell.pieceTypes.single);
     }
   }
 
@@ -595,8 +594,7 @@ List<_MetaRecord> parseMetaInfo(String source) {
       turnMax = int.tryParse(tmm.group(1)!);
     }
     // drop_only / hold_piece_empty: `true` のみ採用 (nil/false は無視)。
-    final bool dropOnly =
-        RegExp(r'drop_only:\s*true').hasMatch(line);
+    final bool dropOnly = RegExp(r'drop_only:\s*true').hasMatch(line);
     final bool holdPieceEmpty =
         RegExp(r'hold_piece_empty:\s*true').hasMatch(line);
     // hold_piece_in: "角" 等 → 持駒に含む駒。

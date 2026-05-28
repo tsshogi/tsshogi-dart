@@ -147,19 +147,10 @@ class StrategyTemplate {
   bool get hasPlyConstraint => plyEq != null || plyMax != null;
 
   /// このテンプレートが履歴依存要件 (`PieceUnmoved` / `PieceVisited` /
-  /// `KingIgyoku`) を含むかを返す。`true` の場合、位置ベース検出
-  /// (`detectStrategies(position)`) では常にスキップされる。
-  bool get hasHistoryRequirement {
-    for (final CastleRequirement req in placements) {
-      if (req is PieceUnmoved ||
-          req is PieceVisited ||
-          req is PieceDropped ||
-          req is KingIgyoku) {
-        return true;
-      }
-    }
-    return false;
-  }
+  /// `PieceDropped` / `KingIgyoku`) を含むかを返す。`true` の場合、位置ベース
+  /// 検出 (`detectStrategies(position)`) では常にスキップされる。
+  bool get hasHistoryRequirement =>
+      placements.any((CastleRequirement r) => r.isHistoryDependent);
 
   /// このテンプレートを「棋譜の最終手まで評価を遅延し、最終状態で 1 度だけ
   /// 判定する」べきかを示すフラグ。詳細は [CastleTemplate.evaluateAtGameEnd]
