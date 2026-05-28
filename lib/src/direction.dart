@@ -308,11 +308,8 @@ const Map<Direction, ({int x, int y})> directionToDeltaMap = {
   if (x != 0 && y != 0 && x.abs() != y.abs()) {
     return null;
   }
-  final int distance = (() {
-    if (x != 0) return x.abs();
-    if (y != 0) return y.abs();
-    return 0;
-  })();
+  // x が 0 でなければ |x|、そうでなければ |y| (x も y も 0 なら 0)。
+  final int distance = x != 0 ? x.abs() : y.abs();
   if (distance == 0) {
     return null;
   }
