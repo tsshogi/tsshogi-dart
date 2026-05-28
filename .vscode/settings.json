@@ -1,0 +1,56 @@
+{
+  // ===== Dart editor =====
+  // フォーマッタが厳格なので保存・タイプ時に走らせる。CI の dart format に
+  // ローカル状態を常に揃えるための要。analysis_options.yaml の lint
+  // (prefer_const_constructors / prefer_single_quotes 等) はアナライザが見る。
+  "[dart]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.rulers": [80],
+    "editor.defaultFormatter": "Dart-Code.dart-code"
+  },
+  // dart format / analyzer / test runner 設定
+  "dart.lineLength": 80,
+  "dart.runPubGetOnPubspecChanges": "always",
+  "dart.openTestView": ["testRunStart"],
+  "dart.warnWhenEditingFilesOutsideWorkspace": true,
+
+  // ===== Explorer: gitignore 済みでも vscode は隠さないので明示する =====
+  "files.exclude": {
+    "**/.dart_tool": true,
+    "**/.packages": true,
+    "**/.pub-cache": true,
+    "**/build": true,
+    "**/coverage": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true
+  },
+
+  // ===== Search: 検索ノイズ削減 =====
+  // lib/src/generated/*.g.dart はテンプレ自動生成 (5000 行超) なので検索から外す。
+  // 検索したい場合は Explorer から開いて Ctrl/Cmd+F すれば良い。
+  "search.useIgnoreFiles": true,
+  "search.exclude": {
+    "**/.dart_tool": true,
+    "**/.pub-cache": true,
+    "**/build": true,
+    "**/coverage": true,
+    "**/pubspec.lock": true,
+    "lib/src/generated/**": true
+  },
+
+  // ===== File watcher: 大量ファイル監視を抑制 =====
+  "files.watcherExclude": {
+    "**/.dart_tool/**": true,
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/.pub-cache/**": true,
+    "**/build/**": true,
+    "**/coverage/**": true
+  },
+
+  // ===== 改行・末尾 =====
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true
+}
