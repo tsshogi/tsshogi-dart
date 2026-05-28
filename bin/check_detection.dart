@@ -1,7 +1,4 @@
-import 'package:tsshogi/src/castle.dart';
-import 'package:tsshogi/src/record.dart';
-import 'package:tsshogi/src/strategy.dart';
-import 'package:tsshogi/src/technique.dart';
+import 'package:tsshogi/tsshogi.dart';
 
 /// 確認用 USI 棋譜を一覧で保持。追加するときはここに足すだけ。
 const Map<String, String> _samples = <String, String>{
