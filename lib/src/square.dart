@@ -10,28 +10,12 @@ int? _usiFileToNumber(String usi) {
 }
 
 int? _usiRankToNumber(String usi) {
-  switch (usi) {
-    case 'a':
-      return 1;
-    case 'b':
-      return 2;
-    case 'c':
-      return 3;
-    case 'd':
-      return 4;
-    case 'e':
-      return 5;
-    case 'f':
-      return 6;
-    case 'g':
-      return 7;
-    case 'h':
-      return 8;
-    case 'i':
-      return 9;
-    default:
-      return null;
+  if (usi.length != 1) return null;
+  final int code = usi.codeUnitAt(0);
+  if (code >= 0x61 /* 'a' */ && code <= 0x69 /* 'i' */) {
+    return code - 0x60;
   }
+  return null;
 }
 
 const List<String> _sfenRanks = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];

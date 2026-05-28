@@ -31,6 +31,23 @@ void main() {
     if (t.aliases.isNotEmpty) buf.writeln('aliases: ${t.aliases.join(', ')}');
     final String? plyLine = formatPlyHeader(plyEq: t.plyEq, plyMax: t.plyMax);
     if (plyLine != null) buf.writeln(plyLine);
+    for (final String line in formatGameContextHeaders(
+      outbreakSkip: t.outbreakSkip,
+      killCountLteq: t.killCountLteq,
+      killOnly: t.killOnly,
+      orderKey: t.orderKey,
+    )) {
+      buf.writeln(line);
+    }
+    for (final String line in formatHandConstraintHeaders(
+      handEq: t.handEq?.map((PieceType k, int v) => MapEntry(k.name, v)),
+      opHandEq: t.opHandEq?.map((PieceType k, int v) => MapEntry(k.name, v)),
+      handNotIn: t.handNotIn.map((PieceType p) => p.name).toList(),
+      noPawnInHand: t.noPawnInHand,
+      onlyPawnsInHand: t.onlyPawnsInHand,
+    )) {
+      buf.writeln(line);
+    }
     final List<PlacementCell> cells = _toCells(t.placements);
     final String? boardLine = formatBoardHeader(cells);
     if (boardLine != null) buf.writeln(boardLine);

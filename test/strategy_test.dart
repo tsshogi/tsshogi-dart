@@ -146,6 +146,15 @@ void _placeStrategy(Position position, StrategyTemplate template, Color side) {
         break;
     }
   }
+  // 持駒系フラグ (hold_piece_eq / op_hold_piece_eq) を満たすよう持駒を積む。
+  // handNotIn / noPawnInHand / onlyPawnsInHand は空の持駒で満たされる。
+  final Color opp = side == Color.black ? Color.white : Color.black;
+  template.handEq?.forEach((PieceType t, int n) {
+    position.hand(side).set(t, n);
+  });
+  template.opHandEq?.forEach((PieceType t, int n) {
+    position.hand(opp).set(t, n);
+  });
 }
 
 bool _detected(List<DetectedStrategy> results, String name, Color side) {

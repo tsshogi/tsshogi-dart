@@ -10,6 +10,8 @@ import '../piece.dart';
 const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: 'いちご囲い',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 7, PieceType.pawn),
       PiecePlacement(5, 7, PieceType.pawn),
@@ -21,6 +23,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: 'カニ囲い',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.gold),
       PiecePlacement(6, 8, PieceType.silver),
@@ -33,6 +37,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: 'カタ囲い',
     parent: 'カニ囲い',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.pawn),
@@ -44,6 +50,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: 'カブト囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(7, 8, PieceType.gold),
@@ -54,6 +61,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '銀矢倉',
     parent: 'カニ囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
@@ -68,6 +76,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
     name: '金矢倉',
     parent: 'カニ囲い',
     aliases: <String>['矢倉囲い'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
@@ -81,6 +90,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '総矢倉',
     parent: '金矢倉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(6, 7, PieceType.gold),
@@ -92,6 +102,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '菱矢倉',
     parent: '総矢倉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 6, PieceType.silver),
       PiecePlacement(7, 7, PieceType.silver),
@@ -103,6 +114,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '富士見矢倉',
     parent: '総矢倉',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(5, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -118,6 +131,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '高矢倉',
     parent: '金矢倉',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 7, PieceType.king),
       PiecePlacement(7, 7, PieceType.silver),
@@ -130,6 +145,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '四角矢倉',
     parent: '銀矢倉',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(6, 7, PieceType.silver),
@@ -141,6 +158,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '角矢倉',
     parent: 'カニ囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(6, 7, PieceType.bishop),
@@ -152,6 +170,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '豆腐矢倉',
     parent: '金矢倉',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 2, PieceType.rook, color: Color.white),
       PiecePlacement(7, 3, PieceType.knight, color: Color.white),
@@ -163,12 +183,20 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(8, 8, PieceType.king),
       PiecePlacement(7, 8, PieceType.gold),
-      AnyPlacement(PieceType.bishop, <({int file, int rank})>[(file: 2, rank: 2), (file: 3, rank: 3), (file: 4, rank: 4)], color: Color.white),
+      AnyPlacement(
+          PieceType.bishop,
+          <({int file, int rank})>[
+            (file: 2, rank: 2),
+            (file: 3, rank: 3),
+            (file: 4, rank: 4)
+          ],
+          color: Color.white),
     ],
   ),
   CastleTemplate(
     name: '隅矢倉',
     parent: '金矢倉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(9, 6, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -182,6 +210,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '流れ矢倉',
     parent: 'カニ囲い',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       EmptySquare(7, 7),
       PiecePlacement(6, 7, PieceType.gold),
@@ -195,6 +225,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '金門矢倉',
     parent: 'カニ囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(6, 7, PieceType.pawn),
@@ -208,6 +239,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: 'へこみ矢倉',
     parent: '金門矢倉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       EmptySquare(6, 6),
@@ -222,6 +254,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '一文字矢倉',
     parent: 'カニ囲い',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(6, 7, PieceType.gold),
@@ -232,6 +266,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: 'カギ囲い',
     parent: 'カニ囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 7, PieceType.gold),
       PiecePlacement(5, 7, PieceType.silver),
@@ -244,18 +279,22 @@ const List<CastleTemplate> castles = <CastleTemplate>[
     name: 'オールド雁木',
     parent: 'カニ囲い',
     aliases: <String>['雁木囲い'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 7, PieceType.silver),
       PiecePlacement(5, 7, PieceType.silver),
       PiecePlacement(7, 8, PieceType.gold),
       PiecePlacement(5, 8, PieceType.gold),
       PiecePlacement(6, 9, PieceType.king),
-      AnyPlacement(PieceType.bishop, <({int file, int rank})>[(file: 7, rank: 7), (file: 8, rank: 8)]),
+      AnyPlacement(PieceType.bishop,
+          <({int file, int rank})>[(file: 7, rank: 7), (file: 8, rank: 8)]),
     ],
   ),
   CastleTemplate(
     name: '新型雁木',
     parent: 'ツノ銀雁木',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       EmptySquare(7, 7),
       PiecePlacement(6, 7, PieceType.silver),
@@ -272,6 +311,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
     name: '菊水矢倉',
     parent: 'カニ囲い',
     aliases: <String>['しゃがみ矢倉'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 7, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.knight),
@@ -286,6 +326,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '流線矢倉',
     parent: '菊水矢倉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 7, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.knight),
@@ -298,6 +339,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: '悪形矢倉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.gold),
       PiecePlacement(8, 8, PieceType.king),
@@ -306,6 +348,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: '矢倉早囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
@@ -322,6 +365,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
     name: '天野矢倉',
     parent: '矢倉早囲い',
     aliases: <String>['片矢倉', '藤井矢倉'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
@@ -336,6 +380,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: '土居矢倉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
@@ -354,6 +399,9 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: 'ムリヤリ矢倉',
     plyMax: 16,
+    outbreakSkip: true,
+    killCountLteq: 0,
+    orderKey: 'second',
     placements: <CastleRequirement>[
       PiecePlacement(3, 1, PieceType.bishop, color: Color.white),
       PiecePlacement(8, 2, PieceType.rook, color: Color.white),
@@ -373,6 +421,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: 'カニ缶囲い',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(7, 8, PieceType.gold),
@@ -384,6 +434,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: 'オリジナル雁木',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       EmptySquare(2, 4),
       EmptySquare(3, 5),
@@ -405,6 +457,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: '舟囲い',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 8, PieceType.bishop),
       PiecePlacement(7, 8, PieceType.king),
@@ -418,6 +472,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '舟囲いDX',
     parent: '舟囲い',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(5, 7, PieceType.silver),
       PiecePlacement(7, 8, PieceType.king),
@@ -430,6 +486,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '居飛車金無双',
     parent: '舟囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.king),
       PiecePlacement(6, 8, PieceType.gold),
@@ -441,6 +498,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
     name: '天守閣囲い',
     parent: '舟囲い',
     aliases: <String>['▲7八金型天守閣囲い'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.king),
@@ -455,6 +513,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
     name: 'チョコレート囲い',
     parent: '舟囲い',
     aliases: <String>['屋根裏矢倉', '王冠'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 6, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -469,6 +528,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '左美濃',
     parent: '舟囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.silver),
       PiecePlacement(5, 8, PieceType.gold),
@@ -482,6 +542,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '角道不突き左美濃',
     parent: '舟囲い',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 7, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.pawn),
@@ -496,6 +558,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '居飛車金美濃',
     parent: '舟囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
@@ -513,6 +576,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '升田美濃',
     parent: '舟囲い',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.bishop),
       PiecePlacement(6, 7, PieceType.gold),
@@ -527,6 +592,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '天守閣美濃',
     parent: '左美濃',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 6, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -538,17 +604,20 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '四枚美濃',
     parent: '天守閣美濃',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(6, 7, PieceType.gold),
       PiecePlacement(7, 8, PieceType.silver),
       PiecePlacement(6, 9, PieceType.gold),
-      AnyPlacement(PieceType.king, <({int file, int rank})>[(file: 8, rank: 7), (file: 8, rank: 8)]),
+      AnyPlacement(PieceType.king,
+          <({int file, int rank})>[(file: 8, rank: 7), (file: 8, rank: 8)]),
     ],
   ),
   CastleTemplate(
     name: '居飛車銀冠',
     parent: '左美濃',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.silver),
@@ -559,6 +628,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '居飛車金冠',
     parent: '金矢倉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.gold),
@@ -568,6 +638,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '端玉銀冠',
     parent: '天守閣美濃',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.silver),
@@ -580,6 +652,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: 'かんぴょう囲い',
     parent: '居飛車銀冠',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(9, 7, PieceType.lance),
       PiecePlacement(8, 7, PieceType.silver),
@@ -592,18 +666,22 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '四枚銀冠',
     parent: '居飛車銀冠',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 7, PieceType.silver),
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(6, 7, PieceType.gold),
       PiecePlacement(7, 8, PieceType.gold),
-      AnyPlacement(PieceType.king, <({int file, int rank})>[(file: 9, rank: 8), (file: 8, rank: 8)]),
+      AnyPlacement(PieceType.king,
+          <({int file, int rank})>[(file: 9, rank: 8), (file: 8, rank: 8)]),
     ],
   ),
   CastleTemplate(
     name: '串カツ囲い',
     parent: '舟囲い',
     aliases: <String>['早咲玉', '端美濃囲い'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(9, 8, PieceType.king),
       PiecePlacement(8, 8, PieceType.silver),
@@ -654,6 +732,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '松尾流穴熊',
     parent: '居飛車穴熊',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.pawn),
@@ -670,6 +750,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '神吉流穴熊',
     parent: '左美濃',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(7, 7, PieceType.bishop),
@@ -689,6 +770,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '銀冠穴熊',
     parent: '居飛車銀冠',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 6, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.pawn),
@@ -703,6 +785,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '居飛穴音無しの構え',
     parent: '銀冠穴熊',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.silver),
@@ -718,6 +802,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: 'ビッグ4',
     parent: '居飛穴音無しの構え',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 7, PieceType.silver),
       PiecePlacement(7, 7, PieceType.silver),
@@ -731,6 +816,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '矢倉穴熊',
     parent: '金矢倉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 6, PieceType.pawn),
       PiecePlacement(6, 6, PieceType.pawn),
@@ -751,7 +837,19 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(7, 6, PieceType.silver),
       PiecePlacement(6, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.pawn),
-      AnyOfPieces(6, 7, <PieceType>[PieceType.silver, PieceType.gold, PieceType.bishop, PieceType.rook, PieceType.king, PieceType.promPawn, PieceType.promLance, PieceType.promKnight, PieceType.promSilver, PieceType.horse, PieceType.dragon]),
+      AnyOfPieces(6, 7, <PieceType>[
+        PieceType.silver,
+        PieceType.gold,
+        PieceType.bishop,
+        PieceType.rook,
+        PieceType.king,
+        PieceType.promPawn,
+        PieceType.promLance,
+        PieceType.promKnight,
+        PieceType.promSilver,
+        PieceType.horse,
+        PieceType.dragon
+      ]),
       PiecePlacement(8, 8, PieceType.king),
       PiecePlacement(7, 8, PieceType.gold),
       PieceVisited(7, 7, PieceType.silver),
@@ -759,6 +857,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: '紙穴熊',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 7, PieceType.pawn),
       PiecePlacement(2, 7, PieceType.pawn),
@@ -776,6 +875,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '振り飛車銀冠穴熊',
     parent: '振り飛車穴熊',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 6, PieceType.pawn),
       PiecePlacement(2, 7, PieceType.silver),
@@ -788,6 +888,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '振り飛車ビッグ4',
     parent: '振り飛車銀冠穴熊',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 7, PieceType.silver),
       PiecePlacement(2, 7, PieceType.silver),
@@ -801,6 +902,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '文鎮囲い',
     parent: '舟囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.knight),
       PiecePlacement(8, 8, PieceType.silver),
@@ -820,6 +922,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '箱入り娘',
     parent: '舟囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 7, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.king),
@@ -831,6 +934,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '金盾囲い',
     parent: '舟囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 7, PieceType.pawn),
       PiecePlacement(7, 8, PieceType.king),
@@ -842,6 +946,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '大盾囲い',
     parent: '舟囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 6, PieceType.pawn),
       PiecePlacement(6, 7, PieceType.gold),
@@ -855,6 +960,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
     name: 'ミレニアム囲い',
     parent: '舟囲い',
     aliases: <String>['トーチカ', 'トーチカ囲い', 'かまぼこ囲い', 'かまくら囲い'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.knight),
       PiecePlacement(8, 8, PieceType.silver),
@@ -866,6 +972,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
     name: 'セメント囲い',
     parent: '舟囲い',
     aliases: <String>['カタツムリ', 'トラック囲い'],
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 7, PieceType.silver),
       PiecePlacement(5, 7, PieceType.silver),
@@ -877,6 +985,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: 'ボナンザ囲い',
     parent: '舟囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(7, 8, PieceType.king),
@@ -887,6 +996,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: 'エルモ囲い',
     aliases: <String>['elmo囲い'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.king),
       PiecePlacement(6, 8, PieceType.silver),
@@ -897,6 +1007,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '左山囲い',
     parent: 'エルモ囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.king),
       PiecePlacement(6, 8, PieceType.silver),
@@ -908,6 +1019,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: '無責任矢倉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 7, PieceType.silver),
       PiecePlacement(6, 7, PieceType.gold),
@@ -917,6 +1029,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: 'あずまや囲い',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 5, PieceType.pawn),
       PiecePlacement(7, 6, PieceType.silver),
@@ -925,33 +1039,63 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(6, 9, PieceType.gold),
       PiecePlacement(5, 9, PieceType.king),
       PiecePlacement(4, 9, PieceType.gold),
-      AnyPlacement(PieceType.bishop, <({int file, int rank})>[(file: 7, rank: 7), (file: 8, rank: 8)]),
+      AnyPlacement(PieceType.bishop,
+          <({int file, int rank})>[(file: 7, rank: 7), (file: 8, rank: 8)]),
     ],
   ),
   CastleTemplate(
     name: '四段端玉',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       AnyPiece(9, 5),
       AnyPiece(8, 5),
       AnyPiece(7, 5),
       PiecePlacement(9, 6, PieceType.king),
-      AnyOfPieces(8, 6, <PieceType>[PieceType.silver, PieceType.gold, PieceType.bishop, PieceType.rook, PieceType.king, PieceType.promPawn, PieceType.promLance, PieceType.promKnight, PieceType.promSilver, PieceType.horse, PieceType.dragon]),
-      AnyOfPieces(7, 6, <PieceType>[PieceType.silver, PieceType.gold, PieceType.bishop, PieceType.rook, PieceType.king, PieceType.promPawn, PieceType.promLance, PieceType.promKnight, PieceType.promSilver, PieceType.horse, PieceType.dragon]),
+      AnyOfPieces(8, 6, <PieceType>[
+        PieceType.silver,
+        PieceType.gold,
+        PieceType.bishop,
+        PieceType.rook,
+        PieceType.king,
+        PieceType.promPawn,
+        PieceType.promLance,
+        PieceType.promKnight,
+        PieceType.promSilver,
+        PieceType.horse,
+        PieceType.dragon
+      ]),
+      AnyOfPieces(7, 6, <PieceType>[
+        PieceType.silver,
+        PieceType.gold,
+        PieceType.bishop,
+        PieceType.rook,
+        PieceType.king,
+        PieceType.promPawn,
+        PieceType.promLance,
+        PieceType.promKnight,
+        PieceType.promSilver,
+        PieceType.horse,
+        PieceType.dragon
+      ]),
     ],
   ),
   CastleTemplate(
     name: '中原囲い',
     aliases: <String>['中原玉'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.gold),
       PiecePlacement(4, 8, PieceType.silver),
       PiecePlacement(6, 9, PieceType.king),
       PiecePlacement(5, 9, PieceType.gold),
-      AnyPlacement(PieceType.silver, <({int file, int rank})>[(file: 8, rank: 8), (file: 7, rank: 9)]),
+      AnyPlacement(PieceType.silver,
+          <({int file, int rank})>[(file: 8, rank: 8), (file: 7, rank: 9)]),
     ],
   ),
   CastleTemplate(
     name: '中住まい',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(8, 7, PieceType.pawn),
       PiecePlacement(6, 7, PieceType.pawn),
@@ -965,6 +1109,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '桐山流中原囲い',
     parent: '中住まい',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(7, 8, PieceType.gold),
       EmptySquare(6, 8),
@@ -972,13 +1117,15 @@ const List<CastleTemplate> castles = <CastleTemplate>[
       PiecePlacement(4, 8, PieceType.silver),
       EmptySquare(6, 9),
       PiecePlacement(5, 9, PieceType.gold),
-      AnyPlacement(PieceType.silver, <({int file, int rank})>[(file: 8, rank: 8), (file: 7, rank: 9)]),
+      AnyPlacement(PieceType.silver,
+          <({int file, int rank})>[(file: 8, rank: 8), (file: 7, rank: 9)]),
     ],
   ),
   CastleTemplate(
     name: 'アヒル囲い',
     parent: '中住まい',
     aliases: <String>['金開き', '大阪囲い'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 7, PieceType.pawn),
       PiecePlacement(5, 7, PieceType.pawn),
@@ -994,6 +1141,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
     name: '裏アヒル囲い',
     parent: '中住まい',
     aliases: <String>['不死鳥囲い'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 7, PieceType.pawn),
       PiecePlacement(5, 7, PieceType.pawn),
@@ -1008,6 +1156,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '無敵囲い',
     aliases: <String>['初心者囲い'],
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 8, PieceType.silver),
       PiecePlacement(5, 8, PieceType.rook),
@@ -1020,6 +1170,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '早囲い',
     aliases: <String>['壁囲い', '早美濃'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 7, PieceType.pawn),
       PiecePlacement(3, 7, PieceType.pawn),
@@ -1035,6 +1186,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '振り飛車エルモ',
     parent: '早囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 7, PieceType.pawn),
       PiecePlacement(3, 7, PieceType.pawn),
@@ -1049,6 +1201,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
     name: 'ずれ美濃',
     parent: '早囲い',
     aliases: <String>['簡易囲い'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 7, PieceType.pawn),
       PiecePlacement(3, 7, PieceType.pawn),
@@ -1061,6 +1214,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '大隅囲い',
     aliases: <String>['大住囲い', '三手囲い', '金立囲い', '金立美濃'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 7, PieceType.pawn),
       PiecePlacement(3, 7, PieceType.pawn),
@@ -1075,6 +1229,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '連盟美濃',
     parent: '大隅囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 7, PieceType.pawn),
       PiecePlacement(3, 7, PieceType.pawn),
@@ -1090,11 +1245,13 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: '片美濃囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 7, PieceType.pawn),
       PiecePlacement(3, 7, PieceType.pawn),
       PiecePlacement(2, 7, PieceType.pawn),
-      NotOfPieces(5, 8, <PieceType>[PieceType.silver, PieceType.gold, PieceType.promSilver]),
+      NotOfPieces(5, 8,
+          <PieceType>[PieceType.silver, PieceType.gold, PieceType.promSilver]),
       EmptySquare(4, 8),
       PiecePlacement(3, 8, PieceType.silver),
       PiecePlacement(2, 8, PieceType.king),
@@ -1106,6 +1263,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '美濃囲い',
     parent: '片美濃囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 7, PieceType.pawn),
       PiecePlacement(2, 7, PieceType.pawn),
@@ -1121,6 +1279,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: 'ちょんまげ美濃',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(2, 6, PieceType.pawn),
       PiecePlacement(3, 7, PieceType.pawn),
@@ -1134,6 +1293,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '高美濃囲い',
     parent: '美濃囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 7, PieceType.gold),
       PiecePlacement(2, 7, PieceType.pawn),
@@ -1147,6 +1307,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '片銀冠',
     parent: '片美濃囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(2, 6, PieceType.pawn),
       PiecePlacement(4, 7, PieceType.pawn),
@@ -1161,6 +1322,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '銀冠',
     parent: '片銀冠',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(2, 6, PieceType.pawn),
       PiecePlacement(4, 7, PieceType.gold),
@@ -1174,6 +1336,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '銀美濃',
     parent: '片美濃囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 7, PieceType.pawn),
       PiecePlacement(5, 8, PieceType.silver),
@@ -1187,6 +1350,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '金美濃',
     parent: '早囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 7, PieceType.pawn),
       PiecePlacement(3, 7, PieceType.pawn),
@@ -1199,6 +1363,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '振り飛車四枚美濃',
     parent: '高美濃囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 6, PieceType.silver),
       PiecePlacement(4, 7, PieceType.gold),
@@ -1210,6 +1375,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: 'ダイヤモンド美濃',
     parent: '美濃囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 7, PieceType.silver),
       PiecePlacement(5, 8, PieceType.gold),
@@ -1225,6 +1391,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '木村美濃',
     parent: '片美濃囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 7, PieceType.silver),
       EmptySquare(4, 8),
@@ -1235,6 +1402,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '大山美濃',
     parent: '片美濃囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 6, PieceType.pawn),
       PiecePlacement(4, 7, PieceType.pawn),
@@ -1250,6 +1418,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '美濃熊囲い',
     parent: '片美濃囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       EmptySquare(4, 8),
       PiecePlacement(3, 8, PieceType.silver),
@@ -1264,6 +1433,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '裾固め',
     parent: '木村美濃',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 7, PieceType.silver),
       PiecePlacement(2, 7, PieceType.pawn),
@@ -1274,6 +1444,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: '右矢倉',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 7, PieceType.silver),
       PiecePlacement(3, 8, PieceType.gold),
@@ -1283,6 +1454,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '振り飛車ミレニアム',
     aliases: <String>['振りミレ'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 7, PieceType.knight),
       PiecePlacement(2, 9, PieceType.king),
@@ -1291,6 +1463,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: '振り飛車端玉銀冠',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(2, 7, PieceType.silver),
       PiecePlacement(3, 8, PieceType.gold),
@@ -1301,6 +1474,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '振り飛車串カツ囲い',
     aliases: <String>['右端美濃囲い'],
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       NotOfPieces(4, 8, <PieceType>[PieceType.rook]),
       NotOfPieces(3, 8, <PieceType>[PieceType.rook]),
@@ -1314,6 +1488,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: '振り飛車天守閣美濃',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 6, PieceType.pawn),
       PiecePlacement(2, 6, PieceType.pawn),
@@ -1325,6 +1500,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '金無双',
     parent: '大隅囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(5, 7, PieceType.pawn),
       PiecePlacement(4, 7, PieceType.pawn),
@@ -1340,6 +1516,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '離れ金無双',
     parent: '大隅囲い',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 7, PieceType.pawn),
       PiecePlacement(2, 7, PieceType.pawn),
@@ -1354,6 +1531,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '坊主美濃',
     parent: 'ちょんまげ美濃',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       EmptySquare(2, 5),
       EmptySquare(2, 6),
@@ -1366,6 +1544,7 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: 'カブト美濃',
+    outbreakSkip: true,
     placements: <CastleRequirement>[
       EmptySquare(2, 5),
       EmptySquare(2, 6),
@@ -1380,6 +1559,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: '片ツノ銀囲い',
     parent: '舟囲い',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 6, PieceType.pawn),
       PiecePlacement(8, 7, PieceType.pawn),
@@ -1395,6 +1576,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   CastleTemplate(
     name: 'ツノ銀囲い',
     parent: '片ツノ銀囲い',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(6, 6, PieceType.pawn),
       PiecePlacement(4, 6, PieceType.pawn),
@@ -1410,6 +1593,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: 'いかだ囲い',
+    outbreakSkip: true,
+    killCountLteq: 0,
     placements: <CastleRequirement>[
       EmptySquare(8, 8),
       PiecePlacement(7, 8, PieceType.king),
@@ -1425,6 +1610,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: 'モノレール囲い',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(9, 6, PieceType.pawn),
       PiecePlacement(9, 7, PieceType.lance),
@@ -1445,6 +1632,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: '銀多伝',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 6, PieceType.silver),
       PiecePlacement(4, 7, PieceType.silver),
@@ -1454,6 +1643,8 @@ const List<CastleTemplate> castles = <CastleTemplate>[
   ),
   CastleTemplate(
     name: '金多伝',
+    outbreakSkip: true,
+    onlyPawnsInHand: true,
     placements: <CastleRequirement>[
       PiecePlacement(4, 6, PieceType.silver),
       PiecePlacement(4, 7, PieceType.gold),

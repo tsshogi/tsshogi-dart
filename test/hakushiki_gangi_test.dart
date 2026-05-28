@@ -27,8 +27,8 @@ bool _hasCastle(Position p, String name, {Color side = Color.black}) {
 bool _recordHasStrategy(String usi, String name, {Color side = Color.black}) {
   final Record? r = Record.newByUSI(usi);
   expect(r, isNotNull, reason: 'USI parse failed: $usi');
-  return r!.strategies.any(
-      (DetectedStrategyAt d) => d.template.name == name && d.side == side);
+  return r!.strategies
+      .any((DetectedStrategyAt d) => d.template.name == name && d.side == side);
 }
 
 void main() {
@@ -70,6 +70,56 @@ void main() {
       // 角7七・飛6八が盤にあっても、打ち駒履歴が無ければはく式は成立しない。
       final Position p = _pos('4k4/9/9/9/9/9/2B6/3R5/4K4 b - 1');
       expect(_hasStrategy(p, 'はく式四間飛車'), isFalse);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // レグスペ (角交換四間飛車穴熊)
+  //
+  // bioshogi の shape は振り飛車穴熊 (金3八銀2八香1八/金3九桂2九玉1九) だが、
+  // メタデータ hold_piece_in: "角" が決め手 = 「自分の持駒に角がある」
+  // (= 角交換して角を手持ちにしている)。これが無いと角交換していない穴熊でも
+  // レグスペと誤検出する。hold_piece_in は持駒判定なので静的局面で確認できる。
+  // -------------------------------------------------------------------------
+  group('レグスペ', () {
+    test('角交換して持駒に角がある穴熊はレグスペと判定する (positive)', () {
+      // 振り飛車穴熊形 + 先手の持駒に角 (角交換の証跡)。
+      final Position p = _pos('4k4/9/9/9/9/9/9/6GSL/6GNK b B 1');
+      expect(_hasStrategy(p, 'レグスペ'), isTrue,
+          reason: '穴熊 + 持駒角 (角交換) はレグスペのはず');
+    });
+
+    test('角交換していない (持駒に角がない) 穴熊はレグスペと判定しない (negative)', () {
+      // 同じ穴熊形だが持駒に角が無い = 角交換していない。レグスペではない。
+      final Position p = _pos('4k4/9/9/9/9/9/9/6GSL/6GNK b - 1');
+      expect(_hasStrategy(p, 'レグスペ'), isFalse,
+          reason: '角交換していないのにレグスペと誤検出している');
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // 右四間飛車 (居飛車) — outbreak_skip
+  //
+  // bioshogi の 右四間飛車 は side: ibisha (居飛車戦法) かつ outbreak_skip: true
+  // (開戦したら以降は判定しない)。移植時にこのメタデータを落としていたため、
+  // 終盤に飛車が4八へ来ただけでも右四間飛車と誤検出していた。
+  // outbreak_skip は履歴依存なので棋譜走査で確認する。
+  // -------------------------------------------------------------------------
+  group('右四間飛車 (outbreak_skip)', () {
+    test('開戦前に飛車を4八へ振れば右四間飛車を検出する (positive)', () {
+      // ▲4八飛 (2h4h)。駒の取り合いはまだ無い (開戦前)。
+      const String usi = 'position startpos moves 2h4h 3c3d';
+      expect(_recordHasStrategy(usi, '右四間飛車'), isTrue,
+          reason: '開戦前に飛車4八なら右四間飛車のはず');
+    });
+
+    test('開戦後に飛車が4八へ来ても右四間飛車を検出しない (negative)', () {
+      // 1手目に桂を取って開戦 (歩・角以外の駒を取る) させてから、飛車を
+      // 2八へ戻し→4八へ振る。開戦済みなので outbreak_skip で判定されない。
+      // (テストハーネスは非合法手も受理するため飛車で直接桂を取って開戦させる)
+      const String usi = 'position startpos moves 2h2a 3c3d 2a2h 8c8d 2h4h';
+      expect(_recordHasStrategy(usi, '右四間飛車'), isFalse,
+          reason: '開戦後に飛車4八へ来たのに右四間飛車と誤検出している');
     });
   });
 

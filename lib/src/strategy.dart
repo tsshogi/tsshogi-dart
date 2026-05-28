@@ -3,6 +3,7 @@ import 'color.dart';
 import 'generated/strategies.g.dart' as gen;
 import 'move.dart';
 import 'move_history.dart';
+import 'piece.dart';
 import 'position.dart';
 import 'record.dart';
 
@@ -51,6 +52,15 @@ class StrategyTemplate {
     this.plyEq,
     this.plyMax,
     this.evaluateAtGameEnd = false,
+    this.outbreakSkip = false,
+    this.killCountLteq,
+    this.killOnly = false,
+    this.orderKey,
+    this.handEq,
+    this.opHandEq,
+    this.handNotIn = const <PieceType>[],
+    this.noPawnInHand = false,
+    this.onlyPawnsInHand = false,
   });
 
   /// 戦法名 (例: '四間飛車')
@@ -85,23 +95,62 @@ class StrategyTemplate {
   /// 併用可。位置ベース検出では非 null のテンプレートはスキップされる。
   final int? plyMax;
 
+  /// bioshogi `outbreak_skip`: 開戦 (歩・角以外が取られた) 後は判定しない。
+  final bool outbreakSkip;
+
+  /// bioshogi `kill_count_lteq`: これまでの総取り駒数がこの値以下のときのみ
+  /// 成立 (例: 0 = 駒交換が一度も起きていない序盤のみ)。
+  final int? killCountLteq;
+
+  /// bioshogi `kill_only`: 直前の手で駒を取っているときのみ成立。
+  final bool killOnly;
+
+  /// bioshogi `order_key`: 手番限定 ('first' = 先手のみ / 'second' = 後手のみ)。
+  /// 平手前提で 'first'→black / 'second'→white に対応付ける。
+  final String? orderKey;
+
+  /// bioshogi `hold_piece_eq`: 自分の持駒が完全一致のとき成立。
+  final Map<PieceType, int>? handEq;
+
+  /// bioshogi `op_hold_piece_eq`: 相手の持駒が完全一致のとき成立。
+  final Map<PieceType, int>? opHandEq;
+
+  /// bioshogi `hold_piece_not_in`: 自分の持駒にこれらを含まないとき成立。
+  final List<PieceType> handNotIn;
+
+  /// bioshogi `has_pawn_then_skip`: 自分の持駒に歩があれば不成立。
+  final bool noPawnInHand;
+
+  /// bioshogi `has_other_pawn_then_skip`: 自分の持駒に歩以外があれば不成立。
+  final bool onlyPawnsInHand;
+
+  /// このテンプレートが棋譜走査ゲート (outbreak/kill/order) を持つかを返す。
+  bool get hasRecordGate =>
+      outbreakSkip || killCountLteq != null || killOnly || orderKey != null;
+
+  /// 棋譜走査ゲート (game-context 制約) を満たすか。局面単体検出では履歴が
+  /// 無いため評価できず、本判定は `record.strategies` からのみ呼ばれる。
+  bool passesRecordGate(Color side, MoveHistory history) {
+    if (outbreakSkip && history.outbreakTurn != null) return false;
+    if (killCountLteq != null && history.captureCount > killCountLteq!) {
+      return false;
+    }
+    if (killOnly && !history.lastMoveCaptured) return false;
+    if (orderKey != null) {
+      final Color want = orderKey == 'first' ? Color.black : Color.white;
+      if (side != want) return false;
+    }
+    return true;
+  }
+
   /// このテンプレートが ply 制約 (`plyEq` または `plyMax`) を持つかを返す。
   bool get hasPlyConstraint => plyEq != null || plyMax != null;
 
   /// このテンプレートが履歴依存要件 (`PieceUnmoved` / `PieceVisited` /
-  /// `KingIgyoku`) を含むかを返す。`true` の場合、位置ベース検出
-  /// (`detectStrategies(position)`) では常にスキップされる。
-  bool get hasHistoryRequirement {
-    for (final CastleRequirement req in placements) {
-      if (req is PieceUnmoved ||
-          req is PieceVisited ||
-          req is PieceDropped ||
-          req is KingIgyoku) {
-        return true;
-      }
-    }
-    return false;
-  }
+  /// `PieceDropped` / `KingIgyoku`) を含むかを返す。`true` の場合、位置ベース
+  /// 検出 (`detectStrategies(position)`) では常にスキップされる。
+  bool get hasHistoryRequirement =>
+      placements.any((CastleRequirement r) => r.isHistoryDependent);
 
   /// このテンプレートを「棋譜の最終手まで評価を遅延し、最終状態で 1 度だけ
   /// 判定する」べきかを示すフラグ。詳細は [CastleTemplate.evaluateAtGameEnd]
@@ -197,7 +246,15 @@ bool _matchesStrategyTemplate(
   for (final CastleRequirement req in template.placements) {
     if (!req.isSatisfiedBy(position, side, history)) return false;
   }
-  return true;
+  return passesHandConstraints(
+    position,
+    side,
+    handEq: template.handEq,
+    opHandEq: template.opHandEq,
+    handNotIn: template.handNotIn,
+    noPawnInHand: template.noPawnInHand,
+    onlyPawnsInHand: template.onlyPawnsInHand,
+  );
 }
 
 /// 局面からの戦法検出ユーティリティ。プロパティ形式で
@@ -274,6 +331,8 @@ extension ImmutableRecordStrategies on ImmutableRecord {
       // 1. ply 制約も履歴依存要件も無いテンプレートは detectStrategies(pos)
       //    で一括判定 (高速路)。
       for (final DetectedStrategy d in detectStrategies(pos)) {
+        // game-context ゲート (開戦/取り駒数/手番) を棋譜履歴で検証。
+        if (!d.template.passesRecordGate(d.side, history)) continue;
         final String key = '${d.template.name}|${d.side.value}';
         if (seen.add(key)) {
           results.add(DetectedStrategyAt(
@@ -299,6 +358,7 @@ extension ImmutableRecordStrategies on ImmutableRecord {
               history: history)) {
             continue;
           }
+          if (!template.passesRecordGate(side, history)) continue;
           final String key = '${template.name}|${side.value}';
           if (seen.add(key)) {
             results.add(DetectedStrategyAt(

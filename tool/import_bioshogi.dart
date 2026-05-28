@@ -188,8 +188,7 @@ _ShapeRecord _parseAsciiBody(String key, List<String> bodyLines) {
         cell.kind == 'exact' &&
         cell.pieceTypes.length == 1) {
       primaryPieceEnum ??= cell.pieceTypes.single;
-      primary ??=
-          (file: file, rank: rank, pieceEnum: cell.pieceTypes.single);
+      primary ??= (file: file, rank: rank, pieceEnum: cell.pieceTypes.single);
     }
   }
 
@@ -451,6 +450,16 @@ class _MetaRecord {
     this.turnMax,
     this.dropOnly = false,
     this.holdPieceEmpty = false,
+    this.holdPieceIn = const <({String pieceEnum, int count})>[],
+    this.outbreakSkip = false,
+    this.killCountLteq,
+    this.killOnly = false,
+    this.orderKey,
+    this.handEq,
+    this.opHandEq,
+    this.handNotIn = const <String>[],
+    this.noPawnInHand = false,
+    this.onlyPawnsInHand = false,
   });
   final String key;
   final String? parent;
@@ -467,6 +476,72 @@ class _MetaRecord {
 
   /// bioshogi の hold_piece_empty (= 持駒が空であること)。
   final bool holdPieceEmpty;
+
+  /// bioshogi の hold_piece_in (= 持駒に指定駒を含むこと)。レグスペの角交換等。
+  final List<({String pieceEnum, int count})> holdPieceIn;
+
+  /// bioshogi の outbreak_skip (= 開戦後は判定しない)。
+  final bool outbreakSkip;
+
+  /// bioshogi の kill_count_lteq (= 総取り駒数の上限)。
+  final int? killCountLteq;
+
+  /// bioshogi の kill_only (= 直前手が駒取りのときのみ)。
+  final bool killOnly;
+
+  /// bioshogi の order_key (= 'first'/'second')。`:order_first` 等から抽出。
+  final String? orderKey;
+
+  /// bioshogi の hold_piece_eq (= 自分の持駒が完全一致)。enum 名 → 枚数。
+  final Map<String, int>? handEq;
+
+  /// bioshogi の op_hold_piece_eq (= 相手の持駒が完全一致)。
+  final Map<String, int>? opHandEq;
+
+  /// bioshogi の hold_piece_not_in (= 持駒に含まない駒の enum 名)。
+  final List<String> handNotIn;
+
+  /// bioshogi の has_pawn_then_skip。
+  final bool noPawnInHand;
+
+  /// bioshogi の has_other_pawn_then_skip。
+  final bool onlyPawnsInHand;
+}
+
+/// bioshogi の持駒表記 (例: `"角"`, `"角桂歩2"`) を (駒, 枚数) 列にパースする。
+/// 駒は漢字、枚数は駒の直後の算用数字 (無ければ 1)。
+List<({String pieceEnum, int count})> _parseHandSpec(String spec) {
+  final List<({String pieceEnum, int count})> out =
+      <({String pieceEnum, int count})>[];
+  int i = 0;
+  while (i < spec.length) {
+    final String ch = spec[i];
+    final String? sfen = _kanjiToSfen[ch];
+    if (sfen == null) {
+      i++;
+      continue;
+    }
+    int count = 1;
+    int j = i + 1;
+    final StringBuffer digits = StringBuffer();
+    while (j < spec.length && RegExp(r'[0-9]').hasMatch(spec[j])) {
+      digits.write(spec[j]);
+      j++;
+    }
+    if (digits.isNotEmpty) count = int.parse(digits.toString());
+    out.add((pieceEnum: sfenTokenToEnumName(sfen), count: count));
+    i = j;
+  }
+  return out;
+}
+
+/// 持駒表記を enum 名 → 枚数の Map に変換する (hold_piece_eq 等)。
+Map<String, int> _handSpecToMap(String spec) {
+  final Map<String, int> out = <String, int>{};
+  for (final ({String pieceEnum, int count}) e in _parseHandSpec(spec)) {
+    out[e.pieceEnum] = (out[e.pieceEnum] ?? 0) + e.count;
+  }
+  return out;
 }
 
 // ignore: library_private_types_in_public_api
@@ -519,10 +594,47 @@ List<_MetaRecord> parseMetaInfo(String source) {
       turnMax = int.tryParse(tmm.group(1)!);
     }
     // drop_only / hold_piece_empty: `true` のみ採用 (nil/false は無視)。
-    final bool dropOnly =
-        RegExp(r'drop_only:\s*true').hasMatch(line);
+    final bool dropOnly = RegExp(r'drop_only:\s*true').hasMatch(line);
     final bool holdPieceEmpty =
         RegExp(r'hold_piece_empty:\s*true').hasMatch(line);
+    // hold_piece_in: "角" 等 → 持駒に含む駒。
+    List<({String pieceEnum, int count})> holdPieceIn =
+        const <({String pieceEnum, int count})>[];
+    final RegExpMatch? hpi =
+        RegExp(r'hold_piece_in:\s*"([^"]*)"').firstMatch(line);
+    if (hpi != null && hpi.group(1)!.isNotEmpty) {
+      holdPieceIn = _parseHandSpec(hpi.group(1)!);
+    }
+    final bool outbreakSkip = RegExp(r'outbreak_skip:\s*true').hasMatch(line);
+    final bool killOnly = RegExp(r'kill_only:\s*true').hasMatch(line);
+    int? killCountLteq;
+    final RegExpMatch? kcm =
+        RegExp(r'kill_count_lteq:\s*(\d+)').firstMatch(line);
+    if (kcm != null) killCountLteq = int.tryParse(kcm.group(1)!);
+    String? orderKey;
+    final RegExpMatch? okm =
+        RegExp(r'order_key:\s*:order_(first|second)').firstMatch(line);
+    if (okm != null) orderKey = okm.group(1);
+    Map<String, int>? handEq;
+    final RegExpMatch? hem =
+        RegExp(r'hold_piece_eq:\s*"([^"]+)"').firstMatch(line);
+    if (hem != null) handEq = _handSpecToMap(hem.group(1)!);
+    Map<String, int>? opHandEq;
+    final RegExpMatch? ohm =
+        RegExp(r'op_hold_piece_eq:\s*"([^"]+)"').firstMatch(line);
+    if (ohm != null) opHandEq = _handSpecToMap(ohm.group(1)!);
+    List<String> handNotIn = const <String>[];
+    final RegExpMatch? hnm =
+        RegExp(r'hold_piece_not_in:\s*"([^"]+)"').firstMatch(line);
+    if (hnm != null) {
+      handNotIn = _parseHandSpec(hnm.group(1)!)
+          .map((({String pieceEnum, int count}) e) => e.pieceEnum)
+          .toList();
+    }
+    final bool noPawnInHand =
+        RegExp(r'has_pawn_then_skip:\s*true').hasMatch(line);
+    final bool onlyPawnsInHand =
+        RegExp(r'has_other_pawn_then_skip:\s*true').hasMatch(line);
     out.add(_MetaRecord(
       key: key,
       parent: parent,
@@ -531,6 +643,16 @@ List<_MetaRecord> parseMetaInfo(String source) {
       turnMax: turnMax,
       dropOnly: dropOnly,
       holdPieceEmpty: holdPieceEmpty,
+      holdPieceIn: holdPieceIn,
+      outbreakSkip: outbreakSkip,
+      killCountLteq: killCountLteq,
+      killOnly: killOnly,
+      orderKey: orderKey,
+      handEq: handEq,
+      opHandEq: opHandEq,
+      handNotIn: handNotIn,
+      noPawnInHand: noPawnInHand,
+      onlyPawnsInHand: onlyPawnsInHand,
     ));
   }
   return out;
@@ -569,6 +691,13 @@ List<PlacementCell> _withMeta(_ShapeRecord sh, _MetaRecord m) {
   if (m.holdPieceEmpty) {
     cells.add(PlacementCell(kind: 'handEmpty'));
   }
+  for (final ({String pieceEnum, int count}) h in m.holdPieceIn) {
+    cells.add(PlacementCell(
+      kind: 'handPiece',
+      pieceTypes: <String>[h.pieceEnum],
+      minCount: h.count,
+    ));
+  }
   return cells;
 }
 
@@ -583,6 +712,15 @@ String _formatTemplate({
   required List<PlacementCell> cells,
   int? plyEq,
   int? plyMax,
+  bool outbreakSkip = false,
+  int? killCountLteq,
+  bool killOnly = false,
+  String? orderKey,
+  Map<String, int>? handEq,
+  Map<String, int>? opHandEq,
+  List<String> handNotIn = const <String>[],
+  bool noPawnInHand = false,
+  bool onlyPawnsInHand = false,
 }) {
   final StringBuffer buf = StringBuffer();
   buf.writeln('=== name: $name');
@@ -591,6 +729,23 @@ String _formatTemplate({
   if (side != null) buf.writeln('side: $side');
   final String? plyLine = formatPlyHeader(plyEq: plyEq, plyMax: plyMax);
   if (plyLine != null) buf.writeln(plyLine);
+  for (final String line in formatGameContextHeaders(
+    outbreakSkip: outbreakSkip,
+    killCountLteq: killCountLteq,
+    killOnly: killOnly,
+    orderKey: orderKey,
+  )) {
+    buf.writeln(line);
+  }
+  for (final String line in formatHandConstraintHeaders(
+    handEq: handEq,
+    opHandEq: opHandEq,
+    handNotIn: handNotIn,
+    noPawnInHand: noPawnInHand,
+    onlyPawnsInHand: onlyPawnsInHand,
+  )) {
+    buf.writeln(line);
+  }
   final String? igyokuLine = formatIgyokuHeader(cells);
   if (igyokuLine != null) buf.writeln(igyokuLine);
   for (final String line in formatUnmovedHeaders(cells)) {
@@ -602,6 +757,8 @@ String _formatTemplate({
   for (final String line in formatAnyHeaders(cells)) {
     buf.writeln(line);
   }
+  final String? handLine = formatHandHeader(cells);
+  if (handLine != null) buf.writeln(handLine);
   for (final String line in formatDroppedHeaders(cells)) {
     buf.writeln(line);
   }
@@ -699,11 +856,14 @@ String? _guessSide(String name) {
     '居飛車',
     '右四間飛車', // 居飛車の右四間
   ];
-  for (final String kw in furibishaKeywords) {
-    if (name.contains(kw)) return 'furibisha';
-  }
+  // 居飛車キーワードを先に判定する。「右四間飛車」は居飛車戦法だが部分文字列
+  // に「四間飛車」(振り飛車キーワード) を含むため、先に振り飛車判定すると
+  // 誤って furibisha になる。より具体的な居飛車名を優先する。
   for (final String kw in ibishaKeywords) {
     if (name.contains(kw)) return 'ibisha';
+  }
+  for (final String kw in furibishaKeywords) {
+    if (name.contains(kw)) return 'furibisha';
   }
   return null;
 }
@@ -817,6 +977,15 @@ void main(List<String> args) {
       cells: _withMeta(sh, m),
       plyEq: m.turnEq,
       plyMax: m.turnMax,
+      outbreakSkip: m.outbreakSkip,
+      killCountLteq: m.killCountLteq,
+      killOnly: m.killOnly,
+      orderKey: m.orderKey,
+      handEq: m.handEq,
+      opHandEq: m.opHandEq,
+      handNotIn: m.handNotIn,
+      noPawnInHand: m.noPawnInHand,
+      onlyPawnsInHand: m.onlyPawnsInHand,
     ));
     castleCount++;
     for (final PlacementCell p in sh.cells) {
@@ -850,6 +1019,15 @@ void main(List<String> args) {
       cells: _withMeta(sh, m),
       plyEq: m.turnEq,
       plyMax: m.turnMax,
+      outbreakSkip: m.outbreakSkip,
+      killCountLteq: m.killCountLteq,
+      killOnly: m.killOnly,
+      orderKey: m.orderKey,
+      handEq: m.handEq,
+      opHandEq: m.opHandEq,
+      handNotIn: m.handNotIn,
+      noPawnInHand: m.noPawnInHand,
+      onlyPawnsInHand: m.onlyPawnsInHand,
     ));
     strategyCount++;
     for (final PlacementCell p in sh.cells) {
