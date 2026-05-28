@@ -28,6 +28,7 @@ class ParsedTemplate {
     this.handNotIn = const <String>[],
     this.noPawnInHand = false,
     this.onlyPawnsInHand = false,
+    this.mutual = false,
   });
 
   /// 必須: テンプレ名 (例: '金矢倉')
@@ -89,6 +90,11 @@ class ParsedTemplate {
 
   /// bioshogi `has_other_pawn_then_skip` (持駒に歩以外があれば不成立)。
   final bool onlyPawnsInHand;
+
+  /// 「相 〜」のように局面相互の戦法名 (相掛かり / 相横歩取り 等)。
+  /// `record.strategies` でテンプレ名単位の dedup と「指し手陣営に帰属」する
+  /// emit に切り替えるためのフラグ。
+  final bool mutual;
 }
 
 /// 要件 1 件分の中間表現。per-cell と position-wide のどちらも 1 つの型で
@@ -189,6 +195,7 @@ List<ParsedTemplate> parseTemplateFile(String content) {
   List<String> sectionHandNotIn = <String>[];
   bool sectionNoPawnInHand = false;
   bool sectionOnlyPawnsInHand = false;
+  bool sectionMutual = false;
   final List<PlacementCell> sectionExtras = <PlacementCell>[];
   final List<List<String>> gridRows = <List<String>>[];
 
@@ -249,6 +256,7 @@ List<ParsedTemplate> parseTemplateFile(String content) {
         handNotIn: List<String>.unmodifiable(sectionHandNotIn),
         noPawnInHand: sectionNoPawnInHand,
         onlyPawnsInHand: sectionOnlyPawnsInHand,
+        mutual: sectionMutual,
       ),
     );
   }
@@ -271,6 +279,7 @@ List<ParsedTemplate> parseTemplateFile(String content) {
     sectionHandNotIn = <String>[];
     sectionNoPawnInHand = false;
     sectionOnlyPawnsInHand = false;
+    sectionMutual = false;
     sectionExtras.clear();
     gridRows.clear();
   }
@@ -475,6 +484,9 @@ List<ParsedTemplate> parseTemplateFile(String content) {
         case 'only_pawns_in_hand':
           sectionOnlyPawnsInHand =
               _parseBoolHeader(header.value, lineNo, 'only_pawns_in_hand');
+          break;
+        case 'mutual':
+          sectionMutual = _parseBoolHeader(header.value, lineNo, 'mutual');
           break;
         case 'igyoku':
           // `igyoku: true` → KingIgyoku() を placements に追加し、

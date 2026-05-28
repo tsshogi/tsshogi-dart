@@ -386,6 +386,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     plyMax: 6,
     outbreakSkip: true,
     killCountLteq: 0,
+    mutual: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
       PiecePlacement(8, 5, PieceType.pawn, color: Color.white),
@@ -399,6 +400,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     side: StrategySide.ibisha,
     outbreakSkip: true,
     handEq: <PieceType, int>{PieceType.pawn: 1},
+    mutual: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
       PiecePlacement(2, 3, PieceType.pawn, color: Color.white),
@@ -526,6 +528,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
     parent: '横歩取り',
     side: StrategySide.ibisha,
     outbreakSkip: true,
+    mutual: true,
     placements: <CastleRequirement>[
       PiecePlacement(3, 2, PieceType.gold, color: Color.white),
       EmptySquare(3, 3),
@@ -1013,6 +1016,7 @@ const List<StrategyTemplate> strategies = <StrategyTemplate>[
   StrategyTemplate(
     name: '相筋違い角',
     outbreakSkip: true,
+    mutual: true,
     placements: <CastleRequirement>[
       EmptySquare(7, 2),
       EmptySquare(6, 2),

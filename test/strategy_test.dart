@@ -604,6 +604,44 @@ void main() {
       expect(_detected(result, '向かい飛車', Color.black), isFalse);
     });
 
+    test('相~ は mutual 戦法として一度だけ報告され、emit 側は指し手の手番', () {
+      // 横歩取り → 相横歩取り に発展する USI 棋譜。22 手目で 後手 (white)
+      // が 8f→7f に飛車を引き、これで相横歩取りの局面が確定する。
+      // 修正前: ply 18 で `black 相横歩取り` と `white 相横歩取り` が二重 emit
+      // されていた。mutual: true 化により name 単位 dedup + 指し手陣営帰属に
+      // なり、ply 18 で white の 1 件のみが出ることを確認する。
+      final Record? r = Record.newByUSI(
+        'position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/'
+        'LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b '
+        '2e2d 2c2d 2h2d 8e8f 8g8f 8b8f 2d3d 2b8h+ 7i8h 8f7f 8h7g 7f7d '
+        '3d7d 7c7d',
+      );
+      expect(r, isNotNull);
+      final List<DetectedStrategyAt> aiyoko = r!.strategies
+          .where((DetectedStrategyAt s) => s.template.name == '相横歩取り')
+          .toList();
+      expect(aiyoko, hasLength(1),
+          reason: 'mutual strategy must be emitted exactly once');
+      expect(aiyoko.single.side, Color.white,
+          reason: 'mutual strategy is attributed to the side whose move '
+              'completed the position');
+    });
+
+    test('mutual テンプレは 相掛かり / 相掛かり棒銀 / 相横歩取り / 相筋違い角 の 4 件', () {
+      final List<String> mutualNames = knownStrategies
+          .where((StrategyTemplate t) => t.mutual)
+          .map((StrategyTemplate t) => t.name)
+          .toList()
+        ..sort();
+      expect(mutualNames,
+          containsAll(<String>['相掛かり', '相掛かり棒銀', '相横歩取り', '相筋違い角']));
+      // mutual 化されているのは「相 〜」名の 4 件だけであるべき。
+      for (final String n in mutualNames) {
+        expect(n, startsWith('相'),
+            reason: 'mutual templates should be 相~ names; got "$n"');
+      }
+    });
+
     test('side flag distribution: ibisha / furibisha / either の数はそれぞれ妥当', () {
       final int ibishaCount = knownStrategies
           .where((StrategyTemplate t) => t.side == StrategySide.ibisha)
