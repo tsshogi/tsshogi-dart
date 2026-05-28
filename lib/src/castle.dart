@@ -37,6 +37,18 @@ sealed class CastleRequirement {
       [MoveHistory? history]);
 }
 
+/// 先手視点で記述された (file, rank) を、判定対象 [side] の盤上座標へ変換する。
+/// 後手なら 180° 回転 (file → 10-file, rank → 10-rank) する。per-cell 要件が
+/// 共通して使う座標正規化。
+Square _squareForSide(int file, int rank, Color side) =>
+    side == Color.black ? Square(file, rank) : Square(10 - file, 10 - rank);
+
+/// テンプレ視点の絶対色 [templateColor] を、判定対象 [side] における期待色へ
+/// 変換する。`Color.black` = 自陣 → side そのまま、`Color.white` = 相手陣 →
+/// reverseColor(side)。
+Color _expectedColor(Color templateColor, Color side) =>
+    templateColor == Color.black ? side : reverseColor(side);
+
 /// 駒種を厳密に指定する盤上 1 マスの要件 (exact match)。
 ///
 /// 例: `PiecePlacement(7, 8, PieceType.gold)` は 7八に先手視点で金。後手陣
@@ -70,14 +82,9 @@ class PiecePlacement extends CastleRequirement {
   @override
   bool isSatisfiedBy(ImmutablePosition position, Color side,
       [MoveHistory? history]) {
-    final int f = side == Color.black ? file : 10 - file;
-    final int r = side == Color.black ? rank : 10 - rank;
-    final Piece? piece = position.board.at(Square(f, r));
+    final Piece? piece = position.board.at(_squareForSide(file, rank, side));
     if (piece == null) return false;
-    // テンプレで color=black の駒は side 視点で自陣 → 期待色は side そのまま。
-    // color=white の駒は相手陣 → 期待色は reverseColor(side)。
-    final Color expected = color == Color.black ? side : reverseColor(side);
-    if (piece.color != expected) return false;
+    if (piece.color != _expectedColor(color, side)) return false;
     return piece.type == pieceType;
   }
 
@@ -114,9 +121,7 @@ class AnyOfPieces extends CastleRequirement {
   @override
   bool isSatisfiedBy(ImmutablePosition position, Color side,
       [MoveHistory? history]) {
-    final int f = side == Color.black ? file : 10 - file;
-    final int r = side == Color.black ? rank : 10 - rank;
-    final Piece? piece = position.board.at(Square(f, r));
+    final Piece? piece = position.board.at(_squareForSide(file, rank, side));
     if (piece == null) return false;
     if (piece.color != side) return false;
     return options.contains(piece.type);
@@ -154,9 +159,7 @@ class EmptySquare extends CastleRequirement {
   @override
   bool isSatisfiedBy(ImmutablePosition position, Color side,
       [MoveHistory? history]) {
-    final int f = side == Color.black ? file : 10 - file;
-    final int r = side == Color.black ? rank : 10 - rank;
-    return position.board.at(Square(f, r)) == null;
+    return position.board.at(_squareForSide(file, rank, side)) == null;
   }
 
   @override
@@ -197,12 +200,9 @@ class NotOfPieces extends CastleRequirement {
   @override
   bool isSatisfiedBy(ImmutablePosition position, Color side,
       [MoveHistory? history]) {
-    final int f = side == Color.black ? file : 10 - file;
-    final int r = side == Color.black ? rank : 10 - rank;
-    final Piece? piece = position.board.at(Square(f, r));
+    final Piece? piece = position.board.at(_squareForSide(file, rank, side));
     if (piece == null) return true;
-    final Color target = color == Color.black ? side : reverseColor(side);
-    if (piece.color != target) return true;
+    if (piece.color != _expectedColor(color, side)) return true;
     return !excluded.contains(piece.type);
   }
 
@@ -246,9 +246,7 @@ class AnyPiece extends CastleRequirement {
   @override
   bool isSatisfiedBy(ImmutablePosition position, Color side,
       [MoveHistory? history]) {
-    final int f = side == Color.black ? file : 10 - file;
-    final int r = side == Color.black ? rank : 10 - rank;
-    final Piece? piece = position.board.at(Square(f, r));
+    final Piece? piece = position.board.at(_squareForSide(file, rank, side));
     if (piece == null) return false;
     return anySide || piece.color == side;
   }
@@ -289,11 +287,10 @@ class AnyPlacement extends CastleRequirement {
   @override
   bool isSatisfiedBy(ImmutablePosition position, Color side,
       [MoveHistory? history]) {
-    final Color expected = color == Color.black ? side : reverseColor(side);
+    final Color expected = _expectedColor(color, side);
     for (final ({int file, int rank}) sq in squares) {
-      final int f = side == Color.black ? sq.file : 10 - sq.file;
-      final int r = side == Color.black ? sq.rank : 10 - sq.rank;
-      final Piece? piece = position.board.at(Square(f, r));
+      final Piece? piece =
+          position.board.at(_squareForSide(sq.file, sq.rank, side));
       if (piece != null && piece.color == expected && piece.type == pieceType) {
         return true;
       }
@@ -360,7 +357,8 @@ class PieceAnywhere extends CastleRequirement {
 /// - `Color.white` = 相手陣の持駒 (bioshogi の `v駒` 相当)。角交換振り飛車の
 ///   ように「相手が角を持駒にしている」状況を表現したいときに使う。
 class HandPiece extends CastleRequirement {
-  const HandPiece(this.pieceType, [this.minCount = 1, this.color = Color.black]);
+  const HandPiece(this.pieceType,
+      [this.minCount = 1, this.color = Color.black]);
 
   /// 駒種
   final PieceType pieceType;
@@ -374,7 +372,7 @@ class HandPiece extends CastleRequirement {
   @override
   bool isSatisfiedBy(ImmutablePosition position, Color side,
       [MoveHistory? history]) {
-    final Color handSide = color == Color.black ? side : reverseColor(side);
+    final Color handSide = _expectedColor(color, side);
     return position.hand(handSide).count(pieceType) >= minCount;
   }
 
@@ -412,9 +410,8 @@ class PieceUnmoved extends CastleRequirement {
   bool isSatisfiedBy(ImmutablePosition position, Color side,
       [MoveHistory? history]) {
     if (history == null) return false;
-    final int f = side == Color.black ? file : 10 - file;
-    final int r = side == Color.black ? rank : 10 - rank;
-    return history.isUnmoved(side, f, r);
+    final Square sq = _squareForSide(file, rank, side);
+    return history.isUnmoved(side, sq.file, sq.rank);
   }
 
   @override
@@ -489,9 +486,8 @@ class PieceVisited extends CastleRequirement {
   bool isSatisfiedBy(ImmutablePosition position, Color side,
       [MoveHistory? history]) {
     if (history == null) return false;
-    final int f = side == Color.black ? file : 10 - file;
-    final int r = side == Color.black ? rank : 10 - rank;
-    return history.hasVisited(side, pieceType, f, r);
+    final Square sq = _squareForSide(file, rank, side);
+    return history.hasVisited(side, pieceType, sq.file, sq.rank);
   }
 
   @override
@@ -529,13 +525,12 @@ class PieceDropped extends CastleRequirement {
   bool isSatisfiedBy(ImmutablePosition position, Color side,
       [MoveHistory? history]) {
     if (history == null) return false;
-    final int f = side == Color.black ? file : 10 - file;
-    final int r = side == Color.black ? rank : 10 - rank;
-    final Piece? piece = position.board.at(Square(f, r));
+    final Square sq = _squareForSide(file, rank, side);
+    final Piece? piece = position.board.at(sq);
     if (piece == null || piece.color != side || piece.type != pieceType) {
       return false;
     }
-    return history.isDroppedInPlace(side, f, r);
+    return history.isDroppedInPlace(side, sq.file, sq.rank);
   }
 
   @override
