@@ -35,6 +35,13 @@ sealed class CastleRequirement {
   /// を返す。
   bool isSatisfiedBy(ImmutablePosition position, Color side,
       [MoveHistory? history]);
+
+  /// この要件が `MoveHistory` (棋譜走査) なしには判定できないかを返す。
+  /// `true` の要件を含むテンプレートは position-only 検出 (履歴 null) では
+  /// 必ずスキップされる。デフォルトは `false`; 履歴に依存するサブクラス
+  /// (`PieceUnmoved` / `PieceVisited` / `PieceDropped` / `KingIgyoku`) で
+  /// `true` をオーバーライドする。
+  bool get isHistoryDependent => false;
 }
 
 /// 先手視点で記述された (file, rank) を、判定対象 [side] の盤上座標へ変換する。
@@ -415,6 +422,9 @@ class PieceUnmoved extends CastleRequirement {
   }
 
   @override
+  bool get isHistoryDependent => true;
+
+  @override
   bool operator ==(Object other) {
     return other is PieceUnmoved && other.file == file && other.rank == rank;
   }
@@ -456,6 +466,9 @@ class KingIgyoku extends CastleRequirement {
   }
 
   @override
+  bool get isHistoryDependent => true;
+
+  @override
   bool operator ==(Object other) => other is KingIgyoku;
 
   @override
@@ -489,6 +502,9 @@ class PieceVisited extends CastleRequirement {
     final Square sq = _squareForSide(file, rank, side);
     return history.hasVisited(side, pieceType, sq.file, sq.rank);
   }
+
+  @override
+  bool get isHistoryDependent => true;
 
   @override
   bool operator ==(Object other) {
@@ -532,6 +548,9 @@ class PieceDropped extends CastleRequirement {
     }
     return history.isDroppedInPlace(side, sq.file, sq.rank);
   }
+
+  @override
+  bool get isHistoryDependent => true;
 
   @override
   bool operator ==(Object other) {
@@ -624,9 +643,10 @@ class CastleTemplate {
   bool get hasPlyConstraint => plyEq != null || plyMax != null;
 
   /// このテンプレートが履歴依存要件 (`PieceUnmoved` / `PieceVisited` /
-  /// `KingIgyoku`) を含むかを返す。`true` の場合、位置ベース検出
-  /// (`detectCastles(position)`) では常にスキップされる。
-  bool get hasHistoryRequirement => _hasHistoryRequirement(placements);
+  /// `PieceDropped` / `KingIgyoku`) を含むかを返す。`true` の場合、位置ベース
+  /// 検出 (`detectCastles(position)`) では常にスキップされる。
+  bool get hasHistoryRequirement =>
+      placements.any((CastleRequirement r) => r.isHistoryDependent);
 
   /// このテンプレートを「棋譜の最終手まで評価を遅延し、最終状態で 1 度だけ
   /// 判定する」べきかを示すフラグ。
@@ -688,19 +708,6 @@ class CastleTemplate {
     if (plyMax != null && ply > plyMax!) return false;
     return true;
   }
-}
-
-/// 任意の placement 列が履歴依存要件を含むかを返す内部ヘルパ。
-bool _hasHistoryRequirement(List<CastleRequirement> placements) {
-  for (final CastleRequirement req in placements) {
-    if (req is PieceUnmoved ||
-        req is PieceVisited ||
-        req is PieceDropped ||
-        req is KingIgyoku) {
-      return true;
-    }
-  }
-  return false;
 }
 
 /// 局面における囲いの検出結果。
