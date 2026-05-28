@@ -230,6 +230,22 @@ List<DetectedStrategy> detectStrategies(
     if (template.hasPlyConstraint) continue;
     // game-end 評価テンプレ (居玉 等) は record.strategies からのみ。
     if (template.evaluateAtGameEnd) continue;
+    // mutual テンプレは局面相互の戦法名 (相~ 系)。両陣営から同時に match
+    // しても **1 件のみ** 返す。スナップショットには「指し手の手番」の概念が
+    // 無いので、`side:` フィルタが渡された場合はそれを emit 側に採用、無い
+    // 場合はテンプレ記述視点の `Color.black` を canonical として返す。
+    // ply 単位の帰属が欲しい場合は `record.strategies` を使う (こちらは
+    // `Move.color` に帰属させる)。
+    if (template.mutual) {
+      for (final Color s in const <Color>[Color.black, Color.white]) {
+        if (side != null && side != s) continue;
+        if (_matchesStrategyTemplate(position, template, s, history: history)) {
+          results.add(DetectedStrategy(template: template, side: side ?? s));
+          break;
+        }
+      }
+      continue;
+    }
     if (side == null || side == Color.black) {
       if (_matchesStrategyTemplate(position, template, Color.black,
           history: history)) {
@@ -272,6 +288,11 @@ bool _matchesStrategyTemplate(
 /// 注: これは **スナップショット** 検出のため、戦法が成立した後の手でも
 /// 同じ結果が出続ける。「初めて成立した手」を知りたい場合は
 /// [ImmutableRecordStrategies.strategies] を使う。
+///
+/// 注 2: `mutual: true` のテンプレ (相~ 系) はスナップショットでも 1 件のみ
+/// 返り、`side` は canonical な `Color.black` (テンプレ記述視点) になる。
+/// ply 単位での指し手帰属が必要なら [ImmutableRecordStrategies.strategies]
+/// を使う (こちらは `Move.color` ベース)。
 ///
 /// ```dart
 /// final p = Position.newBySFEN(sfen)!;
