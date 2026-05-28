@@ -294,6 +294,51 @@ bool _isInOwnCamp(Color color, int rank) {
   return color == Color.black ? rank >= 7 : rank <= 3;
 }
 
+/// [move] を指した後の駒種 (成り手なら成った後の駒種)。
+PieceType _movedType(Move move) =>
+    move.promote ? promotedPieceType(move.pieceType) : move.pieceType;
+
+/// 金と同じ動きをする駒種か (金・と・成香・成桂・成銀)。頭金 / 腹金 / 尻金 /
+/// 肩金 / 裾金 など玉攻めの定型手筋で「金相当」を識別する判定。
+bool _isGoldLike(PieceType pt) =>
+    pt == PieceType.gold ||
+    pt == PieceType.promPawn ||
+    pt == PieceType.promLance ||
+    pt == PieceType.promKnight ||
+    pt == PieceType.promSilver;
+
+/// [from] に居る [moved] の利きが [position] 上で [targetTypes] のいずれかに
+/// 当たる相手駒に届くかを判定する。`_OuteHisha` / `_OuteKaku` / `_JunOuteHisha`
+/// / `_JunOuteKaku` で共通する 8 方向探索の本体。step は long 駒の暴走防止
+/// (盤の最大長 8 で打ち切り)。
+bool _attacksEnemyOf(
+  ImmutablePosition position,
+  Square from,
+  Piece moved,
+  Set<PieceType> targetTypes,
+) {
+  for (final Direction dir in movableDirections(moved)) {
+    final MoveType? type = resolveMoveType(moved, dir);
+    if (type == null) continue;
+    Square sq = from.neighborByDirection(dir);
+    int step = 0;
+    while (sq.valid) {
+      step += 1;
+      final Piece? p = position.board.at(sq);
+      if (p != null) {
+        if (p.color != moved.color && targetTypes.contains(p.type)) {
+          return true;
+        }
+        break;
+      }
+      if (type == MoveType.short) break;
+      sq = sq.neighborByDirection(dir);
+      if (step > 8) break;
+    }
+  }
+  return false;
+}
+
 // ---------------------------------------------------------------------------
 // 歩を打つ手筋
 // ---------------------------------------------------------------------------
@@ -656,12 +701,8 @@ class _RyoTori extends TechniqueTemplate {
   String get name => '両取り';
   @override
   bool matches(Move move, ImmutablePosition before, ImmutablePosition after) {
-    final Piece p = Piece(
-      move.color,
-      move.promote ? promotedPieceType(move.pieceType) : move.pieceType,
-    );
-    final int targets = _countEnemyTargetsFrom(after, move.to, p);
-    return targets >= 2;
+    final Piece p = Piece(move.color, _movedType(move));
+    return _countEnemyTargetsFrom(after, move.to, p) >= 2;
   }
 }
 
@@ -672,12 +713,9 @@ class _KakuRyoTori extends TechniqueTemplate {
   String get name => '角による両取り';
   @override
   bool matches(Move move, ImmutablePosition before, ImmutablePosition after) {
-    final PieceType after_ =
-        move.promote ? promotedPieceType(move.pieceType) : move.pieceType;
-    if (after_ != PieceType.bishop && after_ != PieceType.horse) return false;
-    final int targets =
-        _countEnemyTargetsFrom(after, move.to, Piece(move.color, after_));
-    return targets >= 2;
+    final PieceType pt = _movedType(move);
+    if (pt != PieceType.bishop && pt != PieceType.horse) return false;
+    return _countEnemyTargetsFrom(after, move.to, Piece(move.color, pt)) >= 2;
   }
 }
 
@@ -688,12 +726,9 @@ class _HishaRyoTori extends TechniqueTemplate {
   String get name => '飛車による両取り';
   @override
   bool matches(Move move, ImmutablePosition before, ImmutablePosition after) {
-    final PieceType after_ =
-        move.promote ? promotedPieceType(move.pieceType) : move.pieceType;
-    if (after_ != PieceType.rook && after_ != PieceType.dragon) return false;
-    final int targets =
-        _countEnemyTargetsFrom(after, move.to, Piece(move.color, after_));
-    return targets >= 2;
+    final PieceType pt = _movedType(move);
+    if (pt != PieceType.rook && pt != PieceType.dragon) return false;
+    return _countEnemyTargetsFrom(after, move.to, Piece(move.color, pt)) >= 2;
   }
 }
 
@@ -720,8 +755,7 @@ class _DengakuZashi extends TechniqueTemplate {
   String get name => '田楽刺し';
   @override
   bool matches(Move move, ImmutablePosition before, ImmutablePosition after) {
-    final PieceType pt =
-        move.promote ? promotedPieceType(move.pieceType) : move.pieceType;
+    final PieceType pt = _movedType(move);
     // 串刺しは飛・香・竜の利き上 (縦の long move) で 2 駒以上を通す。
     if (pt != PieceType.lance &&
         pt != PieceType.rook &&
@@ -853,16 +887,8 @@ class _AtamaKin extends TechniqueTemplate {
   String get name => '頭金';
   @override
   bool matches(Move move, ImmutablePosition before, ImmutablePosition after) {
-    final PieceType pt =
-        move.promote ? promotedPieceType(move.pieceType) : move.pieceType;
     // 金 (もしくは成駒の金相当) で前方が敵玉
-    if (pt != PieceType.gold &&
-        pt != PieceType.promPawn &&
-        pt != PieceType.promLance &&
-        pt != PieceType.promKnight &&
-        pt != PieceType.promSilver) {
-      return false;
-    }
+    if (!_isGoldLike(_movedType(move))) return false;
     final Square? front = _front(move.to, move.color);
     if (front == null) return false;
     final Piece? king = before.board.at(front);
@@ -897,15 +923,7 @@ class _HaraKin extends TechniqueTemplate {
   String get name => '腹金';
   @override
   bool matches(Move move, ImmutablePosition before, ImmutablePosition after) {
-    final PieceType pt =
-        move.promote ? promotedPieceType(move.pieceType) : move.pieceType;
-    if (pt != PieceType.gold &&
-        pt != PieceType.promPawn &&
-        pt != PieceType.promLance &&
-        pt != PieceType.promKnight &&
-        pt != PieceType.promSilver) {
-      return false;
-    }
+    if (!_isGoldLike(_movedType(move))) return false;
     final Square? enemyKing = before.board.findKing(reverseColor(move.color));
     if (enemyKing == null) return false;
     return move.to.rank == enemyKing.rank &&
@@ -936,15 +954,7 @@ class _ShiriKin extends TechniqueTemplate {
   String get name => '尻金';
   @override
   bool matches(Move move, ImmutablePosition before, ImmutablePosition after) {
-    final PieceType pt =
-        move.promote ? promotedPieceType(move.pieceType) : move.pieceType;
-    if (pt != PieceType.gold &&
-        pt != PieceType.promPawn &&
-        pt != PieceType.promLance &&
-        pt != PieceType.promKnight &&
-        pt != PieceType.promSilver) {
-      return false;
-    }
+    if (!_isGoldLike(_movedType(move))) return false;
     final Square? enemyKing = before.board.findKing(reverseColor(move.color));
     if (enemyKing == null) return false;
     // 玉から見た「後ろ」 (= 攻め側から見た「前」のさらに 1 段奥)
@@ -978,15 +988,7 @@ class _KataKin extends TechniqueTemplate {
   String get name => '肩金';
   @override
   bool matches(Move move, ImmutablePosition before, ImmutablePosition after) {
-    final PieceType pt =
-        move.promote ? promotedPieceType(move.pieceType) : move.pieceType;
-    if (pt != PieceType.gold &&
-        pt != PieceType.promPawn &&
-        pt != PieceType.promLance &&
-        pt != PieceType.promKnight &&
-        pt != PieceType.promSilver) {
-      return false;
-    }
+    if (!_isGoldLike(_movedType(move))) return false;
     final Square? enemyKing = before.board.findKing(reverseColor(move.color));
     if (enemyKing == null) return false;
     // 玉から見て前 1 段 + 横 1 列
@@ -1024,15 +1026,7 @@ class _SusoKin extends TechniqueTemplate {
   String get name => '裾金';
   @override
   bool matches(Move move, ImmutablePosition before, ImmutablePosition after) {
-    final PieceType pt =
-        move.promote ? promotedPieceType(move.pieceType) : move.pieceType;
-    if (pt != PieceType.gold &&
-        pt != PieceType.promPawn &&
-        pt != PieceType.promLance &&
-        pt != PieceType.promKnight &&
-        pt != PieceType.promSilver) {
-      return false;
-    }
+    if (!_isGoldLike(_movedType(move))) return false;
     final Square? enemyKing = before.board.findKing(reverseColor(move.color));
     if (enemyKing == null) return false;
     final Color enemy = reverseColor(move.color);
@@ -1075,32 +1069,12 @@ class _OuteHisha extends TechniqueTemplate {
   bool matches(Move move, ImmutablePosition before, ImmutablePosition after) {
     final Color enemy = reverseColor(move.color);
     if (!after.board.isChecked(enemy)) return false;
-    final Piece moved = Piece(
-      move.color,
-      move.promote ? promotedPieceType(move.pieceType) : move.pieceType,
+    return _attacksEnemyOf(
+      after,
+      move.to,
+      Piece(move.color, _movedType(move)),
+      const {PieceType.rook, PieceType.dragon},
     );
-    // 移動先の利きに敵の飛車 (or 竜) が含まれるか
-    for (final Direction dir in movableDirections(moved)) {
-      final MoveType? type = resolveMoveType(moved, dir);
-      if (type == null) continue;
-      Square sq = move.to.neighborByDirection(dir);
-      int step = 0;
-      while (sq.valid) {
-        step += 1;
-        final Piece? p = after.board.at(sq);
-        if (p != null) {
-          if (p.color != move.color &&
-              (p.type == PieceType.rook || p.type == PieceType.dragon)) {
-            return true;
-          }
-          break;
-        }
-        if (type == MoveType.short) break;
-        sq = sq.neighborByDirection(dir);
-        if (step > 8) break;
-      }
-    }
-    return false;
   }
 }
 
@@ -1113,31 +1087,12 @@ class _OuteKaku extends TechniqueTemplate {
   bool matches(Move move, ImmutablePosition before, ImmutablePosition after) {
     final Color enemy = reverseColor(move.color);
     if (!after.board.isChecked(enemy)) return false;
-    final Piece moved = Piece(
-      move.color,
-      move.promote ? promotedPieceType(move.pieceType) : move.pieceType,
+    return _attacksEnemyOf(
+      after,
+      move.to,
+      Piece(move.color, _movedType(move)),
+      const {PieceType.bishop, PieceType.horse},
     );
-    for (final Direction dir in movableDirections(moved)) {
-      final MoveType? type = resolveMoveType(moved, dir);
-      if (type == null) continue;
-      Square sq = move.to.neighborByDirection(dir);
-      int step = 0;
-      while (sq.valid) {
-        step += 1;
-        final Piece? p = after.board.at(sq);
-        if (p != null) {
-          if (p.color != move.color &&
-              (p.type == PieceType.bishop || p.type == PieceType.horse)) {
-            return true;
-          }
-          break;
-        }
-        if (type == MoveType.short) break;
-        sq = sq.neighborByDirection(dir);
-        if (step > 8) break;
-      }
-    }
-    return false;
   }
 }
 
@@ -1150,31 +1105,12 @@ class _JunOuteHisha extends TechniqueTemplate {
   bool matches(Move move, ImmutablePosition before, ImmutablePosition after) {
     final Color enemy = reverseColor(move.color);
     if (after.board.isChecked(enemy)) return false;
-    final Piece moved = Piece(
-      move.color,
-      move.promote ? promotedPieceType(move.pieceType) : move.pieceType,
+    return _attacksEnemyOf(
+      after,
+      move.to,
+      Piece(move.color, _movedType(move)),
+      const {PieceType.rook, PieceType.dragon},
     );
-    for (final Direction dir in movableDirections(moved)) {
-      final MoveType? type = resolveMoveType(moved, dir);
-      if (type == null) continue;
-      Square sq = move.to.neighborByDirection(dir);
-      int step = 0;
-      while (sq.valid) {
-        step += 1;
-        final Piece? p = after.board.at(sq);
-        if (p != null) {
-          if (p.color != move.color &&
-              (p.type == PieceType.rook || p.type == PieceType.dragon)) {
-            return true;
-          }
-          break;
-        }
-        if (type == MoveType.short) break;
-        sq = sq.neighborByDirection(dir);
-        if (step > 8) break;
-      }
-    }
-    return false;
   }
 }
 
@@ -1187,31 +1123,12 @@ class _JunOuteKaku extends TechniqueTemplate {
   bool matches(Move move, ImmutablePosition before, ImmutablePosition after) {
     final Color enemy = reverseColor(move.color);
     if (after.board.isChecked(enemy)) return false;
-    final Piece moved = Piece(
-      move.color,
-      move.promote ? promotedPieceType(move.pieceType) : move.pieceType,
+    return _attacksEnemyOf(
+      after,
+      move.to,
+      Piece(move.color, _movedType(move)),
+      const {PieceType.bishop, PieceType.horse},
     );
-    for (final Direction dir in movableDirections(moved)) {
-      final MoveType? type = resolveMoveType(moved, dir);
-      if (type == null) continue;
-      Square sq = move.to.neighborByDirection(dir);
-      int step = 0;
-      while (sq.valid) {
-        step += 1;
-        final Piece? p = after.board.at(sq);
-        if (p != null) {
-          if (p.color != move.color &&
-              (p.type == PieceType.bishop || p.type == PieceType.horse)) {
-            return true;
-          }
-          break;
-        }
-        if (type == MoveType.short) break;
-        sq = sq.neighborByDirection(dir);
-        if (step > 8) break;
-      }
-    }
-    return false;
   }
 }
 
@@ -1618,9 +1535,7 @@ class _MamoriNoUma extends TechniqueTemplate {
   bool matches(Move move, ImmutablePosition before, ImmutablePosition after) {
     if (move.from is! FromSquare) return false;
     // 馬になる (or すでに馬) + 移動先が自陣
-    final PieceType after_ =
-        move.promote ? promotedPieceType(move.pieceType) : move.pieceType;
-    if (after_ != PieceType.horse) return false;
+    if (_movedType(move) != PieceType.horse) return false;
     return _isInOwnCamp(move.color, move.to.rank);
   }
 }
@@ -1853,9 +1768,7 @@ class _IkkenRyu extends TechniqueTemplate {
   @override
   bool matches(Move move, ImmutablePosition before, ImmutablePosition after) {
     // 竜を動かす (or 飛車成) → 移動先と相手玉が距離 2 で直線上 (cross)。
-    final PieceType after_ =
-        move.promote ? promotedPieceType(move.pieceType) : move.pieceType;
-    if (after_ != PieceType.dragon) return false;
+    if (_movedType(move) != PieceType.dragon) return false;
     final Square? king = after.board.findKing(reverseColor(move.color));
     if (king == null) return false;
     final int dx = (move.to.file - king.file).abs();
