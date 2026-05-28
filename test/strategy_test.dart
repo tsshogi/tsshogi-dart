@@ -627,6 +627,45 @@ void main() {
               'completed the position');
     });
 
+    test(
+        'スナップショット検出 (position.strategies / detectStrategies) でも mutual は 1 件のみ',
+        () {
+      // 同じ 横歩取り サンプルで position.strategies / detectStrategies を叩く。
+      // 修正前: side=black と side=white の 2 件返却。
+      // 修正後: 1 件のみ。side: フィルタ無しなら canonical の black、
+      // フィルタを渡したらそれを尊重。
+      final Record? r = Record.newByUSI(
+        'position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/'
+        'LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d 2f2e 8d8e 6i7h 4a3b '
+        '2e2d 2c2d 2h2d 8e8f 8g8f 8b8f 2d3d 2b8h+ 7i8h 8f7f',
+      );
+      expect(r, isNotNull);
+
+      final List<DetectedStrategy> snapAll = r!.position.strategies
+          .where((s) => s.template.name == '相横歩取り')
+          .toList();
+      expect(snapAll, hasLength(1),
+          reason: 'snapshot detection should emit mutual exactly once');
+      expect(snapAll.single.side, Color.black,
+          reason: 'no side filter → canonical Color.black');
+
+      final List<DetectedStrategy> detBlack =
+          detectStrategies(r.position, side: Color.black)
+              .where((s) => s.template.name == '相横歩取り')
+              .toList();
+      expect(detBlack, hasLength(1));
+      expect(detBlack.single.side, Color.black,
+          reason: 'side: black filter → side=black');
+
+      final List<DetectedStrategy> detWhite =
+          detectStrategies(r.position, side: Color.white)
+              .where((s) => s.template.name == '相横歩取り')
+              .toList();
+      expect(detWhite, hasLength(1));
+      expect(detWhite.single.side, Color.white,
+          reason: 'side: white filter → side=white');
+    });
+
     test('mutual テンプレは 相掛かり / 相掛かり棒銀 / 相横歩取り / 相筋違い角 の 4 件', () {
       final List<String> mutualNames = knownStrategies
           .where((StrategyTemplate t) => t.mutual)
