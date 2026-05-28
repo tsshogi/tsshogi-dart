@@ -61,6 +61,7 @@ class StrategyTemplate {
     this.handNotIn = const <PieceType>[],
     this.noPawnInHand = false,
     this.onlyPawnsInHand = false,
+    this.mutual = false,
   });
 
   /// 戦法名 (例: '四間飛車')
@@ -123,6 +124,14 @@ class StrategyTemplate {
 
   /// bioshogi `has_other_pawn_then_skip`: 自分の持駒に歩以外があれば不成立。
   final bool onlyPawnsInHand;
+
+  /// 「相 〜」のように局面相互の戦法名 (相掛かり / 相横歩取り 等)。
+  ///
+  /// テンプレ自体は両陣営から同時に match するが、`record.strategies` では
+  /// **テンプレ名単位で 1 度だけ** emit し、陣営はその局面を成立させた手の
+  /// 指し手 (`Move.color`) に帰属させる。これがないと `18手目: black 相横歩
+  /// 取り` と `18手目: white 相横歩取り` のような陣営別重複が発生する。
+  final bool mutual;
 
   /// このテンプレートが棋譜走査ゲート (outbreak/kill/order) を持つかを返す。
   bool get hasRecordGate =>
@@ -327,17 +336,22 @@ extension ImmutableRecordStrategies on ImmutableRecord {
     final Set<String> seen = <String>{};
     final MoveHistory history = MoveHistory()
       ..initFromPosition(initialPosition);
-    void emitAt(int ply, ImmutablePosition pos) {
+    // mutual テンプレ用 dedup キーは陣営を含めずテンプレ名のみ。
+    // emit 時の `side` はこの ply を指した側 (movingSide) に帰属させる。
+    String dedupKey(StrategyTemplate t, Color side) =>
+        t.mutual ? '${t.name}|MUTUAL' : '${t.name}|${side.value}';
+
+    void emitAt(int ply, ImmutablePosition pos, Color movingSide) {
       // 1. ply 制約も履歴依存要件も無いテンプレートは detectStrategies(pos)
       //    で一括判定 (高速路)。
       for (final DetectedStrategy d in detectStrategies(pos)) {
         // game-context ゲート (開戦/取り駒数/手番) を棋譜履歴で検証。
         if (!d.template.passesRecordGate(d.side, history)) continue;
-        final String key = '${d.template.name}|${d.side.value}';
+        final String key = dedupKey(d.template, d.side);
         if (seen.add(key)) {
           results.add(DetectedStrategyAt(
             template: d.template,
-            side: d.side,
+            side: d.template.mutual ? movingSide : d.side,
             ply: ply,
           ));
         }
@@ -359,11 +373,11 @@ extension ImmutableRecordStrategies on ImmutableRecord {
             continue;
           }
           if (!template.passesRecordGate(side, history)) continue;
-          final String key = '${template.name}|${side.value}';
+          final String key = dedupKey(template, side);
           if (seen.add(key)) {
             results.add(DetectedStrategyAt(
               template: template,
-              side: side,
+              side: template.mutual ? movingSide : side,
               ply: ply,
             ));
           }
@@ -380,7 +394,7 @@ extension ImmutableRecordStrategies on ImmutableRecord {
       if (raw is Move) {
         history.recordMove(raw, node.ply);
         pos.doMove(raw, ignoreValidation: true);
-        emitAt(node.ply, pos);
+        emitAt(node.ply, pos, raw.color);
         lastPly = node.ply;
       }
       node = node.next;
@@ -397,10 +411,12 @@ extension ImmutableRecordStrategies on ImmutableRecord {
               history: history)) {
             continue;
           }
-          final String key = '${template.name}|${side.value}';
+          final String key = dedupKey(template, side);
           if (!seen.add(key)) continue;
           // 居玉系: 戦い開始 (outbreak_turn) を emit ply に使う。
           // 戦いが起きなかった棋譜なら最終 ply。
+          // mutual テンプレートが game-end 評価に乗ることは現状無いが、
+          // 万一の組み合わせでも陣営は最終 ply の手番に倒す。
           final int emitPly = history.outbreakTurn ?? lastPly;
           results.add(DetectedStrategyAt(
             template: template,

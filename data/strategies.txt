@@ -294,6 +294,7 @@ side: ibisha
 ply: max 6
 outbreak_skip: true
 kill_count_lteq: 0
+mutual: true
 
 . . . . . . . . .
 . . . . . . g . .
@@ -310,6 +311,7 @@ parent: 相掛かり
 side: ibisha
 outbreak_skip: true
 hand_eq: P
+mutual: true
 any: vR 8 2 8 4 8 5 8 6
 
 . . . . . . . . .
@@ -429,6 +431,7 @@ outbreak_skip: true
 parent: 横歩取り
 side: ibisha
 outbreak_skip: true
+mutual: true
 hand: B
 
 . . . . . . . . .
@@ -902,6 +905,7 @@ hand_empty: true
 
 === name: 相筋違い角
 outbreak_skip: true
+mutual: true
 any: vB 6 5 7 6
 dropped: B 4 5
 hand_empty: true

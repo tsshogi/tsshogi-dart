@@ -85,6 +85,9 @@ String generateStrategyDart(List<ParsedTemplate> templates) {
     if (t.onlyPawnsInHand) {
       buf.writeln('    onlyPawnsInHand: true,');
     }
+    if (t.mutual) {
+      buf.writeln('    mutual: true,');
+    }
     if (t.placements.isEmpty) {
       buf.writeln('    placements: <CastleRequirement>[],');
     } else {
