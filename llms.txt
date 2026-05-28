@@ -11,7 +11,9 @@ point for any LLM coding assistant.
 
 ## Setup
 
-- [README.md](README.md): user-facing setup, dependency snippet, license.
+- [README.md](README.md): user-facing setup, dependency snippet, quick
+  start example (parse SFEN / USI, detect castles / strategies /
+  techniques), license, dev commands.
 - [pubspec.yaml](pubspec.yaml): package metadata (name, version 2.3.2,
   Dart SDK ^3.4.0, dev deps only).
 
@@ -83,11 +85,32 @@ point for any LLM coding assistant.
 - [docs/technique-coverage.md](docs/technique-coverage.md): per-technique
   status (94 implemented, 43 skipped, ~20 FIXME).
 
+## Contributing & conventions
+
+- [.claude/skills/refactor/SKILL.md](.claude/skills/refactor/SKILL.md):
+  safe-refactor guardrails. Never hand-edit `lib/src/generated/*.g.dart`
+  (edit `data/*.txt` and regenerate). Never rename public API names
+  that mirror upstream TypeScript `tsshogi`. CI-equivalent verification
+  is `dart format` → `dart analyze --fatal-infos --fatal-warnings` →
+  `dart test`.
+- [.commitlintrc.yaml](.commitlintrc.yaml): commit message rules.
+  Conventional types (`refactor` / `feat` / `fix` / `format` / `chore` /
+  `docs` / `test` / `perf` / `build` / `ci` / `revert` / `ui`). Subject
+  must NOT start with an uppercase English word — lowercase or
+  Japanese-leading subjects pass `subject-case`.
+- [.github/workflows/test.yaml](.github/workflows/test.yaml): CI runs
+  `dart format --output=none --set-exit-if-changed .`,
+  `dart analyze --fatal-infos --fatal-warnings`, and
+  `dart test --reporter expanded --coverage=coverage`. Triggers on push
+  to `master|feat/**|fix/**` and on PR targeting `master`.
+
 ## Optional
 
 - [test/](test/): all test files. Useful as executable examples.
 - [bin/check_detection.dart](bin/check_detection.dart): dev script that
   runs detection on sample USIs.
+- [.vscode/settings.json](.vscode/settings.json): workspace editor
+  settings (format-on-save, 80-col ruler, generated-file search exclusion).
 
 ## License
 
